@@ -5,7 +5,7 @@ type Edge = Integer
 type CFG = Set[Node]
 
 //case class Node(id: Label, stmt: Stmt, nType: NodeType, InputEdges: Set[Edge], OutputEdges: Set[Edge])
-case class Node(id: Label, stmt: Stmt, InputEdges: Set[Edge], OutputEdges: Set[Edge])
+case class Node(id: Label, stmt: Stmt, inputEdges: Set[Edge], outputEdges: Set[Edge])
 
 object CFGBuilder {
 
@@ -15,15 +15,15 @@ object CFGBuilder {
   def generate(function: FunDecl): CFG =
     generate(function.body, Set.empty, Set.empty)
 
-  def generate(stmt: Stmt, InputEdges: Set[Edge], OutputEdges: Set[Edge]): CFG = {
+  def generate(stmt: Stmt, inputEdges: Set[Edge], outputEdges: Set[Edge]): CFG = {
 
     stmt match {
-      case SequenceStmt(stmt1, stmt2) =>  generate(stmt1, InputEdges, getLabel(stmt2)) concat generate(stmt2, getLabel(stmt1), OutputEdges)
-      case IfStmt(condition, stmt, label) => Set(Node(label, stmt, InputEdges, OutputEdges)) concat generate(stmt, Set(label), OutputEdges)
-      case AssignmentStmt(_, _, label) => Set(Node(label, stmt, InputEdges,OutputEdges))
-      case OutputStmt(_, label) => Set(Node(label, stmt, InputEdges, OutputEdges))
-      case ReturnStmt(_, label) => Set(Node(label, stmt, InputEdges, OutputEdges))
-      case DeclarationStmt(_, label) => Set(Node(label, stmt, InputEdges, OutputEdges))
+      case SequenceStmt(stmt1, stmt2) =>  generate(stmt1, inputEdges, getLabel(stmt2)) concat generate(stmt2, getLabel(stmt1), outputEdges)
+      case IfStmt(condition, stmt, label) => Set(Node(label, stmt, inputEdges, outputEdges)) concat generate(stmt, Set(label), outputEdges)
+      case AssignmentStmt(_, _, label) => Set(Node(label, stmt, inputEdges,outputEdges))
+      case OutputStmt(_, label) => Set(Node(label, stmt, inputEdges, outputEdges))
+      case ReturnStmt(_, label) => Set(Node(label, stmt, inputEdges, outputEdges))
+      case DeclarationStmt(_, label) => Set(Node(label, stmt, inputEdges, outputEdges))
       case _ => Set.empty
     }
   }

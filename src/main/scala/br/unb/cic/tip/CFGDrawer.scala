@@ -7,10 +7,10 @@ object CFGDrawer {
   def pairs(cfg: CFG): Set[pair] = {
     var p = Set[pair]()
     cfg.map(n => {
-      n.InputEdges.map(e => {
+      n.inputEdges.map(e => {
         p += (e, n.id)
       })
-      n.OutputEdges.map(e => {
+      n.outputEdges.map(e => {
         p += (n.id, e)
       })
     })
