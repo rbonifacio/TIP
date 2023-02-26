@@ -4,11 +4,14 @@ object CFGDrawer {
 
   type pair = (Label, Label)
 
-  def pairs(cfg: CFG): List[pair] = {
-    var p = List[pair]()
+  def pairs(cfg: CFG): Set[pair] = {
+    var p = Set[pair]()
     cfg.map(n => {
       n.InputEdges.map(e => {
-        p = p :+ (e, n.id)
+        p += (e, n.id)
+      })
+      n.OutputEdges.map(e => {
+        p += (n.id, e)
       })
     })
     p
