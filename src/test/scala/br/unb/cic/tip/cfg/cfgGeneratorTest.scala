@@ -16,10 +16,9 @@ class cfgGeneratorTest extends AnyFunSuite {
       val cfg = CFGBuilder.generate(program, 0)
 
       val pairs = CFGDrawer.pairs(cfg)
-
+      
       val expected: List[(Label, Label)] =
         List(
-          (0, 1),
           (1, 2),
           (2, 3)
         )

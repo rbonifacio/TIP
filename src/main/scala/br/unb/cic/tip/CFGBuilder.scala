@@ -24,9 +24,15 @@ object CFGBuilder {
   }
 
   def generate(head: Stmt, tail: List[Stmt], label: Label): CFG = {
+
+    val pre = label match {
+      case 0 => List[Edge]()
+      case _ => List[Edge](label)
+    }
+
     head match {
-      case AssignmentStmt(_,_,l) => generate(tail, l) :+ Node(l, head, List[Edge](label))
-      case OutputStmt(_,l) => generate(tail, l) :+ Node(l, head, List[Edge](label))
+      case AssignmentStmt(_,_,l) => generate(tail, l) :+ Node(l, head, pre)
+      case OutputStmt(_,l) => generate(tail, l) :+ Node(l, head, pre)
 //      case ReturnStmt(_) => Node(counter, stmt)
       case _ => List[Node]()
     }
