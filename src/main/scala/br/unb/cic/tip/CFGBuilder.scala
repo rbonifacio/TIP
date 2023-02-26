@@ -2,10 +2,10 @@ package br.unb.cic.tip
 
 type NodeType = String
 type Edge = Integer
-type CFG = List[Node]
+type CFG = Set[Node]
 
-//case class Node(id: Label, stmt: Stmt, nType: NodeType, InputEdges: List[Edge], OutputEdges: List[Edge])
-case class Node(id: Label, stmt: Stmt, InputEdges: List[Edge], OutputEdges: List[Edge])
+//case class Node(id: Label, stmt: Stmt, nType: NodeType, InputEdges: Set[Edge], OutputEdges: Set[Edge])
+case class Node(id: Label, stmt: Stmt, InputEdges: Set[Edge], OutputEdges: Set[Edge])
 
 object CFGBuilder {
 
@@ -13,29 +13,29 @@ object CFGBuilder {
 //    program.map(p => generate(p))
 
   def generate(function: FunDecl): CFG =
-    generate(function.body, List[Edge](), List[Edge]())
+    generate(function.body, Set.empty, Set.empty)
 
-  def generate(stmt: Stmt, InputEdges: List[Edge], OutputEdges: List[Edge]): CFG = {
+  def generate(stmt: Stmt, InputEdges: Set[Edge], OutputEdges: Set[Edge]): CFG = {
 
     stmt match {
       case SequenceStmt(stmt1, stmt2) =>  generate(stmt1, InputEdges, getLabel(stmt2)) concat generate(stmt2, getLabel(stmt1), OutputEdges)
-      case IfStmt(condition, stmt, label) => List[Node](Node(label, stmt, InputEdges, OutputEdges)) concat generate(stmt, List[Edge](label), OutputEdges)
-      case AssignmentStmt(_, _, label) => List[Node](Node(label, stmt, InputEdges,OutputEdges))
-      case OutputStmt(_, label) => List[Node](Node(label, stmt, InputEdges, OutputEdges))
-      case ReturnStmt(_, label) => List[Node](Node(label, stmt, InputEdges, OutputEdges))
-      case DeclarationStmt(_, label) => List[Node](Node(label, stmt, InputEdges, OutputEdges))
-      case _ => List[Node]()
+      case IfStmt(condition, stmt, label) => Set(Node(label, stmt, InputEdges, OutputEdges)) concat generate(stmt, Set(label), OutputEdges)
+      case AssignmentStmt(_, _, label) => Set(Node(label, stmt, InputEdges,OutputEdges))
+      case OutputStmt(_, label) => Set(Node(label, stmt, InputEdges, OutputEdges))
+      case ReturnStmt(_, label) => Set(Node(label, stmt, InputEdges, OutputEdges))
+      case DeclarationStmt(_, label) => Set(Node(label, stmt, InputEdges, OutputEdges))
+      case _ => Set.empty
     }
   }
 
-  def getLabel(stmt: Stmt): List[Edge] = {
+  def getLabel(stmt: Stmt): Set[Edge] = {
     stmt match {
-      case AssignmentStmt(_,_,label) => List[Edge](label)
-      case OutputStmt(_,label) => List[Edge](label)
-      case ReturnStmt(_, label) => List[Edge](label)
-      case DeclarationStmt(_, label) => List[Edge](label)
-      case IfStmt(_, _, label) => List[Edge](label)
-      case _ => List[Edge]()
+      case AssignmentStmt(_,_,label) => Set(label)
+      case OutputStmt(_,label) => Set(label)
+      case ReturnStmt(_, label) => Set(label)
+      case DeclarationStmt(_, label) => Set(label)
+      case IfStmt(_, _, label) => Set(label)
+      case _ => Set.empty
     }
   }
 }
