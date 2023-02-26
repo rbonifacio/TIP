@@ -30,6 +30,8 @@ case class FunDecl(name: Id, args: List[Id], vars: List[Id], body: Stmt, retExp:
 abstract class Expression
 
 case class ConstExp(v: Integer) extends Expression
+case class VariableExp(name: Id) extends Expression
+case class AddExp(left: Expression, right: Expression) extends Expression
 
 //enum Expression:
 //  case ConstExp(v: Integer) extends Expression

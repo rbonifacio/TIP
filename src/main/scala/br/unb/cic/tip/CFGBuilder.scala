@@ -6,7 +6,7 @@ type CFG = List[Node]
 //type CFG = Node
 
 //case class Node(id: Label, stmt: Stmt, nType: NodeType, InputEdges: List[Edge], OutputEdges: List[Edge])
-case class Node(id: Label, stmt: Stmt)
+case class Node(id: Label, stmt: Stmt, InputEdges: List[Edge])
 
 object CFGBuilder {
 
@@ -17,26 +17,17 @@ object CFGBuilder {
 //    generate(function.body)
 
   def generate(stmtL: List[Stmt], label: Label): CFG = {
-//    (generate(stmtL.head) :+ generate(stmtL.tail))
-      if (stmtL.size > 1) {
-        generate(stmtL.head, stmtL.tail, label)
-      }
-      else {
-        if (stmtL.size == 1) {
-          generate(stmtL.head, List(), label)
-        }
-        else {
-          List[Node]()
-        }
-
-      }
-//    stmtL.map(stmt => generate(stmt))
+    stmtL.size match {
+      case 0 => List[Node]()
+      case 1 => generate(stmtL.head, List(), label)
+      case _ => generate(stmtL.head, stmtL.tail, label)
+    }
   }
 
   def generate(head: Stmt, tail: List[Stmt], label: Label): CFG = {
     head match {
-      case AssignmentStmt(_,_,l) => generate(tail, l) :+ Node(l, head)
-      case OutputStmt(_,l) => generate(tail, l) :+ Node(l, head)
+      case AssignmentStmt(_,_,l) => generate(tail, l) :+ Node(l, head, List[Edge](label))
+      case OutputStmt(_,l) => generate(tail, l) :+ Node(l, head, List[Edge](label))
 //      case ReturnStmt(_) => Node(counter, stmt)
       case _ => List[Node]()
     }
