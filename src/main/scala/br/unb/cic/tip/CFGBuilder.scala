@@ -11,17 +11,18 @@ object CFGBuilder {
 
 //  def generate(program: Program): CFG =
 //    program.map(p => generate(p))
-////
+
   def generate(function: FunDecl): CFG =
     generate(function.body, List[Edge]())
 
   def generate(stmt: Stmt, edges: List[Edge]): CFG = {
 
     stmt match {
-      case SequenceStmt(s1,s2) =>  generate(s1, edges) concat generate(s2, getLabel(s1))
-      case AssignmentStmt(_,_,l) => List[Node](Node(l, stmt, edges))
-      case OutputStmt(_,l) => List[Node](Node(l, stmt, edges))
-//      case ReturnStmt(_) => Node(counter, stmt)
+      case SequenceStmt(stmt1, stmt2) =>  generate(stmt1, edges) concat generate(stmt2, getLabel(stmt1))
+      case AssignmentStmt(_, _, label) => List[Node](Node(label, stmt, edges))
+      case OutputStmt(_, label) => List[Node](Node(label, stmt, edges))
+      case ReturnStmt(_, label) => List[Node](Node(label, stmt, edges))
+      case DeclarationStmt(_, label) => List[Node](Node(label, stmt, edges))
       case _ => List[Node]()
     }
   }
@@ -30,6 +31,8 @@ object CFGBuilder {
     stmt match {
       case AssignmentStmt(_,_,label) => List[Edge](label)
       case OutputStmt(_,label) => List[Edge](label)
+      case ReturnStmt(_, label) => List[Edge](label)
+      case DeclarationStmt(_, label) => List[Edge](label)
       case _ => List[Edge]()
     }
   }
