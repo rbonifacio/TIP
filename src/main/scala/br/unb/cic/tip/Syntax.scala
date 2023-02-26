@@ -28,10 +28,14 @@ case class FunDecl(name: Id, args: List[Id], vars: List[Id], body: Stmt, retExp:
 
 /** Algebraic data type for expressions */
 abstract class Expression
+abstract class BoolExpression extends Expression
 
 case class ConstExp(v: Integer) extends Expression
 case class VariableExp(name: Id) extends Expression
 case class AddExp(left: Expression, right: Expression) extends Expression
+
+//bool expressions
+case class EqExp(left: Expression, right: Expression) extends Expression
 
 //enum Expression:
 //  case ConstExp(v: Integer) extends Expression
@@ -69,9 +73,14 @@ case class AddExp(left: Expression, right: Expression) extends Expression
 
 abstract class Stmt
 abstract class BasicStmt extends Stmt
+abstract class ConditionStmt extends Stmt
 
 case class SequenceStmt(s1: Stmt, s2: Stmt) extends Stmt
-// basic ones
+// condition Stmt
+case class IfStmt(condition: Expression, s1: Stmt, label: Label) extends ConditionStmt
+//case class IfElseStmt(condition: Expression, s1: Stmt, s2: Option[Stmt], label: Label) extends ConditionStmt
+
+// basic Stmt
 case class AssignmentStmt(name: Id, exp: Expression, label: Label) extends BasicStmt
 case class OutputStmt(exp: Expression, label: Label) extends BasicStmt
 case class ReturnStmt(exp: Expression, label: Label) extends BasicStmt
