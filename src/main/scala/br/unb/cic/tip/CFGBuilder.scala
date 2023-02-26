@@ -3,7 +3,6 @@ package br.unb.cic.tip
 type NodeType = String
 type Edge = Integer
 type CFG = List[Node]
-//type CFG = Node
 
 //case class Node(id: Label, stmt: Stmt, nType: NodeType, InputEdges: List[Edge], OutputEdges: List[Edge])
 case class Node(id: Label, stmt: Stmt, InputEdges: List[Edge])
