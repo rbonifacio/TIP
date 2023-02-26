@@ -67,9 +67,12 @@ case class AddExp(left: Expression, right: Expression) extends Expression
 //  case ReturnStmt(exp: Expression) extends Stmt
 //  case DeclarationStmt(v: Expression) extends Stmt
 
-trait Stmt
+abstract class Stmt
+abstract class BasicStmt extends Stmt
 
-case class AssignmentStmt(name: Id, exp: Expression, label: Label) extends Stmt
-case class OutputStmt(exp: Expression, label: Label) extends Stmt
-case class ReturnStmt(exp: Expression, label: Label) extends Stmt
+case class AssignmentStmt(name: Id, exp: Expression, label: Label) extends BasicStmt
+case class OutputStmt(exp: Expression, label: Label) extends BasicStmt
+case class ReturnStmt(exp: Expression, label: Label) extends BasicStmt
+case class SequenceStmt(s1: Stmt, s2: Stmt) extends Stmt
+
 
