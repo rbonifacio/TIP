@@ -15,7 +15,7 @@ object CFGBuilder {
 //  def generate(function: FunDecl): CFG =
 //    generate(function.body)
 
-  def generate(stmtL: List[Stmt], label: Label): CFG = {
+  def generate(stmtL: List[Stmt], label: Label = 0): CFG = {
     stmtL.size match {
       case 0 => List[Node]()
       case 1 => generate(stmtL.head, List(), label)
