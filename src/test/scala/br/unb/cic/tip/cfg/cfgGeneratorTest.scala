@@ -22,7 +22,8 @@ class cfgGeneratorTest extends AnyFunSuite {
       val expected: List[(Label, Label)] =
         List(
           (1, 2),
-          (2, 3)
+          (2, 3),
+          (3, 4)
         )
 
       assert(pairs == expected )
