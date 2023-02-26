@@ -10,6 +10,7 @@ type Program = List[FunDecl]
 type Int = Integer
 type Id  = String
 type Field = (Id, Expression)
+type Label = Integer
 
 /** Algebraic definition of function declaration.
  *   - name: name of the function
@@ -64,9 +65,9 @@ case class ConstExp(v: Integer) extends Expression
 //  case ReturnStmt(exp: Expression) extends Stmt
 //  case DeclarationStmt(v: Expression) extends Stmt
 
-abstract class Stmt
+trait Stmt
 
-case class AssignmentStmt(name: Id, exp: Expression) extends Stmt
-case class OutputStmt(exp: Expression) extends Stmt
-case class ReturnStmt(exp: Expression) extends Stmt
+case class AssignmentStmt(name: Id, exp: Expression, label: Label) extends Stmt
+case class OutputStmt(exp: Expression, label: Label) extends Stmt
+case class ReturnStmt(exp: Expression, label: Label) extends Stmt
 
