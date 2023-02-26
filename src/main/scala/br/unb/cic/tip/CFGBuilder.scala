@@ -12,29 +12,25 @@ object CFGBuilder {
 //  def generate(program: Program): CFG =
 //    program.map(p => generate(p))
 ////
-//  def generate(function: FunDecl): CFG =
-//    generate(function.body)
+  def generate(function: FunDecl): CFG =
+    generate(function.body, List[Edge]())
 
-  def generate(stmtL: List[Stmt], label: Label = 0): CFG = {
-    stmtL.size match {
-      case 0 => List[Node]()
-      case 1 => generate(stmtL.head, List(), label)
-      case _ => generate(stmtL.head, stmtL.tail, label)
+  def generate(stmt: Stmt, edges: List[Edge]): CFG = {
+
+    stmt match {
+      case SequenceStmt(s1,s2) =>  generate(s1, edges) concat generate(s2, getLabel(s1))
+      case AssignmentStmt(_,_,l) => List[Node](Node(l, stmt, edges))
+      case OutputStmt(_,l) => List[Node](Node(l, stmt, edges))
+//      case ReturnStmt(_) => Node(counter, stmt)
+      case _ => List[Node]()
     }
   }
 
-  def generate(head: Stmt, tail: List[Stmt], label: Label): CFG = {
-
-    val pre = label match {
-      case 0 => List[Edge]()
-      case _ => List[Edge](label)
-    }
-
-    head match {
-      case AssignmentStmt(_,_,l) => generate(tail, l) :+ Node(l, head, pre)
-      case OutputStmt(_,l) => generate(tail, l) :+ Node(l, head, pre)
-//      case ReturnStmt(_) => Node(counter, stmt)
-      case _ => List[Node]()
+  def getLabel(stmt: Stmt): List[Edge] = {
+    stmt match {
+      case AssignmentStmt(_,_,label) => List[Edge](label)
+      case OutputStmt(_,label) => List[Edge](label)
+      case _ => List[Edge]()
     }
   }
 }

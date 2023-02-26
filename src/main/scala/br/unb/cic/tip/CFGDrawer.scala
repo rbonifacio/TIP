@@ -6,7 +6,7 @@ object CFGDrawer {
 
   def pairs(cfg: CFG): List[pair] = {
     var p = List[pair]()
-    cfg.reverse.map(n => {
+    cfg.map(n => {
       n.InputEdges.map(e => {
         p = p :+ (e, n.id)
       })

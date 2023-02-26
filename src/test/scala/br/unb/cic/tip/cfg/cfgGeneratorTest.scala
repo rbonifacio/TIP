@@ -11,9 +11,11 @@ class cfgGeneratorTest extends AnyFunSuite {
       val s3 = AssignmentStmt("z", AddExp(VariableExp("x"),VariableExp("y")), 3)
       val s4 = ReturnStmt(VariableExp("z"), 4)
 
-      val program = List(s1, s2, s3, s4)
+      val body = SequenceStmt(s1, SequenceStmt(s2, SequenceStmt(s3, s4)))
 
-      val cfg = CFGBuilder.generate(program)
+      val function = FunDecl("sum", List(), List(), body, VariableExp("z"))
+
+      val cfg = CFGBuilder.generate(function)
 
       val pairs = CFGDrawer.pairs(cfg)
 
@@ -23,7 +25,7 @@ class cfgGeneratorTest extends AnyFunSuite {
           (2, 3)
         )
 
-      assert(expected == pairs)
+      assert(pairs == expected )
     }
 
 }
