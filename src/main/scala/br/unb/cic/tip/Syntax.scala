@@ -39,30 +39,32 @@ abstract class PointerExp extends Exp
 abstract class RecordExp extends Exp
 abstract class IOExp extends Exp
 
-//Basic Exps
+//Basic Expressions
 case class ConstExp(v: Int) extends BasicExp
 case class VariableExp(name: Id) extends BasicExp
 case class BracketExp(exp: Exp) extends BasicExp
 
-//IO Exps
+//IO Expressions
 case object InputExp extends IOExp
 case object OutputExp extends IOExp
 
-//Arithmetic Exps
+//Arithmetic Expressions
 case class AddExp(left: Exp, right: Exp) extends ArithmeticExp
 case class SubExp(left: Exp, right: Exp) extends ArithmeticExp
 case class MulExp(left: Exp, right: Exp) extends ArithmeticExp
 case class DivExp(left: Exp, right: Exp) extends ArithmeticExp
 
-//Boolean Exps
-case class GTExp(left: Exp, right: Exp) extends Exp
-case class EqExp(left: Exp, right: Exp) extends Exp
+//Boolean Expressions
+case class LTExp(left: Exp, right: Exp) extends BoolExp
+case class GTExp(left: Exp, right: Exp) extends BoolExp
+case class EqExp(left: Exp, right: Exp) extends BoolExp
+case class NotExp(exp: Exp) extends BoolExp
 
-//Call functions
+//Call functions Expressions
 case class DirectFunctionCallExp(name: Id, args: List[Exp]) extends CallExp
 case class IndirectFunctionCallExp(exp: Exp, args: List[Exp]) extends CallExp
 
-//Pointers
+//Pointers Expressions
 case class AllocExp(exp: Exp) extends PointerExp
 case class LocationExp(pointer: Id) extends PointerExp
 case class LoadExp(exp: Exp) extends PointerExp
