@@ -46,7 +46,6 @@ case class BracketExp(exp: Exp) extends BasicExp
 
 //IO Expressions
 case object InputExp extends IOExp
-case object OutputExp extends IOExp
 
 //Arithmetic Expressions
 case class AddExp(left: Exp, right: Exp) extends ArithmeticExp
@@ -55,10 +54,8 @@ case class MulExp(left: Exp, right: Exp) extends ArithmeticExp
 case class DivExp(left: Exp, right: Exp) extends ArithmeticExp
 
 //Boolean Expressions
-case class LTExp(left: Exp, right: Exp) extends BoolExp
 case class GTExp(left: Exp, right: Exp) extends BoolExp
 case class EqExp(left: Exp, right: Exp) extends BoolExp
-case class NotExp(exp: Exp) extends BoolExp
 
 //Call functions Expressions
 case class DirectFunctionCallExp(name: Id, args: List[Exp]) extends CallExp
