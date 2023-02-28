@@ -34,7 +34,7 @@ enum Expression:
   case MultiExp(left: Expression, right: Expression) extends Expression
   case DivExp(left: Expression, right: Expression) extends Expression
   case EqExp(left: Expression, right: Expression) extends Expression
-  case GEqExp(left: Expression, right: Expression) extends Expression
+  case GTExp(left: Expression, right: Expression) extends Expression
   case BracketExp(exp: Expression) extends Expression
   // function-call expressions
   case DirectFunctionCallExp(name: Id, args: List[Expression]) extends Expression
