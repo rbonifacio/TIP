@@ -31,7 +31,7 @@ class cfgGeneratorTest extends AnyFunSuite {
     val s1 = AssignmentStmt("x", ConstExp(1), 1)
     val s2IfExp = EqExp(VariableExp("x"),ConstExp(0))
     val s2IfStmt = AssignmentStmt("z", AddExp(VariableExp("x"),ConstExp(2)), 3)
-    val s2 = IfStmt(s2IfExp, s2IfStmt, 2)
+    val s2 = IfElseStmt(s2IfExp, s2IfStmt, None, 2)
     val s3 = ReturnStmt(VariableExp("z"), 4)
 
     val body = SequenceStmt(s1, SequenceStmt(s2, s3))

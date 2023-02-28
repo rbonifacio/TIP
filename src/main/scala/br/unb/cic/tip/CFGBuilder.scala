@@ -19,7 +19,8 @@ object CFGBuilder {
 
     stmt match {
       case SequenceStmt(stmt1, stmt2) =>  generate(stmt1, inputEdges, getLabel(stmt2)) concat generate(stmt2, getLabel(stmt1), outputEdges)
-      case IfStmt(condition, stmt, label) => Set(Node(label, stmt, inputEdges, outputEdges)) concat generate(stmt, Set(label), outputEdges)
+      case IfElseStmt(condition, stmt1, Some(stmt2), label) => Set(Node(label, stmt, inputEdges, outputEdges)) concat generate(stmt1, Set(label), outputEdges) concat generate(stmt2, Set(label), outputEdges)
+      case IfElseStmt(condition, stmt1, None, label) => Set(Node(label, stmt, inputEdges, outputEdges)) concat generate(stmt1, Set(label), outputEdges)
       case AssignmentStmt(_, _, label) => Set(Node(label, stmt, inputEdges,outputEdges))
       case OutputStmt(_, label) => Set(Node(label, stmt, inputEdges, outputEdges))
       case ReturnStmt(_, label) => Set(Node(label, stmt, inputEdges, outputEdges))
@@ -34,7 +35,7 @@ object CFGBuilder {
       case OutputStmt(_,label) => Set(label)
       case ReturnStmt(_, label) => Set(label)
       case DeclarationStmt(_, label) => Set(label)
-      case IfStmt(_, _, label) => Set(label)
+      case IfElseStmt(_, _, _, label) => Set(label)
       case _ => Set.empty
     }
   }

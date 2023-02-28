@@ -81,8 +81,7 @@ abstract class ConditionStmt extends Stmt
 abstract class PointerStmt extends Stmt
 
 //Condition Statement
-case class IfStmt(condition: Exp, s1: Stmt, label: Label) extends ConditionStmt
-case class IfElseStmt(condition: Exp, s1: Stmt, s2: Stmt, label: Label) extends ConditionStmt
+case class IfElseStmt(condition: Exp, s1: Stmt, s2: Option[Stmt], label: Label) extends ConditionStmt
 case class WhileStmt(condition: Exp, stmt: Stmt) extends ConditionStmt
 
 //Basic Statement
