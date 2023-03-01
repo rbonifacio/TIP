@@ -7,6 +7,7 @@ lazy val root = (project in file("."))
     name := "TIP"
   )
 
-
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.15" % "test"
 libraryDependencies += "org.scalatest" %% "scalatest-featurespec" % "3.2.15" % "test"
+
+libraryDependencies += "org.typelevel" %% "paiges-core" % "0.4.2"
