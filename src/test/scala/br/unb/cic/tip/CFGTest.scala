@@ -88,7 +88,7 @@ class CFGTest extends AnyFunSuite {
 
     val cfg = flow(function)
     assert(expected == cfg)
-    println(exportDot(cfg))
+//    println(exportDot(cfg))
   }
 
 
@@ -151,6 +151,8 @@ class CFGTest extends AnyFunSuite {
       (SimpleNode(s4), EndNode)
     )
 
-    assert(expected == flow(function))
+    val cfg = flow(function)
+    assert(expected == cfg)
+    println(exportDot(cfg))
   }
 }
