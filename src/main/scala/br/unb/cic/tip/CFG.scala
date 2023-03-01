@@ -32,3 +32,6 @@ def flow(stmt: Stmt): Graph = stmt match {
   case WhileStmt(condition, s1) => flow(s1) union Set((stmt, initStmt(s1))) union finalStmt(s1).map(s => (s,stmt))
   case _ => Set()
 }
+
+def flow(f: FunDecl): Graph =
+  Set((InStmt, initStmt(f.body))) union flow(f.body) union finalStmt(f.body).map(s => (s, FiStmt))
