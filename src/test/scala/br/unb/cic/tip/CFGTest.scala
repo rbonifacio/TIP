@@ -3,6 +3,7 @@ package br.unb.cic.tip
 import org.scalatest.funsuite.AnyFunSuite
 import br.unb.cic.tip.Expression.*
 import br.unb.cic.tip.Stmt.*
+import br.unb.cic.tip.Node.*
 import br.unb.cic.tip.*
 
 class CFGTest extends AnyFunSuite {
@@ -33,13 +34,17 @@ class CFGTest extends AnyFunSuite {
 //    assert(Set[Stmt](s2, s3) == finalStmt(s4))
 //  }
 //
-//  test("cfg simple stmts") {
-//    val s1 = AssignmentStmt("x", ConstExp(1))
-//    val s2 = AssignmentStmt("y", ConstExp(2))
-//    val seq = SequenceStmt(s1, s2)
-//
-//    assert(Set((s1, s2)) == flow(seq))
-//  }
+  test("cfg simple stmts") {
+    val s1 = AssignmentStmt("x", ConstExp(1))
+    val s2 = AssignmentStmt("y", ConstExp(2))
+    val seq = SequenceStmt(s1, s2)
+
+    val expected = Set(
+        (SimpleNode(s1), SimpleNode(s2)),
+    )
+
+    assert(expected == flow(seq))
+  }
 //
 //  /**
 //      f = 1;
@@ -75,10 +80,10 @@ class CFGTest extends AnyFunSuite {
     val function = FunDecl("sum", List(), List(), body, VariableExp("z"))
 
     val expected = Set(
-        (InStmt, s1),
-        (s1, s2),
-        (s2, s3),
-        (s3, FiStmt),
+        (StartNode, SimpleNode(s1)),
+        (SimpleNode(s1), SimpleNode(s2)),
+        (SimpleNode(s2), SimpleNode(s3)),
+        (SimpleNode(s3), EndNode),
       )
 
     assert(expected == flow(function) )

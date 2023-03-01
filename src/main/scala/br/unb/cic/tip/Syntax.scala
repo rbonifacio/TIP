@@ -57,7 +57,11 @@ enum Stmt:
   case SequenceStmt(s1: Stmt, s2: Stmt) extends Stmt
   case IfElseStmt(condition: Expression, s1: Stmt, s2: Option[Stmt]) extends Stmt
   case WhileStmt(condition: Expression, stmt: Stmt) extends Stmt
-  case InStmt extends Stmt
-  case FiStmt extends Stmt
+
+/** Node Types */
+enum Node:
+  case StartNode extends Node
+  case EndNode extends Node
+  case SimpleNode(stmt: Stmt) extends Node
 
 
