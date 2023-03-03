@@ -53,6 +53,8 @@ enum Expression:
 enum Stmt:
   case AssignmentStmt(name: Id, exp: Expression) extends Stmt
   case StoreStmt(exp1: Expression, exp2: Expression) extends Stmt
+  case RecordAssignmentStmt(name: Id, field: Id, exp: Expression) extends Stmt
+  case RecordStoreStmt(exp1: Expression, id: Id, exp2: Expression)
   case OutputStmt(exp: Expression) extends Stmt
   case SequenceStmt(s1: Stmt, s2: Stmt) extends Stmt
   case IfElseStmt(condition: Expression, s1: Stmt, s2: Option[Stmt]) extends Stmt
