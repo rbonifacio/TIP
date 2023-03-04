@@ -36,3 +36,12 @@ def flow(stmt: Stmt): Graph = stmt match {
 
 def flow(f: FunDecl): Graph =
   Set((StartNode, SimpleNode(initStmt(f.body)))) union flow(f.body) union finalStmt(f.body).map(s => (SimpleNode(s), EndNode))
+
+def statements(stmt: Stmt): Set[Stmt] = stmt match {
+  case SequenceStmt(s1, s2) => statements(s1) union statements(s2)
+  case IfElseStmt(condition, s1, Some(s2)) => statements(s1) union statements(s2)
+  case IfElseStmt(condition, s1, None) => statements(s1)
+  case WhileStmt(condition, s1) => statements(s1)
+  case AssignmentStmt(_, _) => Set(stmt)
+  case _ => Set()
+}
