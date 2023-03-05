@@ -45,3 +45,26 @@ def statements(stmt: Stmt): Set[Stmt] = stmt match {
   case AssignmentStmt(_, _) => Set(stmt)
   case _ => Set()
 }
+
+object predecessor {
+
+  var visited = Set[Node]()
+
+  def run(graph: Graph, node: Node ):  Graph = {
+    visited = Set[Node]()
+    predecessors(graph, node)
+  }
+  def predecessors(graph: Graph, node: Node ):  Graph = {
+
+    if (visited.contains(node)) {
+      return Set()
+    }
+
+    visited = visited union Set(node)
+    var myG = Set[Edge]()
+    val myPre = graph.filter({ case (s, t) => t == node && s != StartNode })
+    myPre.foreach({ case (s, _) => myG = myG union predecessors(graph, s)})
+    myPre union myG
+  }
+
+}
