@@ -10,97 +10,120 @@ import scala.util.parsing.combinator._
 import scala.util.parsing.input.Positional
 
 class BasicParser extends RegexParsers {
-  def idParser: Parser[Id] = """[a-zA-Z]+""".r
-  def intParser: Parser[Int] = """-?[0-9]+""".r ^^ { (s) => Integer(s) }
+  def id: Parser[Id] = """[a-zA-Z]+""".r
+  def int: Parser[Int] = """-?[0-9]+""".r ^^ { (s) => Integer(s) }
 }
 
+/* Exp → Int
+ *     | Id
+ *     | input
+ *     | null
+ *     | & Id
+ *     | Exp + Exp | Exp - Exp | Exp * Exp | Exp / Exp | Exp > Exp | Exp == Exp
+ *     | ( Exp )
+ *     | Id ( Exp,. . .,Exp )
+ *     | Exp ( Exp , . . ., Exp )
+ *     | alloc Exp
+ *     | * Exp
+ *     | { Id : Exp , . . ., Id : Exp }
+ *     | Exp . Id
+ */
 class ExpressionParser extends BasicParser {
-  def inputParser: Parser[Expression] = "input" ^^^ InputExp
-  // def directFunctionCallParser: Parser[DirectFunctionCallExp] =
-  //   idParser ~ ("(" ~> repsep(expressionParser, ",") <~ ")")
-  //     ^^ { case id ~ args => DirectFunctionCallExp(id, args) }
-  def indirectFunctionCallParser: Parser[IndirectFunctionCallExp] =
-    variableParser ~ ("(" ~> repsep(expressionParser, ",") <~ ")")
-      ^^ { case exp ~ args => IndirectFunctionCallExp(exp, args) }
-  def variableParser: Parser[VariableExp] =
-    idParser ^^ { s => VariableExp(s) }
-  def constParser: Parser[ConstExp] =
-    intParser ^^ { s => ConstExp(Integer(s)) }
+  def input: Parser[Expression] = "input" ^^^ InputExp
+  def variable: Parser[VariableExp] = id ^^ { s => VariableExp(s) }
+  def directFunctionCall: Parser[DirectFunctionCallExp] =
+    id ~ ("(" ~> repsep(expression, ",") <~ ")")
+      ^^ { case id ~ args => DirectFunctionCallExp(id, args) }
+  def const: Parser[ConstExp] = int ^^ { s => ConstExp(Integer(s)) }
 
-  def fieldParser: Parser[Field] =
-    idParser ~ (":" ~> expressionParser) ^^ { case id ~ exp =>
-      (id, exp)
-    }
+  def field: Parser[Field] =
+    id ~ (":" ~> expression) ^^ { case id ~ exp => (id, exp) }
   def recordCreation: Parser[RecordExp] =
-    "{" ~> rep1sep(fieldParser, ",") <~ "}" ^^ { case a => RecordExp(a) }
+    "{" ~> rep1sep(field, ",") <~ "}" ^^ { case a => RecordExp(a) }
 
-  def opParser: Parser[String] = """[+\-*/>]|(==)""".r
+  def operations: Parser[String] = """[+\-*/>]|(==)""".r
 
-  def prio2ExpParser: Parser[Expression] = failure("Helper to fix formatting")
-    | inputParser
-    | "alloc" ~> expressionParser ^^ AllocExp.apply
-    | "&" ~> idParser ^^ LocationExp.apply
-    | "*" ~> expressionParser ^^ LoadExp.apply
+  def prio3Expression: Parser[Expression] = failure("Helper to fix formatting")
+    | input
+    | "alloc" ~> expression ^^ AllocExp.apply
+    | "&" ~> id ^^ LocationExp.apply
+    | "*" ~> expression ^^ LoadExp.apply
     | "null" ^^^ NullExp
-    | indirectFunctionCallParser
-    | variableParser
-    | constParser
+    | directFunctionCall
+    | variable
+    | const
     | recordCreation
-    | "(" ~> expressionParser <~ ")" ^^ BracketExp.apply
+    | "(" ~> expression <~ ")" ^^ BracketExp.apply
 
-  def prio1ExpOpParser: Parser[Expression => Expression] =
-    opParser ~ prio2ExpParser ^^ {
-      case "+" ~ exp  => AddExp(_, exp)
-      case "-" ~ exp  => SubExp(_, exp)
-      case "*" ~ exp  => MultiExp(_, exp)
-      case "/" ~ exp  => DivExp(_, exp)
-      case ">" ~ exp  => GTExp(_, exp)
-      case "==" ~ exp => EqExp(_, exp)
-      case _          => throw new RuntimeException("Failure in parsing")
-    }
+  def prio2ExpressionOperation: Parser[Expression => Expression] =
+    operations ~ expression
+      ^^ {
+        case "+" ~ exp  => AddExp(_, exp)
+        case "-" ~ exp  => SubExp(_, exp)
+        case "*" ~ exp  => MultiExp(_, exp)
+        case "/" ~ exp  => DivExp(_, exp)
+        case ">" ~ exp  => GTExp(_, exp)
+        case "==" ~ exp => EqExp(_, exp)
+        case _          => throw new RuntimeException("Failure in parsing")
+      }
+      | "." ~> id ^^ { id => FieldAccess(_, id) }
 
-  def prio1ExpParser: Parser[Expression] =
-    prio2ExpParser ~ rep(prio1ExpOpParser) ^^ { case exp ~ list =>
+  def prio2Expression: Parser[Expression] =
+    prio3Expression ~ rep(prio2ExpressionOperation) ^^ { case exp ~ list =>
       list.foldLeft(exp)((exp, exp2) => exp2(exp))
     }
 
-  def prio0ExpOpParser: Parser[Expression => Expression] =
-    "." ~> idParser ^^ { id => FieldAccess(_, id) }
+  def prio0ExpressionOperation: Parser[Expression] =
+    prio2Expression ~ opt("(" ~> repsep(expression, ",") <~ ")")
+      ^^ {
+        case exp ~ None       => exp
+        case exp ~ Some(args) => IndirectFunctionCallExp(exp, args)
+      }
 
-  def prio0ExpParser: Parser[Expression] =
-    prio1ExpParser ~ rep(prio0ExpOpParser) ^^ { case exp ~ ids =>
-      ids.foldLeft(exp)((exp, it) => it(exp))
-    }
+  def prio0Expression: Parser[Expression] =
+    prio0ExpressionOperation
+    // ~ rep(prio0ExpressionOperation) ^^ {
+    //   case exp ~ exps =>
+    //     println(exp)
+    //     println(exps)
+    //     exp
+    // }
 
-  def expressionParser: Parser[Expression] = prio0ExpParser
+  def expression: Parser[Expression] = prio0Expression
+}
+
+object ExpressionParser extends ExpressionParser {
+  def parse(input: String): ParseResult[Expression] = {
+    parse(expression, input)
+  }
 }
 
 class StatementParser extends ExpressionParser {
-  def prio0StmtParser: Parser[Stmt] = failure("Helper to fix formatting")
-    | "*" ~> expressionParser ~ ("=" ~> expressionParser <~ ";")
+  def prio0Stmt: Parser[Stmt] = failure("Helper to fix formatting")
+    | "*" ~> expression ~ ("=" ~> expression <~ ";")
     ^^ { case ponterExp ~ newValueExp => StoreStmt(ponterExp, newValueExp) }
-    | ("(" ~> "*" ~> expressionParser <~ ")")
-    ~ ("." ~> idParser) ~ ("=" ~> expressionParser <~ ";")
+    | ("(" ~> "*" ~> expression <~ ")")
+    ~ ("." ~> id) ~ ("=" ~> expression <~ ";")
     ^^ { case ponterExp ~ id ~ newValueExp =>
       RecordStoreStmt(ponterExp, id, newValueExp)
     }
-    | idParser ~ ("=" ~> expressionParser <~ ";")
+    | id ~ ("=" ~> expression <~ ";")
     ^^ { case id ~ exp => AssignmentStmt(id, exp) }
-    | idParser ~ ("." ~> idParser) ~ ("=" ~> expressionParser <~ ";")
+    | id ~ ("." ~> id) ~ ("=" ~> expression <~ ";")
     ^^ { case name ~ field ~ exp => RecordAssignmentStmt(name, field, exp) }
-    | "output" ~> expressionParser <~ ";" ^^ OutputStmt.apply
-    | ("if" ~> "(" ~> expressionParser <~ ")")
-    ~ ("{" ~> statementParser <~ "}")
-    ~ opt("else" ~> "{" ~> commit(statementParser) <~ "}")
+    | "output" ~> expression <~ ";" ^^ OutputStmt.apply
+    | ("if" ~> "(" ~> expression <~ ")")
+    ~ ("{" ~> statement <~ "}")
+    ~ opt("else" ~> "{" ~> commit(statement) <~ "}")
     ^^ { case exp1 ~ thenStmt ~ elseStmt =>
       IfElseStmt(exp1, thenStmt, elseStmt)
     }
-    | ("while" ~> "(" ~> expressionParser <~ ")")
-    ~ ("{" ~> statementParser <~ "}")
+    | ("while" ~> "(" ~> expression <~ ")")
+    ~ ("{" ~> statement <~ "}")
     ^^ { case exp1 ~ thenStmt => WhileStmt(exp1, thenStmt) }
 
-  def statementParser: Parser[Stmt] =
-    prio0StmtParser ~ rep(prio0StmtParser) ^^ { case stmt ~ stmtList =>
+  def statement: Parser[Stmt] =
+    prio0Stmt ~ rep(prio0Stmt) ^^ { case stmt ~ stmtList =>
       stmtList.reverse match {
         case Nil => stmt
         case lastStmt :: restOfStmts =>
@@ -114,30 +137,43 @@ class StatementParser extends ExpressionParser {
     }
 }
 
+object StatementParser extends StatementParser {
+  def parse(input: String): ParseResult[Stmt] = {
+    parse(statement, input)
+  }
+}
+
 class FunctionParser extends StatementParser {
-  def functionVariablesParser: Parser[List[Id]] =
-    opt("var" ~> repsep(idParser, ",") <~ ";") ^^ {
+  def functionVariables: Parser[List[Id]] =
+    opt("var" ~> repsep(id, ",") <~ ";") ^^ {
       case None        => Nil
       case Some(value) => value
     }
 
-  def functionParser: Parser[FunDecl] = failure("Helper to fix formatting")
-    | idParser
-    ~ ("(" ~> repsep(idParser, ",") <~ ")")
-    ~ ("{" ~> functionVariablesParser
-      ~ statementParser
-      ~ ("return" ~> expressionParser <~ ";")
-      <~ "}")
+  def function: Parser[FunDecl] = failure("Helper to fix formatting")
+    | id
+    ~ ("(" ~> repsep(id, ",") <~ ")")
+    ~ ("{" ~> functionVariables
+      ~ statement
+      ~ ("return" ~> expression <~ ";") <~ "}")
     ^^ { case name ~ params ~ (vars ~ funcStmt ~ returnExp) =>
       FunDecl(name, params, vars, funcStmt, returnExp)
     }
 }
 
-object TipParser extends FunctionParser {
-  def programParser: Parser[List[FunDecl]] =
-    rep1(functionParser)
+object FunctionParser extends FunctionParser {
+  def parse(input: String): ParseResult[FunDecl] = {
+    parse(function, input)
+  }
+}
 
-  def apply(s: String) = parse(programParser, s)
+object TipParser extends FunctionParser {
+  def program: Parser[List[FunDecl]] =
+    phrase(rep(function))
+
+  def parse(input: String): ParseResult[List[FunDecl]] = {
+    parse(program, input)
+  }
 }
 
 def getFileContents(fileName: String) =
@@ -155,4 +191,4 @@ def getFileContents(fileName: String) =
 @main def main(firstString: String, others: String*) =
   val fileContents = getFileContents(firstString)
   println("============================")
-  println(TipParser.apply(fileContents))
+  println(TipParser.parse(fileContents))
