@@ -29,34 +29,24 @@ class BasicParser extends RegexParsers {
  *     | Exp . Id
  */
 class ExpressionParser extends BasicParser {
-  def input: Parser[Expression] = "input" ^^^ InputExp
-  def variable: Parser[VariableExp] = id ^^ { s => VariableExp(s) }
-  def directFunctionCall: Parser[DirectFunctionCallExp] =
-    id ~ ("(" ~> repsep(expression, ",") <~ ")")
-      ^^ { case id ~ args => DirectFunctionCallExp(id, args) }
-  def const: Parser[ConstExp] = int ^^ { s => ConstExp(Integer(s)) }
-
-  def field: Parser[Field] =
-    id ~ (":" ~> expression) ^^ { case id ~ exp => (id, exp) }
-  def recordCreation: Parser[RecordExp] =
-    "{" ~> rep1sep(field, ",") <~ "}" ^^ { case a => RecordExp(a) }
-
-  def operations: Parser[String] = """[+\-*/>]|(==)""".r
 
   def prio3Expression: Parser[Expression] = failure("Helper to fix formatting")
-    | input
+    | "input" ^^^ InputExp
     | "alloc" ~> expression ^^ AllocExp.apply
     | "&" ~> id ^^ LocationExp.apply
     | "*" ~> expression ^^ LoadExp.apply
     | "null" ^^^ NullExp
     | directFunctionCall
-    | variable
-    | const
+    | id ^^ VariableExp.apply
+    | int ^^ ConstExp.apply
     | recordCreation
     | "(" ~> expression <~ ")" ^^ BracketExp.apply
 
+  def operations: Parser[String] = """[+\-*/>]|(==)""".r
+
   def prio2ExpressionOperation: Parser[Expression => Expression] =
-    operations ~ expression
+    failure("Helper to fix formatting")
+      | operations ~ commit(expression)
       ^^ {
         case "+" ~ exp  => AddExp(_, exp)
         case "-" ~ exp  => SubExp(_, exp)
@@ -66,30 +56,33 @@ class ExpressionParser extends BasicParser {
         case "==" ~ exp => EqExp(_, exp)
         case _          => throw new RuntimeException("Failure in parsing")
       }
-      | "." ~> id ^^ { id => FieldAccess(_, id) }
+      | "." ~> commit(id) ^^ { id => FieldAccess(_, id) }
+      | arguments ^^ { case args =>
+        IndirectFunctionCallExp(_, args)
+      }
 
   def prio2Expression: Parser[Expression] =
     prio3Expression ~ rep(prio2ExpressionOperation) ^^ { case exp ~ list =>
       list.foldLeft(exp)((exp, exp2) => exp2(exp))
     }
 
-  def prio0ExpressionOperation: Parser[Expression] =
-    prio2Expression ~ opt("(" ~> repsep(expression, ",") <~ ")")
+  def arguments: Parser[List[Expression]] =
+    "(" ~> opt(expression) <~ ")"
       ^^ {
-        case exp ~ None       => exp
-        case exp ~ Some(args) => IndirectFunctionCallExp(exp, args)
+        case None      => Nil
+        case Some(arg) => List(arg)
       }
+      | "(" ~> commit(expression ~ rep("," ~> commit(expression)) <~ ")")
+      ^^ mkList
+  def directFunctionCall: Parser[DirectFunctionCallExp] =
+    id ~ arguments ^^ { case id ~ args => DirectFunctionCallExp(id, args) }
 
-  def prio0Expression: Parser[Expression] =
-    prio0ExpressionOperation
-    // ~ rep(prio0ExpressionOperation) ^^ {
-    //   case exp ~ exps =>
-    //     println(exp)
-    //     println(exps)
-    //     exp
-    // }
+  def field: Parser[Field] =
+    id ~ (":" ~> expression) ^^ { case id ~ exp => (id, exp) }
+  def recordCreation: Parser[RecordExp] =
+    "{" ~> rep1sep(field, ",") <~ "}" ^^ { case a => RecordExp(a) }
 
-  def expression: Parser[Expression] = prio0Expression
+  def expression: Parser[Expression] = prio2Expression
 }
 
 object ExpressionParser extends ExpressionParser {

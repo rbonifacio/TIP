@@ -1,11 +1,10 @@
-package br.unb.cic.tip
+package br.unb.cic.tip.parser
 
 import org.scalatest.funsuite.AnyFunSuite
 import br.unb.cic.tip.*
 
 import br.unb.cic.tip.Stmt.*
 import br.unb.cic.tip.Expression.*
-import java.lang.reflect.Field
 
 /* Exp → Int
  *     | Id
@@ -22,6 +21,7 @@ import java.lang.reflect.Field
  *     | Exp . Id
  */
 class ExpressionParserTest extends AnyFunSuite {
+
   test("should fail to parse an empty string") {
     val result = ExpressionParser.parse("")
 
@@ -91,6 +91,23 @@ class ExpressionParserTest extends AnyFunSuite {
           BracketExp(ConstExp(8)),
           BracketExp(MultiExp(VariableExp("variable"), ConstExp(3)))
         )
+    )
+  }
+
+  test("should parse equation with complex expression") {
+    val result = ExpressionParser.parse("8 + {a: 3}.b(5) * 2")
+
+    assert(
+      result.get == AddExp(
+        ConstExp(8),
+        MultiExp(
+          IndirectFunctionCallExp(
+            FieldAccess(RecordExp(List(("a", ConstExp(3)))), "b"),
+            List(ConstExp(5))
+          ),
+          ConstExp(2)
+        )
+      )
     )
   }
 
@@ -166,14 +183,10 @@ class ExpressionParserTest extends AnyFunSuite {
 
     assert(
       result.get ==
-        null
-        // FieldAccess(
-        //   FieldAccess(
-        //     AddExp(RecordExp(List(("a", ConstExp(4)))), ConstExp(2)),
-        //     "b"
-        //   ),
-        //   "c"
-        // )
+        AddExp(
+          FieldAccess(RecordExp(List(("a", ConstExp(4)))), "a"),
+          FieldAccess(VariableExp("b"), "c")
+        )
     )
   }
 
@@ -183,8 +196,10 @@ class ExpressionParserTest extends AnyFunSuite {
     assert(result.get == DirectFunctionCallExp("foo", Nil))
   }
 
-  test("should parse direct function call with args") {
+  test("failure: should parse direct function call with args") {
     val result = ExpressionParser.parse("foo(1, b, {j : 0})")
+
+    println(result)
 
     assert(
       result.get == DirectFunctionCallExp(
@@ -205,26 +220,110 @@ class ExpressionParserTest extends AnyFunSuite {
     )
   }
 
-  test("should parse indirect function call curried no args") {
-    val result = ExpressionParser.parse("foo.a().b()")
+  test("failure: should parse indirect higher order function call") {
+    val result = ExpressionParser.parse("foo()(a)(b, c)")
+    println(result)
+
+    assert(
+      result.get == IndirectFunctionCallExp(
+        IndirectFunctionCallExp(
+          DirectFunctionCallExp(
+            "foo",
+            Nil
+          ),
+          List(VariableExp("a"))
+        ),
+        List(VariableExp("b"), VariableExp("c"))
+      )
+    )
+  }
+
+  test("failure: should parse indirect function call curried with args") {
+    val result = ExpressionParser.parse("foo.a().b(a, b, c)")
+    println(result)
 
     assert(
       result.get == IndirectFunctionCallExp(
         FieldAccess(
           IndirectFunctionCallExp(
             FieldAccess(VariableExp("foo"), "a"),
-            List()
+            Nil
           ),
           "b"
         ),
-        Nil
+        List(VariableExp("a"), VariableExp("b"), VariableExp("c"))
       )
     )
   }
+
+  def failureHelper(input: String) =
+    val result = ExpressionParser.parse(input)
+    try {
+      assert(result.successful == false)
+    } catch {
+      case e => {
+        println("Failure ----------")
+        println(input + ">>>>>>>" + result)
+        throw e
+      }
+    }
+
+  test("should fail on missing id for location") {
+    failureHelper("& ")
+  }
+
+  test("should fail on missing expression for load") {
+    failureHelper("* ")
+  }
+
+  test("should fail on dangling comma") {
+    failureHelper("call(test,)")
+  }
+
+  test("should fail on missing second argument") {
+    failureHelper("call (test, ")
+  }
+
+  test("should fail on trailing comma") {
+    failureHelper("call(, test)")
+  }
+
+  test("should fail on missing closing parenthesis without args") {
+    failureHelper("call (")
+  }
+
+  test("should fail on missing closing parenthesis on DirectFunctionCall") {
+    failureHelper("call (test")
+  }
+
+  test("should fail on missing closing parenthesis on IndirectFunctionCall") {
+    failureHelper("a.b (test")
+  }
+
+  test("should fail on missing closing parenthesis on Brackets") {
+    failureHelper("(test")
+  }
+
+  test("should fail on empty record") {
+    failureHelper("{}")
+  }
+
+  test("should fail on empty brackets") {
+    failureHelper("()")
+  }
+
+  test("should fail on missing second operand") {
+    failureHelper("3 + ")
+  }
+
+  test("should fail on value missing on record") {
+    failureHelper("{sla: }")
+  }
+
+  test("should fail on missing id on field access") {
+    failureHelper("{sla: 3} . ")
+  }
 }
-/* Exp → Id ( Exp,. . .,Exp )
- *     | Exp ( Exp , . . ., Exp )
- */
 
 class TipParserTest extends AnyFunSuite {
   test("should parse successfully an empty string") {
@@ -232,5 +331,4 @@ class TipParserTest extends AnyFunSuite {
 
     assert(result.get == List())
   }
-
 }
