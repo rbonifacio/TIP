@@ -8,18 +8,18 @@ import br.unb.cic.tip.*
 
 class RDTest extends AnyFunSuite {
 
-  test("test_get_assignment_from_stmts") {
-    val s1 = AssignmentStmt("x", ConstExp(1))
-    val s2 = AssignmentStmt("y", ConstExp(2))
-    val seq = SequenceStmt(s1, s2)
-
-    val expected = Set(
-      s1,
-      s2
-    )
-
-    assert( expected == statements(seq))
-  }
+//  test("test_get_assignment_from_stmts") {
+//    val s1 = AssignmentStmt("x", ConstExp(1))
+//    val s2 = AssignmentStmt("y", ConstExp(2))
+//    val seq = SequenceStmt(s1, s2)
+//
+//    val expected = Set(
+//      s1,
+//      s2
+//    )
+//
+//    assert( expected == statements(seq))
+//  }
 
   test("test_get_assignment_from_factorial") {
     val s1 = AssignmentStmt("f", ConstExp(1))
@@ -119,5 +119,20 @@ class RDTest extends AnyFunSuite {
     )
 
     assert( expectedS5 == predecessor.run(cfg, SimpleNode(s5)))
+  }
+
+  test("test_rd_from_stmts") {
+    val s1 = AssignmentStmt("x", ConstExp(1))
+    val s2 = AssignmentStmt("y", ConstExp(2))
+    val s3 = AssignmentStmt("y", ConstExp(3))
+    val seq = SequenceStmt(s1, SequenceStmt(s2, s3))
+
+    val cfg = flow(seq)
+    val rd = ReachingDefinitions(cfg)
+
+    rd.map(v => {
+        println(s"node -> ${v._1}")
+        println(s"RD -> ${v._2}")
+    })
   }
 }

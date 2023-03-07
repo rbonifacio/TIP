@@ -3,9 +3,12 @@ package br.unb.cic.tip
 import br.unb.cic.tip.Stmt.*
 import br.unb.cic.tip.Expression.*
 import br.unb.cic.tip.Node.*
+import br.unb.cic.tip.predecessor.visited
 
 type Edge = (Node, Node)
 type Graph = Set[Edge]
+type Assignment = (Id, Expression)
+type RD = (Node, Set[Assignment])
 
 def initStmt(stmt: Stmt): Stmt = stmt match {
   case SequenceStmt(s1, s2) => s1
@@ -37,12 +40,34 @@ def flow(stmt: Stmt): Graph = stmt match {
 def flow(f: FunDecl): Graph =
   Set((StartNode, SimpleNode(initStmt(f.body)))) union flow(f.body) union finalStmt(f.body).map(s => (SimpleNode(s), EndNode))
 
-def statements(stmt: Stmt): Set[Stmt] = stmt match {
-  case SequenceStmt(s1, s2) => statements(s1) union statements(s2)
-  case IfElseStmt(condition, s1, Some(s2)) => statements(s1) union statements(s2)
-  case IfElseStmt(condition, s1, None) => statements(s1)
-  case WhileStmt(condition, s1) => statements(s1)
-  case AssignmentStmt(_, _) => Set(stmt)
+def statements(node: Node): Set[Assignment] = node match {
+  case SimpleNode(stmt) => statements(stmt)
+  case _ => Set()
+}
+
+def statements(stmts: Set[Stmt]): Set[Assignment] = {
+  var stmtList = Set[Assignment]()
+  stmts.foreach(stmt => {
+    stmtList = stmtList union statements(stmt)
+  })
+  stmtList
+}
+
+def statements(stmt: Stmt): Set[Assignment] = stmt match {
+  case AssignmentStmt(l, r) => Set((l, r))
+  case _ => Set()
+}
+
+def convertGraph2Stmts(graph: Graph): Set[Stmt] = {
+  var stmtList = Set[Stmt]()
+  graph.map(g => {
+    stmtList = stmtList union convertNode2Stmt(g._1) union convertNode2Stmt(g._2)
+  })
+  stmtList
+}
+
+def convertNode2Stmt(node: Node): Set[Stmt] = node match {
+  case SimpleNode(stmt) => Set(stmt)
   case _ => Set()
 }
 
@@ -53,6 +78,10 @@ object predecessor {
   def run(graph: Graph, node: Node ):  Graph = {
     visited = Set[Node]()
     predecessors(graph, node)
+  }
+  def run(graph: Graph, stmt: Stmt ):  Graph = {
+    visited = Set[Node]()
+    predecessors(graph, SimpleNode(stmt))
   }
   def predecessors(graph: Graph, node: Node ):  Graph = {
 
@@ -66,5 +95,39 @@ object predecessor {
     myPre.foreach({ case (s, _) => myG = myG union predecessors(graph, s)})
     myPre union myG
   }
-
 }
+
+def ReachingDefinitions(graph: Graph): Set[RD] = {
+    var visited = Set[Node]()
+    var rd = Set[RD]()
+    graph.map(g => {
+      if (! visited.contains(g._1)) {
+        rd = rd union Set((g._1, ReachingDefinitions(graph, g._1)))
+        visited = visited union Set(g._1)
+      }
+      if (! visited.contains(g._2)) {
+        rd = rd union Set((g._2, ReachingDefinitions(graph, g._2)))
+        visited = visited union Set(g._2)
+      }
+    })
+    rd
+}
+
+def ReachingDefinitions(graph: Graph, node: Node): Set[Assignment] = node match {
+  case SimpleNode(stmt) => ReachingDefinitions(graph, stmt)
+  case _ => Set()
+}
+
+def ReachingDefinitions(graph: Graph, stmt: Stmt): Set[Assignment] = stmt match {
+  case AssignmentStmt(_, _) => {
+    statements(convertGraph2Stmts(predecessor.run(graph, stmt))).filter({ case (l, r) => l != getIdForAssignment(stmt)}) union statements(stmt)
+  }
+  case _ => statements(convertGraph2Stmts(predecessor.run(graph, stmt)))
+}
+
+def getIdForAssignment(stmt: Stmt): Id = stmt match {
+  case AssignmentStmt(l, r) => l
+  case _ => null
+}
+
+
