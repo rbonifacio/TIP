@@ -2,8 +2,9 @@ package br.unb.cic.tip
 
 import br.unb.cic.tip.Stmt.*
 import br.unb.cic.tip.Expression.*
+import br.unb.cic.tip.Node.*
 
-type Edge = (Stmt, Stmt)
+type Edge = (Node, Node)
 type Graph = Set[Edge]
 
 def initStmt(stmt: Stmt): Stmt = stmt match {
@@ -26,9 +27,12 @@ def blocks(stmt: Stmt): Set[Stmt] = stmt match {
 }
 
 def flow(stmt: Stmt): Graph = stmt match {
-  case SequenceStmt(s1, s2) => flow(s1) union flow(s2) union finalStmt(s1).map(s => (s,initStmt(s2)))
-  case IfElseStmt(condition, s1, Some(s2)) => flow(s1) union flow(s2) union Set((stmt, initStmt(s1))) union Set((stmt, initStmt(s2)))
-  case IfElseStmt(condition, s1, None) => flow(s1) union Set((stmt, initStmt(s1)))
-  case WhileStmt(condition, s1) => flow(s1) union Set((stmt, initStmt(s1))) union finalStmt(s1).map(s => (s,stmt))
+  case SequenceStmt(s1, s2) => flow(s1) union flow(s2) union finalStmt(s1).map(s => (SimpleNode(s),SimpleNode(initStmt(s2))))
+  case IfElseStmt(condition, s1, Some(s2)) => flow(s1) union flow(s2) union Set((SimpleNode(stmt), SimpleNode(initStmt(s1)))) union Set((SimpleNode(stmt), SimpleNode(initStmt(s2))))
+  case IfElseStmt(condition, s1, None) => flow(s1) union Set((SimpleNode(stmt), SimpleNode(initStmt(s1))))
+  case WhileStmt(condition, s1) => flow(s1) union Set((SimpleNode(stmt), SimpleNode(initStmt(s1)))) union finalStmt(s1).map(s => (SimpleNode(s),SimpleNode(stmt)))
   case _ => Set()
 }
+
+def flow(f: FunDecl): Graph =
+  Set((StartNode, SimpleNode(initStmt(f.body)))) union flow(f.body) union finalStmt(f.body).map(s => (SimpleNode(s), EndNode))
