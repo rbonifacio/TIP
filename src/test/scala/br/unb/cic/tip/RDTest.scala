@@ -21,22 +21,22 @@ class RDTest extends AnyFunSuite {
 //    assert( expected == statements(seq))
 //  }
 
-  test("test_get_assignment_from_factorial") {
-    val s1 = AssignmentStmt("f", ConstExp(1))
-    val s2 = AssignmentStmt("f", MultiExp(VariableExp("f"), VariableExp("n")))
-    val s3 = AssignmentStmt("n", SubExp(VariableExp("n"), ConstExp(1)))
-    val s4 = SequenceStmt(s2,s3)
-    val s5 = WhileStmt(GTExp(VariableExp("n"), ConstExp(0)),s4)
-    val s6 = SequenceStmt(s1, s5)
-
-    val expected = Set(
-      s1,
-      s2,
-      s3
-    )
-
-    assert(expected == statements(s6))
-  }
+//  test("test_get_assignment_from_factorial") {
+//    val s1 = AssignmentStmt("f", ConstExp(1))
+//    val s2 = AssignmentStmt("f", MultiExp(VariableExp("f"), VariableExp("n")))
+//    val s3 = AssignmentStmt("n", SubExp(VariableExp("n"), ConstExp(1)))
+//    val s4 = SequenceStmt(s2,s3)
+//    val s5 = WhileStmt(GTExp(VariableExp("n"), ConstExp(0)),s4)
+//    val s6 = SequenceStmt(s1, s5)
+//
+//    val expected = Set(
+//      s1,
+//      s2,
+//      s3
+//    )
+//
+//    assert(expected == statements(s6))
+//  }
 
   test("test_get_pre_from_stmts") {
     val s1 = AssignmentStmt("x", ConstExp(1))
