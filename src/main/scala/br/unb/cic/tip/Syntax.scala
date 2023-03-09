@@ -37,8 +37,7 @@ enum Expression:
   case GTExp(left: Expression, right: Expression) extends Expression
   case BracketExp(exp: Expression) extends Expression
   // function-call expressions
-  case DirectFunctionCallExp(name: Id, args: List[Expression]) extends Expression
-  case IndirectFunctionCallExp(exp: Expression, args: List[Expression]) extends Expression
+  case FunctionCallExp(exp: Expression, args: List[Expression]) extends Expression
   // pointer-based expressions
   case AllocExp(exp: Expression) extends Expression
   case LocationExp(pointer: Id) extends Expression
@@ -59,6 +58,7 @@ enum Stmt:
   case SequenceStmt(s1: Stmt, s2: Stmt) extends Stmt
   case IfElseStmt(condition: Expression, s1: Stmt, s2: Option[Stmt]) extends Stmt
   case WhileStmt(condition: Expression, stmt: Stmt) extends Stmt
+  case NopStmt extends Stmt
 
 /** Node Types */
 enum Node:

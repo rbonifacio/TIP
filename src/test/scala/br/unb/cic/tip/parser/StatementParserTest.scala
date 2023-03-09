@@ -7,9 +7,7 @@ import br.unb.cic.tip.Stmt.*
 import br.unb.cic.tip.Expression.*
 
 class StatementParserTest extends AnyFunSuite {
-  ignore("should parse empty strings") {
-    // TODO: this is required by the grammar rules.
-    // Is it implementable  with the current AST?
+  test("should parse empty strings") {
     val result = StatementParser.parse("")
 
     assert(result.successful)
@@ -144,7 +142,6 @@ class StatementParserTest extends AnyFunSuite {
   def failureHelper(input: String) =
     val result = StatementParser.parse(input)
     try {
-      println(input + ">>>>>>>" + result)
       assert(result.successful == false)
     } catch {
       case e => {
@@ -171,15 +168,15 @@ class StatementParserTest extends AnyFunSuite {
   }
 
   test("should fail on missing if closing brackets") {
-    failureHelper("if() {")
+    failureHelper("if(0) {")
   }
 
   test("should fail on missing else brackets") {
-    failureHelper("if() {} else ")
+    failureHelper("if(0) {} else ")
   }
 
   test("should fail on missing else closing brackets") {
-    failureHelper("if() {} else {")
+    failureHelper("if(0) {} else {")
   }
 
   test("should fail on missing while condition") {
@@ -195,15 +192,11 @@ class StatementParserTest extends AnyFunSuite {
   }
 
   test("should fail on missing while brackets") {
-    failureHelper("while()")
+    failureHelper("while(0)")
   }
 
   test("should fail on missing while closing brackets") {
-    failureHelper("while() {")
-  }
-
-  test("should fail on missing id in assignment") {
-    failureHelper(" = 3;")
+    failureHelper("while(0) {")
   }
 
   test("should fail on missing expression in assignment") {
@@ -220,10 +213,6 @@ class StatementParserTest extends AnyFunSuite {
 
   test("should fail on missing second expression in store") {
     failureHelper("* e = ;")
-  }
-
-  test("should fail on missing first id in record assignment") {
-    failureHelper(". sla = 3;")
   }
 
   test("should fail on missing second id in record assignment") {

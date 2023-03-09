@@ -30,13 +30,11 @@ class BasicParser extends RegexParsers {
  */
 class ExpressionParser extends BasicParser {
 
-  def prio3Expression: Parser[Expression] = failure("Helper to fix formatting")
-    | "input" ^^^ InputExp
+  def prio3Expression: Parser[Expression] = "input" ^^^ InputExp
     | "alloc" ~> expression ^^ AllocExp.apply
     | "&" ~> id ^^ LocationExp.apply
     | "*" ~> expression ^^ LoadExp.apply
     | "null" ^^^ NullExp
-    | directFunctionCall
     | id ^^ VariableExp.apply
     | int ^^ ConstExp.apply
     | recordCreation
@@ -45,8 +43,7 @@ class ExpressionParser extends BasicParser {
   def operations: Parser[String] = """[+\-*/>]|(==)""".r
 
   def prio2ExpressionOperation: Parser[Expression => Expression] =
-    failure("Helper to fix formatting")
-      | operations ~ commit(expression)
+    operations ~ commit(expression)
       ^^ {
         case "+" ~ exp  => AddExp(_, exp)
         case "-" ~ exp  => SubExp(_, exp)
@@ -57,9 +54,7 @@ class ExpressionParser extends BasicParser {
         case _          => throw new RuntimeException("Failure in parsing")
       }
       | "." ~> commit(id) ^^ { id => FieldAccess(_, id) }
-      | arguments ^^ { case args =>
-        IndirectFunctionCallExp(_, args)
-      }
+      | arguments ^^ { case args => FunctionCallExp(_, args) }
 
   def prio2Expression: Parser[Expression] =
     prio3Expression ~ rep(prio2ExpressionOperation) ^^ { case exp ~ list =>
@@ -74,8 +69,6 @@ class ExpressionParser extends BasicParser {
       }
       | "(" ~> commit(expression ~ rep("," ~> commit(expression)) <~ ")")
       ^^ mkList
-  def directFunctionCall: Parser[DirectFunctionCallExp] =
-    id ~ arguments ^^ { case id ~ args => DirectFunctionCallExp(id, args) }
 
   def field: Parser[Field] =
     id ~ (":" ~> expression) ^^ { case id ~ exp => (id, exp) }
@@ -92,28 +85,34 @@ object ExpressionParser extends ExpressionParser {
 }
 
 class StatementParser extends ExpressionParser {
+  def condition: Parser[Expression] = "(" ~> expression <~ ")"
+  def block: Parser[Stmt] = "{" ~> statement <~ "}"
+  def assignment: Parser[Expression] = "=" ~> expression <~ ";"
+  def elseBlock: Parser[Option[Stmt]] =
+    "else" ~> commit(block) ^^ Some.apply
+      | success(None)
+
   def prio0Stmt: Parser[Stmt] = failure("Helper to fix formatting")
-    | "*" ~> expression ~ ("=" ~> expression <~ ";")
+    | "*" ~> commit(expression ~ assignment)
     ^^ { case ponterExp ~ newValueExp => StoreStmt(ponterExp, newValueExp) }
-    | ("(" ~> "*" ~> expression <~ ")")
-    ~ ("." ~> id) ~ ("=" ~> expression <~ ";")
+    | "(" ~> commit(
+      ("*" ~> expression <~ ")") ~ ("." ~> id) ~ assignment
+    )
     ^^ { case ponterExp ~ id ~ newValueExp =>
       RecordStoreStmt(ponterExp, id, newValueExp)
     }
-    | id ~ ("=" ~> expression <~ ";")
-    ^^ { case id ~ exp => AssignmentStmt(id, exp) }
-    | id ~ ("." ~> id) ~ ("=" ~> expression <~ ";")
-    ^^ { case name ~ field ~ exp => RecordAssignmentStmt(name, field, exp) }
     | "output" ~> expression <~ ";" ^^ OutputStmt.apply
-    | ("if" ~> "(" ~> expression <~ ")")
-    ~ ("{" ~> statement <~ "}")
-    ~ opt("else" ~> "{" ~> commit(statement) <~ "}")
+    | "if" ~> commit(condition ~ block ~ elseBlock)
     ^^ { case exp1 ~ thenStmt ~ elseStmt =>
       IfElseStmt(exp1, thenStmt, elseStmt)
     }
-    | ("while" ~> "(" ~> expression <~ ")")
-    ~ ("{" ~> statement <~ "}")
+    | "while" ~> commit(condition ~ block)
     ^^ { case exp1 ~ thenStmt => WhileStmt(exp1, thenStmt) }
+    | "return" ^^ { case _ => NopStmt }
+    | id ~ ("." ~> commit(id ~ assignment))
+    ^^ { case name ~ (field ~ exp) => RecordAssignmentStmt(name, field, exp) }
+    | id ~ commit(assignment)
+    ^^ { case id ~ exp => AssignmentStmt(id, exp) }
 
   def statement: Parser[Stmt] =
     prio0Stmt ~ rep(prio0Stmt) ^^ { case stmt ~ stmtList =>
@@ -128,6 +127,7 @@ class StatementParser extends ExpressionParser {
           )
       }
     }
+      | success(NopStmt)
 }
 
 object StatementParser extends StatementParser {

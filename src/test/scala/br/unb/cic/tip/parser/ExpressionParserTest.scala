@@ -101,7 +101,7 @@ class ExpressionParserTest extends AnyFunSuite {
       result.get == AddExp(
         ConstExp(8),
         MultiExp(
-          IndirectFunctionCallExp(
+          FunctionCallExp(
             FieldAccess(RecordExp(List(("a", ConstExp(3)))), "b"),
             List(ConstExp(5))
           ),
@@ -193,7 +193,7 @@ class ExpressionParserTest extends AnyFunSuite {
   test("should parse direct function call no args") {
     val result = ExpressionParser.parse("foo()")
 
-    assert(result.get == DirectFunctionCallExp("foo", Nil))
+    assert(result.get == FunctionCallExp(VariableExp("foo"), Nil))
   }
 
   test("failure: should parse direct function call with args") {
@@ -202,8 +202,8 @@ class ExpressionParserTest extends AnyFunSuite {
     println(result)
 
     assert(
-      result.get == DirectFunctionCallExp(
-        "foo",
+      result.get == FunctionCallExp(
+        VariableExp("foo"),
         List(ConstExp(1), VariableExp("b"), RecordExp(List(("j", ConstExp(0)))))
       )
     )
@@ -213,7 +213,7 @@ class ExpressionParserTest extends AnyFunSuite {
     val result = ExpressionParser.parse("foo.a()")
 
     assert(
-      result.get == IndirectFunctionCallExp(
+      result.get == FunctionCallExp(
         FieldAccess(VariableExp("foo"), "a"),
         List()
       )
@@ -225,10 +225,10 @@ class ExpressionParserTest extends AnyFunSuite {
     println(result)
 
     assert(
-      result.get == IndirectFunctionCallExp(
-        IndirectFunctionCallExp(
-          DirectFunctionCallExp(
-            "foo",
+      result.get == FunctionCallExp(
+        FunctionCallExp(
+          FunctionCallExp(
+            VariableExp("foo"),
             Nil
           ),
           List(VariableExp("a"))
@@ -243,9 +243,9 @@ class ExpressionParserTest extends AnyFunSuite {
     println(result)
 
     assert(
-      result.get == IndirectFunctionCallExp(
+      result.get == FunctionCallExp(
         FieldAccess(
-          IndirectFunctionCallExp(
+          FunctionCallExp(
             FieldAccess(VariableExp("foo"), "a"),
             Nil
           ),
@@ -282,6 +282,11 @@ class ExpressionParserTest extends AnyFunSuite {
 
   test("should fail on missing second argument") {
     failureHelper("call (test, ")
+  }
+
+  test("should fail on missing closing parenthesis") {
+    failureHelper("call (test")
+
   }
 
   test("should fail on trailing comma") {
