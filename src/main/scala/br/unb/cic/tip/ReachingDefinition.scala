@@ -8,20 +8,21 @@ import br.unb.cic.tip.Node.SimpleNode
 import scala.collection.mutable
 
 type DF = (Set[AssignmentStmt], Set[AssignmentStmt])
+type Result = mutable.HashMap[Stmt, DF]
 
 object ReachingDefinition {
 
-    def run(program: Stmt): mutable.HashMap[Node, DF] = {
+    def run(program: Stmt): Result = {
       var explore = true
 
-      val RD: mutable.HashMap[Node, DF] = mutable.HashMap()
+      val RD: Result = mutable.HashMap()
       var en = Set[AssignmentStmt]()
       var ex = Set[AssignmentStmt]()
 
       val cfg = flow(program)
 
       for (stmt <- blocks(program)) {
-        RD(SimpleNode(stmt)) = (en, ex)
+        RD(stmt) = (en, ex)
       }
 
       while (explore) {
@@ -31,28 +32,30 @@ object ReachingDefinition {
 
           en = entry(program, stmt, RD)
           ex = exit(program, stmt, RD)
-          RD(SimpleNode(stmt)) = (en, ex)
+          RD(stmt) = (en, ex)
         }
         explore = lastRD != RD
       }
       RD
     }
 
-    def entry(program: Stmt, stmt: Stmt, RD: mutable.HashMap[Node, DF]): Set[AssignmentStmt] = {
+    def entry(program: Stmt, stmt: Stmt, RD: Result): Set[AssignmentStmt] = {
       if (stmt == initStmt(program)) {
         assignments(program).map({ case AssignmentStmt(r, _) => AssignmentStmt(r, NullExp)})
       }
       else {
         var res = Set[AssignmentStmt]()
         for ((from, to) <- flow(program) if to == SimpleNode(stmt)) {
-          res = RD(from)._2 union res
+          from match {
+            case SimpleNode(s) => res = RD(s)._2 union res
+          }
         }
         res
       }
     }
 
-    def exit(program: Stmt, stmt: Stmt, RD: mutable.HashMap[Node, DF]): Set[AssignmentStmt] = {
-      (RD(SimpleNode(stmt))._1 diff kill(program, stmt)) union gen(stmt)
+    def exit(program: Stmt, stmt: Stmt, RD: Result): Set[AssignmentStmt] = {
+      (RD(stmt)._1 diff kill(program, stmt)) union gen(stmt)
     }
 
     def kill(program: Stmt, stmt: Stmt): Set[AssignmentStmt] = stmt match {
