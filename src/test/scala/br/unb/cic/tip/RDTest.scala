@@ -18,17 +18,17 @@ class RDTest extends AnyFunSuite {
 
     assert( RD(s1) == (
       Set(),
-      Set(AssignmentStmt("x",ConstExp(1)))
+      Set(s1)
     ))
 
     assert( RD(s2) == (
-      Set(AssignmentStmt("x",ConstExp(1))),
-      Set(AssignmentStmt("x",ConstExp(1)), AssignmentStmt("y",ConstExp(2)))
+      Set(s1),
+      Set(s1, s2)
     ))
 
     assert( RD(s3) == (
-      Set(AssignmentStmt("x",ConstExp(1)), AssignmentStmt("y",ConstExp(2))),
-      Set(AssignmentStmt("x",ConstExp(3)), AssignmentStmt("y",ConstExp(2)))
+      Set(s1, s2),
+      Set(s2, s3)
     ))
   }
 
@@ -44,27 +44,27 @@ class RDTest extends AnyFunSuite {
 
     assert( RD(s1) == (
       Set(),
-      Set(AssignmentStmt("x", ConstExp(1)))
+      Set(s1)
     ))
 
     assert( RD(s2) == (
-      Set(AssignmentStmt("x", ConstExp(1))),
-      Set(AssignmentStmt("x", ConstExp(1)), AssignmentStmt("y", ConstExp(2)))
+      Set(s1),
+      Set(s1, s2)
     ))
 
     assert( RD(s3) == (
-      Set(AssignmentStmt("x", ConstExp(1)), AssignmentStmt("y", ConstExp(2))),
-      Set(AssignmentStmt("x", AddExp(VariableExp("x"), VariableExp("y"))), AssignmentStmt("y", ConstExp(2)))
+      Set(s1, s2),
+      Set(s2, s3)
     ))
 
     assert( RD(s4) == (
-      Set(AssignmentStmt("x", AddExp(VariableExp("x"), VariableExp("y"))), AssignmentStmt("y", ConstExp(2))),
-      Set(AssignmentStmt("x", AddExp(VariableExp("x"), VariableExp("y"))), AssignmentStmt("y", ConstExp(2)), AssignmentStmt("z", AddExp(VariableExp("x"), ConstExp(1))))
+      Set(s2, s3),
+      Set(s2, s3, s4)
     ))
 
     assert( RD(s5) == (
-      Set(AssignmentStmt("x", AddExp(VariableExp("x"), VariableExp("y"))), AssignmentStmt("y", ConstExp(2)), AssignmentStmt("z", AddExp(VariableExp("x"), ConstExp(1)))),
-      Set(AssignmentStmt("x", AddExp(VariableExp("x"), VariableExp("y"))), AssignmentStmt("y", ConstExp(2)), AssignmentStmt("z", VariableExp("y")))
+      Set(s2, s3, s4),
+      Set(s2, s3, s5)
     ))
   }
 
@@ -80,17 +80,17 @@ class RDTest extends AnyFunSuite {
 
     assert( RD(s1) == (
       Set(),
-      Set(AssignmentStmt("x", ConstExp(1)))
+      Set(s1)
     ))
 
     assert( RD(s2) == (
-      Set(AssignmentStmt("x", ConstExp(1))),
-      Set(AssignmentStmt("x", ConstExp(1)), AssignmentStmt("y", ConstExp(2)))
+      Set(s1),
+      Set(s1, s2)
     ))
 
     assert( RD(s3) == (
       Set(),
-      Set(AssignmentStmt("z", ConstExp(3)))
+      Set(s3)
     ))
 
     assert( RD(s4) == (
@@ -99,18 +99,18 @@ class RDTest extends AnyFunSuite {
     ))
 
     assert( RD(s5) == (
-      Set(AssignmentStmt("x", ConstExp(1)), AssignmentStmt("y", ConstExp(2)), AssignmentStmt("z", ConstExp(3))),
-      Set(AssignmentStmt("x", ConstExp(1)), AssignmentStmt("y", ConstExp(0)), AssignmentStmt("z", ConstExp(3)))
+      Set(s1, s2, s3),
+      Set(s1, s3, s5)
     ))
   }
-//
-//  /**
-//  f = 1;
-//  while (n>0) {
-//    f = f*n;
-//    n = n-1;
-//  }
-//   */
+
+  /**
+  f = 1;
+  while (n>0) {
+    f = f*n;
+    n = n-1;
+  }
+   */
   test("test_rd_using_while") {
     val s1 = AssignmentStmt("f", ConstExp(1))
     val s2 = AssignmentStmt("f", MultiExp(VariableExp("f"), VariableExp("n")))
@@ -123,22 +123,22 @@ class RDTest extends AnyFunSuite {
 
     assert( RD(s1) == (
       Set(),
-      Set(AssignmentStmt("f", ConstExp(1)))
+      Set(s1)
     ))
 
     assert( RD(s4) == (
-      Set(AssignmentStmt("f", ConstExp(1)), AssignmentStmt("f", MultiExp(VariableExp("f"), VariableExp("n"))), AssignmentStmt("n", SubExp(VariableExp("n"), ConstExp(1)))),
-      Set(AssignmentStmt("f", ConstExp(1)), AssignmentStmt("f", MultiExp(VariableExp("f"), VariableExp("n"))), AssignmentStmt("n", SubExp(VariableExp("n"), ConstExp(1))))
+      Set(s1, s2, s3),
+      Set(s1, s2, s3)
     ))
 
     assert( RD(s2) == (
-      Set(AssignmentStmt("f", ConstExp(1)), AssignmentStmt("f", MultiExp(VariableExp("f"), VariableExp("n"))), AssignmentStmt("n", SubExp(VariableExp("n"), ConstExp(1)))),
-      Set(AssignmentStmt("f", MultiExp(VariableExp("f"), VariableExp("n"))), AssignmentStmt("n", SubExp(VariableExp("n"), ConstExp(1))))
+      Set(s1, s2, s3),
+      Set(s2, s3)
     ))
 
     assert( RD(s3) == (
-      Set(AssignmentStmt("f", MultiExp(VariableExp("f"), VariableExp("n"))), AssignmentStmt("n", SubExp(VariableExp("n"), ConstExp(1)))),
-      Set(AssignmentStmt("f", MultiExp(VariableExp("f"), VariableExp("n"))), AssignmentStmt("n", SubExp(VariableExp("n"), ConstExp(1))))
+      Set(s2, s3),
+      Set(s2, s3)
     ))
   }
 }
