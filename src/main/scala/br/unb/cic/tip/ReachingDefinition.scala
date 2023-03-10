@@ -49,7 +49,17 @@ object ReachingDefinition {
     }
 
     def exit(program: Stmt, stmt: Stmt, RD: Result): Set[AssignmentStmt] = stmt match {
-      case AssignmentStmt(id, exp) => RD(stmt)._1.filter(_.name != id) union Set(AssignmentStmt(id, exp))
+      case AssignmentStmt(id, exp) => (RD(stmt)._1 diff kill(RD(stmt)._1, stmt)) union gen(stmt)
       case _ => RD(stmt)._1
+    }
+
+    def kill(pre: Set[AssignmentStmt], stmt: Stmt): Set[AssignmentStmt] = stmt match {
+      case AssignmentStmt(id, exp) => pre.filter(_.name == id)
+      case _ => Set()
+    }
+
+    def gen(stmt: Stmt): Set[AssignmentStmt] = stmt match {
+      case AssignmentStmt(id, exp) => Set(AssignmentStmt(id, exp))
+      case _ => Set()
     }
 }
