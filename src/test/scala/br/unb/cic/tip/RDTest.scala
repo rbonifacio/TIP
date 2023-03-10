@@ -17,18 +17,18 @@ class RDTest extends AnyFunSuite {
     val RD = ReachingDefinition.run(seq)
 
     assert( RD(s1) == (
-      Set(AssignmentStmt("x",NullExp), AssignmentStmt("y",NullExp)),
-      Set(AssignmentStmt("y",NullExp), AssignmentStmt("x",ConstExp(1)))
+      Set(),
+      Set(s1)
     ))
 
     assert( RD(s2) == (
-      Set(AssignmentStmt("y",NullExp), AssignmentStmt("x",ConstExp(1))),
-      Set(AssignmentStmt("x",ConstExp(1)), AssignmentStmt("y",ConstExp(2)))
+      Set(s1),
+      Set(s1, s2)
     ))
 
     assert( RD(s3) == (
-      Set(AssignmentStmt("x",ConstExp(1)), AssignmentStmt("y",ConstExp(2))),
-      Set(AssignmentStmt("x",ConstExp(3)), AssignmentStmt("y",ConstExp(2)))
+      Set(s1, s2),
+      Set(s2, s3)
     ))
   }
 
@@ -43,28 +43,28 @@ class RDTest extends AnyFunSuite {
     val RD = ReachingDefinition.run(seq)
 
     assert( RD(s1) == (
-      Set(AssignmentStmt("x", NullExp), AssignmentStmt("y", NullExp), AssignmentStmt("z", NullExp)),
-      Set(AssignmentStmt("x", ConstExp(1)), AssignmentStmt("y", NullExp), AssignmentStmt("z", NullExp))
+      Set(),
+      Set(s1)
     ))
 
     assert( RD(s2) == (
-      Set(AssignmentStmt("x", ConstExp(1)), AssignmentStmt("y", NullExp), AssignmentStmt("z", NullExp)),
-      Set(AssignmentStmt("x", ConstExp(1)), AssignmentStmt("y", ConstExp(2)), AssignmentStmt("z", NullExp))
+      Set(s1),
+      Set(s1, s2)
     ))
 
     assert( RD(s3) == (
-      Set(AssignmentStmt("x", ConstExp(1)), AssignmentStmt("y", ConstExp(2)), AssignmentStmt("z", NullExp)),
-      Set(AssignmentStmt("x", AddExp(VariableExp("x"), VariableExp("y"))), AssignmentStmt("y", ConstExp(2)), AssignmentStmt("z", NullExp))
+      Set(s1, s2),
+      Set(s2, s3)
     ))
 
     assert( RD(s4) == (
-      Set(AssignmentStmt("x", AddExp(VariableExp("x"), VariableExp("y"))), AssignmentStmt("y", ConstExp(2)), AssignmentStmt("z", NullExp)),
-      Set(AssignmentStmt("x", AddExp(VariableExp("x"), VariableExp("y"))), AssignmentStmt("y", ConstExp(2)), AssignmentStmt("z", AddExp(VariableExp("x"), ConstExp(1))))
+      Set(s2, s3),
+      Set(s2, s3, s4)
     ))
 
     assert( RD(s5) == (
-      Set(AssignmentStmt("x", AddExp(VariableExp("x"), VariableExp("y"))), AssignmentStmt("y", ConstExp(2)), AssignmentStmt("z", AddExp(VariableExp("x"), ConstExp(1)))),
-      Set(AssignmentStmt("x", AddExp(VariableExp("x"), VariableExp("y"))), AssignmentStmt("y", ConstExp(2)), AssignmentStmt("z", VariableExp("y")))
+      Set(s2, s3, s4),
+      Set(s2, s3, s5)
     ))
   }
 
@@ -79,28 +79,28 @@ class RDTest extends AnyFunSuite {
     val RD = ReachingDefinition.run(seq)
 
     assert( RD(s1) == (
-      Set(AssignmentStmt("x", NullExp), AssignmentStmt("y", NullExp), AssignmentStmt("z", NullExp)),
-      Set(AssignmentStmt("x", ConstExp(1)), AssignmentStmt("y", NullExp), AssignmentStmt("z", NullExp))
+      Set(),
+      Set(s1)
     ))
 
     assert( RD(s2) == (
-      Set(AssignmentStmt("x", ConstExp(1)), AssignmentStmt("y", NullExp), AssignmentStmt("z", NullExp)),
-      Set(AssignmentStmt("x", ConstExp(1)), AssignmentStmt("y", ConstExp(2)), AssignmentStmt("z", NullExp))
+      Set(s1),
+      Set(s1, s2)
     ))
 
     assert( RD(s3) == (
-      Set(AssignmentStmt("x", NullExp), AssignmentStmt("y", NullExp), AssignmentStmt("z", NullExp)),
-      Set(AssignmentStmt("x", NullExp), AssignmentStmt("y", NullExp), AssignmentStmt("z", ConstExp(3)))
+      Set(),
+      Set(s3)
     ))
 
     assert( RD(s4) == (
-      Set(AssignmentStmt("x", NullExp), AssignmentStmt("y", NullExp), AssignmentStmt("z", NullExp)),
-      Set(AssignmentStmt("x", NullExp), AssignmentStmt("y", NullExp), AssignmentStmt("z", NullExp))
+      Set(),
+      Set()
     ))
 
     assert( RD(s5) == (
-      Set(AssignmentStmt("x", ConstExp(1)), AssignmentStmt("y", ConstExp(2)), AssignmentStmt("z", NullExp), AssignmentStmt("x", NullExp), AssignmentStmt("y", NullExp), AssignmentStmt("z", ConstExp(3))),
-      Set(AssignmentStmt("x", ConstExp(1)), AssignmentStmt("y", ConstExp(0)), AssignmentStmt("z", NullExp), AssignmentStmt("x", NullExp), AssignmentStmt("z", ConstExp(3)))
+      Set(s1, s2, s3),
+      Set(s1, s3, s5)
     ))
   }
 
@@ -122,23 +122,23 @@ class RDTest extends AnyFunSuite {
     val RD = ReachingDefinition.run(seq)
 
     assert( RD(s1) == (
-      Set(AssignmentStmt("f", NullExp), AssignmentStmt("n", NullExp)),
-      Set(AssignmentStmt("f", ConstExp(1)), AssignmentStmt("n", NullExp))
+      Set(),
+      Set(s1)
     ))
 
     assert( RD(s4) == (
-      Set(AssignmentStmt("f", ConstExp(1)), AssignmentStmt("n", NullExp), AssignmentStmt("f", MultiExp(VariableExp("f"), VariableExp("n"))), AssignmentStmt("n", SubExp(VariableExp("n"), ConstExp(1)))),
-      Set(AssignmentStmt("f", ConstExp(1)), AssignmentStmt("n", NullExp), AssignmentStmt("f", MultiExp(VariableExp("f"), VariableExp("n"))), AssignmentStmt("n", SubExp(VariableExp("n"), ConstExp(1))))
+      Set(s1, s2, s3),
+      Set(s1, s2, s3)
     ))
 
     assert( RD(s2) == (
-      Set(AssignmentStmt("f", ConstExp(1)), AssignmentStmt("n", NullExp), AssignmentStmt("f", MultiExp(VariableExp("f"), VariableExp("n"))), AssignmentStmt("n", SubExp(VariableExp("n"), ConstExp(1)))),
-      Set(AssignmentStmt("n", NullExp), AssignmentStmt("f", MultiExp(VariableExp("f"), VariableExp("n"))), AssignmentStmt("n", SubExp(VariableExp("n"), ConstExp(1))))
+      Set(s1, s2, s3),
+      Set(s2, s3)
     ))
 
     assert( RD(s3) == (
-      Set(AssignmentStmt("n", NullExp), AssignmentStmt("f", MultiExp(VariableExp("f"), VariableExp("n"))), AssignmentStmt("n", SubExp(VariableExp("n"), ConstExp(1)))),
-      Set(AssignmentStmt("f", MultiExp(VariableExp("f"), VariableExp("n"))), AssignmentStmt("n", SubExp(VariableExp("n"), ConstExp(1))))
+      Set(s2, s3),
+      Set(s2, s3)
     ))
   }
 }
