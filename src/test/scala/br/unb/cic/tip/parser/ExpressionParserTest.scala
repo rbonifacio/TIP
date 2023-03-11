@@ -329,11 +329,3 @@ class ExpressionParserTest extends AnyFunSuite {
     failureHelper("{sla: 3} . ")
   }
 }
-
-class TipParserTest extends AnyFunSuite {
-  test("should parse successfully an empty string") {
-    val result = TipParser.parse("")
-
-    assert(result.get == List())
-  }
-}

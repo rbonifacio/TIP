@@ -92,7 +92,7 @@ class StatementParser extends ExpressionParser {
     "else" ~> commit(block) ^^ Some.apply
       | success(None)
 
-  def prio0Stmt: Parser[Stmt] = failure("Helper to fix formatting")
+  def singleStmt: Parser[Stmt] = failure("Helper to fix formatting")
     | "*" ~> commit(expression ~ assignment)
     ^^ { case ponterExp ~ newValueExp => StoreStmt(ponterExp, newValueExp) }
     | "(" ~> commit(
@@ -108,14 +108,16 @@ class StatementParser extends ExpressionParser {
     }
     | "while" ~> commit(condition ~ block)
     ^^ { case exp1 ~ thenStmt => WhileStmt(exp1, thenStmt) }
-    | "return" ^^ { case _ => NopStmt }
     | id ~ ("." ~> commit(id ~ assignment))
     ^^ { case name ~ (field ~ exp) => RecordAssignmentStmt(name, field, exp) }
     | id ~ commit(assignment)
     ^^ { case id ~ exp => AssignmentStmt(id, exp) }
 
+  def returnGuardedStmt =
+    singleStmt - "return"
+
   def statement: Parser[Stmt] =
-    prio0Stmt ~ rep(prio0Stmt) ^^ { case stmt ~ stmtList =>
+    returnGuardedStmt ~ rep(returnGuardedStmt) ^^ { case stmt ~ stmtList =>
       stmtList.reverse match {
         case Nil => stmt
         case lastStmt :: restOfStmts =>
@@ -138,10 +140,10 @@ object StatementParser extends StatementParser {
 
 class FunctionParser extends StatementParser {
   def functionVariables: Parser[List[Id]] =
-    opt("var" ~> repsep(id, ",") <~ ";") ^^ {
-      case None        => Nil
-      case Some(value) => value
+    "var" ~> commit(rep1sep(id, ",") <~ ";") ^^ { case value =>
+      value
     }
+      | success(Nil)
 
   def function: Parser[FunDecl] = failure("Helper to fix formatting")
     | id
