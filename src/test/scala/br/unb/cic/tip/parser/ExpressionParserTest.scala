@@ -199,8 +199,6 @@ class ExpressionParserTest extends AnyFunSuite {
   test("failure: should parse direct function call with args") {
     val result = ExpressionParser.parse("foo(1, b, {j : 0})")
 
-    println(result)
-
     assert(
       result.get == FunctionCallExp(
         VariableExp("foo"),
@@ -222,7 +220,6 @@ class ExpressionParserTest extends AnyFunSuite {
 
   test("failure: should parse indirect higher order function call") {
     val result = ExpressionParser.parse("foo()(a)(b, c)")
-    println(result)
 
     assert(
       result.get == FunctionCallExp(
@@ -240,7 +237,6 @@ class ExpressionParserTest extends AnyFunSuite {
 
   test("failure: should parse indirect function call curried with args") {
     val result = ExpressionParser.parse("foo.a().b(a, b, c)")
-    println(result)
 
     assert(
       result.get == FunctionCallExp(
