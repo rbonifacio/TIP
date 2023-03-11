@@ -1,0 +1,15 @@
+name () {
+    d = {ha:3};
+    *y.b.a.a = 3;
+    (*dsa).y=8;
+    return 0;
+}
+
+main (a, b) {
+    output name(0, 3*5);
+    output a(0, 3*5);
+    *sla = 8;
+    dois = &sla;
+    tres = (**dois) + 2;
+    return 3;
+}
