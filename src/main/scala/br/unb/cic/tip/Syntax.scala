@@ -65,8 +65,8 @@ enum Stmt:
 
 /** Node Types */
 enum Node:
-  case StartNode extends Node
-  case EndNode extends Node
+  case StartNode(function: Id) extends Node
+  case EndNode(function: Id) extends Node
   case SimpleNode(stmt: Stmt) extends Node
 
 

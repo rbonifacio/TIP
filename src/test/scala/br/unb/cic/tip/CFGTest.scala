@@ -53,10 +53,10 @@ class CFGTest extends AnyFunSuite {
 //    val function = FunDecl("sum", List(), List(), body, VariableExp("z"))
 //
 //    val expected = Set(
-//        (StartNode, SimpleNode(s1)),
+//        (StartNode(function.name), SimpleNode(s1)),
 //        (SimpleNode(s1), SimpleNode(s2)),
 //        (SimpleNode(s2), SimpleNode(s3)),
-//        (SimpleNode(s3), EndNode),
+//        (SimpleNode(s3), EndNode(function.name)),
 //      )
 //
 //    val cfg = flow(function)
@@ -83,12 +83,12 @@ class CFGTest extends AnyFunSuite {
 //    val function = FunDecl("sum", List(), List(), s6, VariableExp("z"))
 //
 //    val expected = Set(
-//      (StartNode, SimpleNode(s1)),
+//      (StartNode(function.name), SimpleNode(s1)),
 //      (SimpleNode(s1), SimpleNode(s5)),
 //      (SimpleNode(s5), SimpleNode(s2)),
 //      (SimpleNode(s2), SimpleNode(s3)),
 //      (SimpleNode(s3), SimpleNode(s5)),
-//      (SimpleNode(s5), EndNode)
+//      (SimpleNode(s5), EndNode(function.name))
 //    )
 //
 //    assert(expected == flow(function))
@@ -114,13 +114,13 @@ class CFGTest extends AnyFunSuite {
 //    val function = FunDecl("ifelse", List(), List(), body, VariableExp("z"))
 //
 //    val expected = Set(
-//      (StartNode, SimpleNode(s1)),
+//      (StartNode(function.name), SimpleNode(s1)),
 //      (SimpleNode(s1), SimpleNode(s5)),
 //      (SimpleNode(s5), SimpleNode(s2)),
 //      (SimpleNode(s2), SimpleNode(s3)),
-//      (SimpleNode(s3), EndNode),
+//      (SimpleNode(s3), EndNode(function.name)),
 //      (SimpleNode(s5), SimpleNode(s4)),
-//      (SimpleNode(s4), EndNode)
+//      (SimpleNode(s4), EndNode(function.name))
 //    )
 //
 //    val cfg = flow(function)
@@ -139,13 +139,13 @@ class CFGTest extends AnyFunSuite {
 //    val function = FunDecl("ifelse", List(), List(), body, VariableExp("z"))
 //
 //    val expected = Set(
-//      (StartNode, SimpleNode(s1)),
+//      (StartNode(function.name), SimpleNode(s1)),
 //      (SimpleNode(s1), SimpleNode(s5)),
 //      (SimpleNode(s5), SimpleNode(s2)),
 //      (SimpleNode(s2), SimpleNode(s3)),
-//      (SimpleNode(s3), EndNode),
+//      (SimpleNode(s3), EndNode(function.name)),
 //      (SimpleNode(s5), SimpleNode(s4)),
-//      (SimpleNode(s4), EndNode)
+//      (SimpleNode(s4), EndNode(function.name))
 //    )
 //
 //    val cfg = flow(function)

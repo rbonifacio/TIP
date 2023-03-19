@@ -40,14 +40,14 @@ def flow(stmt: Stmt): Graph = stmt match {
   case IfElseStmt(condition, s1, None) => flow(s1) union Set((SimpleNode(stmt), SimpleNode(initStmt(s1))))
   case WhileStmt(condition, s1) => flow(s1) union Set((SimpleNode(stmt), SimpleNode(initStmt(s1)))) union finalStmt(s1).map(s => (SimpleNode(s),SimpleNode(stmt)))
     case AssignmentStmt(id, exp) => exp match {
-      case DirectFunctionCallExp(function, _) => Set((SimpleNode(CallStmt(id, function)), StartNode)) union Set((StartNode, EndNode)) union Set((EndNode, SimpleNode(AfterCallStmt(id, function))))
+      case DirectFunctionCallExp(function, _) => Set((SimpleNode(CallStmt(id, function)), StartNode(function))) union Set((StartNode(function), EndNode(function))) union Set((EndNode(function), SimpleNode(AfterCallStmt(id, function))))
       case _ => Set()
     }
   case _ => Set()
 }
 
 def flow(f: FunDecl): Graph =
-  Set((StartNode, SimpleNode(initStmt(f.body)))) union flow(f.body) union finalStmt(f.body).map(s => (SimpleNode(s), EndNode))
+  Set((StartNode(f.name), SimpleNode(initStmt(f.body)))) union flow(f.body) union finalStmt(f.body).map(s => (SimpleNode(s), EndNode(f.name)))
 
 def assignments(stmt: Stmt): Set[AssignmentStmt] = stmt match {
   case SequenceStmt(s1, s2) => assignments(s1) union assignments(s2)
