@@ -1,0 +1,45 @@
+package br.unb.cic.tip
+
+import br.unb.cic.tip.*
+import br.unb.cic.tip.Expression.*
+import br.unb.cic.tip.Node.*
+import br.unb.cic.tip.Stmt.*
+import org.scalatest.funsuite.AnyFunSuite
+
+class CFGProgramTest extends AnyFunSuite {
+
+  test("sum program") {
+
+    //sum function
+    val sumS1 = AssignmentStmt("z", AddExp(VariableExp("x"), VariableExp("y")))
+    val sumS2 = ReturnStmt(VariableExp("z"))
+    val sumBody = SequenceStmt(sumS1, sumS2)
+    val sumFunction = FunDecl("sum", List("x", "y"), List("z"), sumBody, VariableExp("z"))
+
+    //main function
+    val mainS1 = AssignmentStmt("a", ConstExp(1))
+    val mainS2 = AssignmentStmt("b", ConstExp(1))
+    val mainS3 = AssignmentStmt("c", DirectFunctionCallExp(sumFunction.name, List(VariableExp("a"), VariableExp("b"))))
+    val mainS4 = OutputStmt(VariableExp("c"))
+    val mainS5 = AssignmentStmt("d", ConstExp(1))
+    val mainS6 = AssignmentStmt("e", ConstExp(1))
+    val mainS7 = AssignmentStmt("f", DirectFunctionCallExp(sumFunction.name, List(VariableExp("d"), VariableExp("e"))))
+    val mainS8 = OutputStmt(VariableExp("f"))
+    val mainBody =
+      SequenceStmt(mainS1,
+        SequenceStmt(mainS2,
+          SequenceStmt(mainS3,
+            SequenceStmt(mainS4,
+              SequenceStmt(mainS5,
+                SequenceStmt(mainS6,
+                  SequenceStmt(mainS7, mainS8
+                    )))))))
+
+    val mainFunction = FunDecl("main", List(), List("a", "b", "c","d", "e", "f"), mainBody, NullExp)
+
+    val program = List(sumFunction, mainFunction)
+
+    val cfg = flow(program)
+    println(exportDot(cfg))
+  }
+}
