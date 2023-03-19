@@ -60,3 +60,13 @@ def assignments(stmt: Stmt): Set[AssignmentStmt] = stmt match {
   case AssignmentStmt(id, exp) => Set(AssignmentStmt(id, exp))
   case _ => Set()
 }
+
+def successors(stmt: Stmt, cfg: Graph): Set[Stmt] = {
+  var res = Set[Stmt]()
+  for ((from, to) <- cfg if from == SimpleNode(stmt)) {
+    to match {
+      case SimpleNode(s) => res = Set(s) union res
+    }
+  }
+  res
+}
