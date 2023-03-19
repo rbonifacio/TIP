@@ -29,7 +29,6 @@ object ReachingDefinition {
         val lastRD = RD.clone()
 
         for (stmt <- blocks(program)) {
-
           en = entry(program, stmt, RD)
           ex = exit(program, stmt, RD)
           RD(stmt) = (en, ex)
@@ -40,10 +39,6 @@ object ReachingDefinition {
     }
 
     def entry(program: Stmt, stmt: Stmt, RD: Result): Set[AssignmentStmt] = {
-      if (stmt == initStmt(program)) {
-        assignments(program).map({ case AssignmentStmt(r, _) => AssignmentStmt(r, NullExp)})
-      }
-      else {
         var res = Set[AssignmentStmt]()
         for ((from, to) <- flow(program) if to == SimpleNode(stmt)) {
           from match {
@@ -51,15 +46,15 @@ object ReachingDefinition {
           }
         }
         res
-      }
     }
 
-    def exit(program: Stmt, stmt: Stmt, RD: Result): Set[AssignmentStmt] = {
-      (RD(stmt)._1 diff kill(program, stmt)) union gen(stmt)
+    def exit(program: Stmt, stmt: Stmt, RD: Result): Set[AssignmentStmt] = stmt match {
+      case AssignmentStmt(id, exp) => (RD(stmt)._1 diff kill(RD(stmt)._1, stmt)) union gen(stmt)
+      case _ => RD(stmt)._1
     }
 
-    def kill(program: Stmt, stmt: Stmt): Set[AssignmentStmt] = stmt match {
-      case AssignmentStmt(id, exp) => assignments(program).filter(_.name == id) union Set(AssignmentStmt(id, NullExp))
+    def kill(pre: Set[AssignmentStmt], stmt: Stmt): Set[AssignmentStmt] = stmt match {
+      case AssignmentStmt(id, exp) => pre.filter(_.name == id)
       case _ => Set()
     }
 
