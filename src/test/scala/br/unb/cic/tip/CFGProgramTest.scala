@@ -9,7 +9,6 @@ import org.scalatest.funsuite.AnyFunSuite
 class CFGProgramTest extends AnyFunSuite {
 
   test("sum program") {
-
     //sum function
     val sumS1 = AssignmentStmt("z", AddExp(VariableExp("x"), VariableExp("y")))
     val sumS2 = ReturnStmt(VariableExp("z"))
@@ -38,6 +37,27 @@ class CFGProgramTest extends AnyFunSuite {
     val mainFunction = FunDecl("main", List(), List("a", "b", "c","d", "e", "f"), mainBody, NullExp)
 
     val program = List(sumFunction, mainFunction)
+
+    val cfg = flow(program)
+//    println(exportDot(cfg))
+  }
+
+  test("fibonacci program") {
+    //fibonacci function
+    val fibonacciBodyIf: Stmt = AssignmentStmt("v", AddExp(VariableExp("u"), ConstExp(1)))
+    val fibonacciBodyElseS1: Stmt = AssignmentStmt("_f1", DirectFunctionCallExp("fibonacci", List(SubExp(VariableExp("z"), ConstExp(1)), VariableExp("u"), VariableExp("v"))))
+    val fibonacciBodyElseS2: Stmt = AssignmentStmt("_f2", DirectFunctionCallExp("fibonacci", List(SubExp(VariableExp("z"), ConstExp(2)), VariableExp("u"), VariableExp("v"))))
+    val fibonacciBodyElse: Stmt = SequenceStmt(fibonacciBodyElseS1, fibonacciBodyElseS2)
+    val fibonacciBody: Stmt = IfElseStmt(GTExp(VariableExp("z"), ConstExp(3)), fibonacciBodyIf, Some(fibonacciBodyElse))
+
+    val fibonacciFunction = FunDecl("fibonacci", List("z", "u", "v"), List(), fibonacciBody, VariableExp("v"))
+
+    //main function
+    val mainBody = AssignmentStmt("_m1", DirectFunctionCallExp(fibonacciFunction.name, List(VariableExp("x"), ConstExp(0), VariableExp("y"))))
+
+    val mainFunction = FunDecl("main", List(), List("a", "b", "c","d", "e", "f"), mainBody, NullExp)
+
+    val program = List(fibonacciFunction, mainFunction)
 
     val cfg = flow(program)
     println(exportDot(cfg))
