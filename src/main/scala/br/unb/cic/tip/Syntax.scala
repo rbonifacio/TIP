@@ -60,6 +60,8 @@ enum Stmt:
   case SequenceStmt(s1: Stmt, s2: Stmt) extends Stmt // Stmt Stmt
   case StoreStmt(exp1: Expression, exp2: Expression) extends Stmt // *Exp = Exp
   case OutputStmt(exp: Expression) extends Stmt // output Exp
+  case CallStmt(name: Id, function: Id) extends Stmt // output Exp
+  case AfterCallStmt(function: Id, name: Id) extends Stmt // output Exp
 
 /** Node Types */
 enum Node:
