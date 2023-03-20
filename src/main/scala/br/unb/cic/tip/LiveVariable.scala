@@ -15,40 +15,40 @@ object LiveVariable {
   def run(program: Stmt): Result = {
     var explore = true
 
-    val RD: Result = mutable.HashMap()
+    val LV: Result = mutable.HashMap()
     var en = Set[VariableExp]()
     var ex = Set[VariableExp]()
 
     val cfg = flowR(program)
 
     for (stmt <- blocks(program)) {
-      RD(stmt) = (en, ex)
+      LV(stmt) = (en, ex)
     }
 
     while (explore)
     {
-      val lastRD = RD.clone()
+      val lastLV = LV.clone()
       for (stmt <- blocks(program))
       {
-        ex = exit(program, stmt, RD)
-        en = entry(program, stmt, RD)
-        RD(stmt) = (en, ex)
+        ex = exit(program, stmt, LV)
+        en = entry(program, stmt, LV)
+        LV(stmt) = (en, ex)
       }
-      explore = lastRD != RD
+      explore = lastLV != LV
     }
-    RD
+    LV
   }
 
-  def entry(program: Stmt, stmt: Stmt, RD: Result): Set[VariableExp] = stmt match {
-    case AssignmentStmt(id, exp) => (RD(stmt)._2 diff kill(stmt)) union gen(stmt)
-    case _ => RD(stmt)._2 union gen(stmt)
+  def entry(program: Stmt, stmt: Stmt, LV: Result): Set[VariableExp] = stmt match {
+    case AssignmentStmt(id, exp) => (LV(stmt)._2 diff kill(stmt)) union gen(stmt)
+    case _ => LV(stmt)._2 union gen(stmt)
   }
 
-  def exit(program: Stmt, stmt: Stmt, RD: Result): Set[VariableExp] = {
+  def exit(program: Stmt, stmt: Stmt, LV: Result): Set[VariableExp] = {
     var res = Set[VariableExp]()
     for ((from, to) <- flowR(program) if to == SimpleNode(stmt)) {
       from match {
-        case SimpleNode(s) => res = RD(s)._1 union res
+        case SimpleNode(s) => res = LV(s)._1 union res
       }
     }
     res
