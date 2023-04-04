@@ -34,6 +34,9 @@ def flow(stmt: Stmt): Graph = stmt match {
   case _ => Set()
 }
 
+def flowR(stmt: Stmt): Graph =
+  flow(stmt).map((from, to) => (to, from))
+
 def flow(f: FunDecl): Graph =
   Set((StartNode, SimpleNode(initStmt(f.body)))) union flow(f.body) union finalStmt(f.body).map(s => (SimpleNode(s), EndNode))
 
@@ -43,5 +46,18 @@ def assignments(stmt: Stmt): Set[AssignmentStmt] = stmt match {
   case IfElseStmt(condition, s1, None) => assignments(s1)
   case WhileStmt(condition, s1) => assignments(s1)
   case AssignmentStmt(id, exp) => Set(AssignmentStmt(id, exp))
+  case _ => Set()
+}
+
+def variables(exp: Expression): Set[VariableExp] = exp match {
+  case VariableExp(name) => Set(VariableExp(name))
+  case AddExp(left, right) => variables(left) union variables(right)
+  case SubExp(left, right) => variables(left) union variables(right)
+  case MultiExp(left, right) => variables(left) union variables(right)
+  case DivExp(left, right) => variables(left) union variables(right)
+  case EqExp(left, right) => variables(left) union variables(right)
+  case GTExp(left, right) => variables(left) union variables(right)
+  case BracketExp(exp) => variables(exp)
+//    case ConstExp(_) => Set()
   case _ => Set()
 }
