@@ -8,14 +8,14 @@ import br.unb.cic.tip.Node.SimpleNode
 import scala.collection.mutable
 
 type DF = (Set[AssignmentStmt], Set[AssignmentStmt])
-type Result = mutable.HashMap[Stmt, DF]
+type ResultDF = mutable.HashMap[Stmt, DF]
 
 object ReachingDefinition {
 
-    def run(program: Stmt): Result = {
+    def run(program: Stmt): ResultDF = {
       var explore = true
 
-      val RD: Result = mutable.HashMap()
+      val RD: ResultDF = mutable.HashMap()
       var en = Set[AssignmentStmt]()
       var ex = Set[AssignmentStmt]()
 
@@ -38,7 +38,7 @@ object ReachingDefinition {
       RD
     }
 
-    def entry(program: Stmt, stmt: Stmt, RD: Result): Set[AssignmentStmt] = {
+    def entry(program: Stmt, stmt: Stmt, RD: ResultDF): Set[AssignmentStmt] = {
         var res = Set[AssignmentStmt]()
         for ((from, to) <- flow(program) if to == SimpleNode(stmt)) {
           from match {
@@ -48,7 +48,7 @@ object ReachingDefinition {
         res
     }
 
-    def exit(program: Stmt, stmt: Stmt, RD: Result): Set[AssignmentStmt] = stmt match {
+    def exit(program: Stmt, stmt: Stmt, RD: ResultDF): Set[AssignmentStmt] = stmt match {
       case AssignmentStmt(id, exp) => (RD(stmt)._1 diff kill(RD(stmt)._1, stmt)) union gen(stmt)
       case _ => RD(stmt)._1
     }
