@@ -51,7 +51,7 @@ abstract class MFP[T] {
 
     var explore = true
     while (explore) {
-      val lastRD = analysis.clone()
+      val lastAnalysis = analysis.clone()
 
       for (stmt <- blocks(program)) {
 
@@ -59,7 +59,7 @@ abstract class MFP[T] {
         val exitExpressions = transferFunction(program, stmt, analysis)
         analysis(stmt) = (entryExpressions, exitExpressions)
       }
-      explore = lastRD != analysis
+      explore = lastAnalysis != analysis
     }
 
     analysis
