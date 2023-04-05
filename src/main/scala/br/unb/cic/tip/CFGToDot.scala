@@ -4,12 +4,14 @@ import org.typelevel.paiges.Doc
 import br.unb.cic.tip.*
 import br.unb.cic.tip.Node.SimpleNode
 
-def exportDot(cfg: Graph): String = {
+def exportDot(cfg: Graph, path: Path): String = {
   val prefix = Doc.text("digraph CFG { ")
+  val p = createPath(path)
   val edges = cfg.map { case (from, to) =>
       createNode(from) + Doc.space + Doc.text("->") + Doc.space + createNode(to)
   }
-  val body = Doc.intercalate(Doc.text("\n"), edges)
+  var body = Doc.intercalate(Doc.text("\n"), edges)
+  body = p + body
   val suffix = Doc.text("}")
   val res = body.tightBracketBy(prefix, suffix)
   res.render(20)
@@ -20,4 +22,16 @@ def createNode(v: Node): Doc = {
     case SimpleNode(s) => Doc.text(s.toString)
     case _ => Doc.text(v.toString)
   }) + Doc.text("\"")
+}
+
+def createPath(path: Path):  Doc = {
+  val prefix = Doc.text("subgraph cluster_0 { ")
+  val colorNode = Doc.text(  "node[color = red];")
+  val colorBackground = Doc.text(  "color = white")
+  val e = path.map { p => Doc.space + createNode(p) + Doc.space}
+  val edges = Doc.intercalate(Doc.text(""), e)
+  val suffix = Doc.text("}")
+
+  prefix + colorNode + edges + colorBackground + suffix
+
 }
