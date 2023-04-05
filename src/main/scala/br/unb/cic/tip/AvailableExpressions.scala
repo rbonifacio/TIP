@@ -7,52 +7,18 @@ import br.unb.cic.tip.Node.SimpleNode
 
 import scala.collection.mutable
 
-object AvailableExpressions {
-  type AE = (Set[Expression], Set[Expression])
-  type AEResult = mutable.HashMap[Stmt, AE]
+object AvailableExpressions extends MFP[Expression] {
+  val direction = ForwardAnalysis
+  def latticeOperator = Meet
 
-  var cfg: Graph = Set()
-
-  var allExpressions = Set[Expression]()
-
-  def run(program: Stmt): AEResult = {
-    var explore = true
-
-    val AE: AEResult = mutable.HashMap()
-
-    cfg = flow(program)
-
-    for (stmt <- blocks(program)) {
-      allExpressions ++= gen(stmt)
-    }
-
-    for (stmt <- blocks(program)) {
-      AE(stmt) = (allExpressions, allExpressions)
-    }
-
-    while (explore) {
-      val lastRD = AE.clone()
-
-      for (stmt <- blocks(program)) {
-
-        val entryExpressions = entry(program, stmt, AE)
-        val exitExpressions = exit(program, stmt, AE)
-        AE(stmt) = (entryExpressions, exitExpressions)
-      }
-      explore = lastRD != AE
-    }
-
-    AE
-  }
-
-  def entry(program: Stmt, stmt: Stmt, AE: AEResult): Set[Expression] = {
+  def entry(program: Stmt, stmt: Stmt, analysis: Result): Set[Expression] = {
     if (stmt == initStmt(program)) {
       Set()
     } else {
-      var res = allExpressions
+      var res = getLatticeBottom(program)
       for ((from, to) <- cfg if to == SimpleNode(stmt)) {
         from match {
-          case SimpleNode(s) => res = AE(s)._2 & res
+          case SimpleNode(s) => res = analysis(s)._2 & res
           case _             => throw new RuntimeException("Error")
         }
       }
@@ -60,22 +26,23 @@ object AvailableExpressions {
     }
   }
 
-  def exit(program: Stmt, stmt: Stmt, AE: AEResult): Set[Expression] = {
-    (AE(stmt)._1 union gen(stmt)) diff kill(program, stmt)
+  def exit(program: Stmt, stmt: Stmt, analysis: Result): Set[Expression] = {
+    (analysis(stmt)._1 union gen(stmt)) diff kill(program, stmt)
   }
 
   def kill(program: Stmt, stmt: Stmt): Set[Expression] = stmt match {
     case AssignmentStmt(id, exp) =>
-      allExpressions.filter(expDependsOn(_, id))
+      getLatticeBottom(program).filter(expDependsOn(_, id))
     case _ => Set()
   }
 
   def gen(stmt: Stmt): Set[Expression] = stmt match {
-    case AssignmentStmt(_, exp) => genFromExps(exp)
-    case WhileStmt(exp, _)      => genFromExps(exp)
-    case IfElseStmt(exp, _, _)  => genFromExps(exp)
-    case OutputStmt(exp)        => genFromExps(exp)
-    case _                      => Set()
+    case AssignmentStmt(id, exp) =>
+      genFromExps(exp).filterNot(expDependsOn(_, id))
+    case WhileStmt(exp, _)     => genFromExps(exp)
+    case IfElseStmt(exp, _, _) => genFromExps(exp)
+    case OutputStmt(exp)       => genFromExps(exp)
+    case _                     => Set()
   }
 
   def genFromExps(exp: Expression): Set[Expression] = exp match {
