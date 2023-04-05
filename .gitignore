@@ -3,3 +3,8 @@
 project/target
 target/
 build.properties
+
+.bloop
+.metals
+.vscode
+project
