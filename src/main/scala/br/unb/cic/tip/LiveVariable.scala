@@ -25,18 +25,17 @@ object LiveVariable {
       LV(stmt) = (en, ex)
     }
 
-    while (explore)
-      {
-        val lastLV = LV.clone()
-        for (stmt <- blocks(program))
-          {
-            ex = exit(program, stmt, LV)
-            en = entry(program, stmt, LV)
-            LV(stmt) = (en, ex)
-          }
-          explore = lastLV != LV
-      }
-      LV
+    while (explore) {
+      val lastLV = LV.clone()
+      for (stmt <- blocks(program))
+        {
+          ex = exit(program, stmt, LV)
+          en = entry(program, stmt, LV)
+          LV(stmt) = (en, ex)
+        }
+        explore = lastLV != LV
+    }
+    LV
   }
 
   def entry(program: Stmt, stmt: Stmt, LV: Result): Set[VariableExp] =
