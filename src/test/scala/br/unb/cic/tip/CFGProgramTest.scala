@@ -60,6 +60,6 @@ class CFGProgramTest extends AnyFunSuite {
     val program = List(fibonacciFunction, mainFunction)
 
     val cfg = flow(program)
-    println(exportDot(cfg))
+//    println(exportDot(cfg))
   }
 }
