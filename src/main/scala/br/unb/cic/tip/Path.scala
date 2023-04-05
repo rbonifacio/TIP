@@ -30,3 +30,30 @@ def path(from: Node, to: Node, cfg: Graph, visited: List[Node], limit: Int): Set
   }
   res
 }
+
+
+//def validPath(path: Path, stack: List[Stmt]): Boolean = path match
+////  case List() if stack.isEmpty => true // base case + succeeded to recognize the path
+////  case List() if ! stack.isEmpty => false // base case + failed to recognize the path
+////  case _ => { // the recursive case
+////
+////  }
+//{
+//  case List() => stack.isEmpty
+//  case _ => path.head match {
+//    case SimpleNode(stmt) => stmt match
+//      case CallStmt(_, _) => stmt :: stack
+//      case _ => false
+//  }
+//}
+
+//def validPath(path: Path): Boolean =
+
+def gatherCallerAndCallee(path: Path): List[Stmt] = path.isEmpty match
+  case true => List()
+  case false => path.head match
+    case SimpleNode(stmt) => stmt match
+      case CallStmt(_, _) => stmt :: gatherCallerAndCallee(path.tail)
+      case AfterCallStmt(_, _) => stmt :: gatherCallerAndCallee(path.tail)
+      case _ => gatherCallerAndCallee(path.tail)
+    case _ => gatherCallerAndCallee(path.tail)
