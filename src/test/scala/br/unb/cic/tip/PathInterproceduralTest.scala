@@ -64,7 +64,9 @@ class PathInterproceduralTest extends AnyFunSuite {
     // show paths
     paths.foreach(x => {
 //      println(exportDot(cfg, x))
-      println(gatherCallerAndCallee(x))
+      println(x)
+      print("is valid path: ")
+      println(findValidPath(x))
     })
 //      print(gatherCallerAndCallee(paths.head))
   }

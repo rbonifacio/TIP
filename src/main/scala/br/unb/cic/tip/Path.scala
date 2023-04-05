@@ -46,9 +46,15 @@ def path(from: Node, to: Node, cfg: Graph, visited: List[Node], limit: Int): Set
 //      case _ => false
 //  }
 //}
+def findValidPath(path: Path): Boolean =
+  validPath(gatherCallerAndCallee(path))
 
-//def validPath(path: Path): Boolean =
-
+def validPath(callers: List[Stmt]): Boolean = callers.isEmpty match
+  case true => true
+  case _ => callers.head match
+    case CallStmt(name, function) => callers.tail.contains(AfterCallStmt(name, function)) match
+      case true => validPath(callers.tail.filter( _ != AfterCallStmt(name, function)))
+      case _ => false
 def gatherCallerAndCallee(path: Path): List[Stmt] = path.isEmpty match
   case true => List()
   case false => path.head match
