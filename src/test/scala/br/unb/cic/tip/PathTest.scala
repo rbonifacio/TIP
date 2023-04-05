@@ -34,6 +34,7 @@ class PathTest extends AnyFunSuite {
     )
 
     assert(Set(path1) == paths)
+//    println(exportDot(cfg, path1))
   }
 
   /**
@@ -83,6 +84,8 @@ class PathTest extends AnyFunSuite {
     )
 
     assert(Set(path1, path2) == paths)
+
+//    println(exportDot(cfg, path1))
   }
 
   /**
@@ -129,5 +132,7 @@ class PathTest extends AnyFunSuite {
     )
 
     assert(Set(path1, path2) == paths)
+
+    paths.foreach(x => println(exportDot(cfg, x)))
   }
 }
