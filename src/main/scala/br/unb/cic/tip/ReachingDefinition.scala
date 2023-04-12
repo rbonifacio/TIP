@@ -47,7 +47,11 @@ object ReachingDefinition {
         var res = Set[AssignmentStmt]()
         for ((from, to) <- flow(program) if to == SimpleNode(stmt)) {
           from match {
-            case SimpleNode(s) => res = RD(s)._2 union res
+//            case SimpleNode(s) => res = RD(s)._2 union res
+            case SimpleNode(s) => s match
+              case AfterCallStmt(function, name) => null
+              case CallStmt(function, name) => null
+              case _ => res = RD(s)._2 union res
           }
         }
         res
