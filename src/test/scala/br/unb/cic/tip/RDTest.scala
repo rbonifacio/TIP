@@ -8,6 +8,11 @@ import org.scalatest.funsuite.AnyFunSuite
 
 class RDTest extends AnyFunSuite {
 
+  /**
+   * x = 1
+   * y = 2
+   * x = 3
+   */
   test("test_rd_using_only_statements") {
     val s1 = AssignmentStmt("x", ConstExp(1))
     val s2 = AssignmentStmt("y", ConstExp(2))
@@ -17,12 +22,12 @@ class RDTest extends AnyFunSuite {
     val RD = ReachingDefinition.run(seq)
 
     assert( RD(s1) == (
-      Set(AssignmentStmt("x",NullExp), AssignmentStmt("y",NullExp)),
-      Set(AssignmentStmt("y",NullExp), s1)
+      Set(AssignmentStmt("x", NullExp), AssignmentStmt("y", NullExp)),
+      Set(AssignmentStmt("y", NullExp), s1)
     ))
 
     assert( RD(s2) == (
-      Set(AssignmentStmt("y",NullExp), s1),
+      Set(AssignmentStmt("y", NullExp), s1),
       Set(s1, s2)
     ))
 
@@ -32,6 +37,13 @@ class RDTest extends AnyFunSuite {
     ))
   }
 
+  /**
+   * x = 1
+   * y = 2
+   * x = x + y
+   * z = x + 1
+   * z = y
+   */
   test("test_rd_using_only_statements_complex") {
     val s1 = AssignmentStmt("x", ConstExp(1))
     val s2 = AssignmentStmt("y", ConstExp(2))
