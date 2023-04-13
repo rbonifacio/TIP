@@ -70,3 +70,9 @@ def successors(stmt: Stmt, cfg: Graph): Set[Stmt] = {
   }
   res
 }
+
+def getMethodBody(program: Program, methodName: Id = "main"): Stmt = {
+  program.exists(f => f.name == methodName) match
+    case true => program.filter(f => f.name == methodName).head.body
+    case _ => null
+}

@@ -6,6 +6,8 @@ import br.unb.cic.tip.Node.*
 import br.unb.cic.tip.Stmt.*
 import org.scalatest.funsuite.AnyFunSuite
 
+import scala.collection.immutable.Set
+
 class RDInterproceduralTest extends AnyFunSuite {
 
   /**
@@ -35,11 +37,7 @@ class RDInterproceduralTest extends AnyFunSuite {
 
     val program = List(myFunction, mainFunction)
 
-    val cfg = flow(program)
-
-    val RD = ReachingDefinition.run(mainBody)
-
-    println(exportDot(cfg, List()))
+    val RD = ReachingDefinition.run(mainBody, program)
 
     assert( RD(s1) == (
       Set(AssignmentStmt("x", NullExp), AssignmentStmt("y", NullExp), AssignmentStmt("z", NullExp), AssignmentStmt("_m1", NullExp)),
@@ -52,13 +50,18 @@ class RDInterproceduralTest extends AnyFunSuite {
     ))
 
     assert(RD(s3) == (
-      Set(s1, s2, AssignmentStmt("z", NullExp), AssignmentStmt("_m1", NullExp)),
-      Set(s1, s2, AssignmentStmt("z", NullExp), AssignmentStmt("_m1", NullExp))
+      Set(),
+      Set()
     ))
 
-//    assert( RD(s3) == (
-//      Set(s1, s2),
-//      Set(s2, s3)
-//    ))
+    assert( RD(m1) == (
+      Set(AssignmentStmt("a", NullExp)),
+      Set(AssignmentStmt("a", ConstExp(999)))
+    ))
+
+    assert( RD(s4) == (
+      Set(),
+      Set(AssignmentStmt("z", ConstExp(3)))
+    ))
   }
 }
