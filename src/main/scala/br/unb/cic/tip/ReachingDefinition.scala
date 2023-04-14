@@ -19,8 +19,6 @@ object ReachingDefinition {
       var en = Set[AssignmentStmt]()
       var ex = Set[AssignmentStmt]()
 
-      val cfg = flow(program)
-
       for (stmt <- blocks(program)) {
         RD(stmt) = (en, ex)
       }
@@ -30,7 +28,7 @@ object ReachingDefinition {
 
         for (stmt <- blocks(program)) {
           en = entry(program, stmt, RD)
-          ex = exit(program, stmt, RD)
+          ex = exit(stmt, RD)
           RD(stmt) = (en, ex)
         }
         explore = lastRD != RD
@@ -48,13 +46,13 @@ object ReachingDefinition {
         res
     }
 
-    def exit(program: Stmt, stmt: Stmt, RD: ResultDF): Set[AssignmentStmt] = stmt match {
-      case AssignmentStmt(id, exp) => (RD(stmt)._1 diff kill(RD(stmt)._1, stmt)) union gen(stmt)
+    def exit(stmt: Stmt, RD: ResultDF): Set[AssignmentStmt] = stmt match {
+      case AssignmentStmt(_, _) => (RD(stmt)._1 diff kill(RD(stmt)._1, stmt)) union gen(stmt)
       case _ => RD(stmt)._1
     }
 
     def kill(pre: Set[AssignmentStmt], stmt: Stmt): Set[AssignmentStmt] = stmt match {
-      case AssignmentStmt(id, exp) => pre.filter(_.name == id)
+      case AssignmentStmt(id, _) => pre.filter(_.name == id)
       case _ => Set()
     }
 
