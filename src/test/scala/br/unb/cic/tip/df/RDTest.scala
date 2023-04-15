@@ -1,13 +1,19 @@
-package br.unb.cic.tip
+package br.unb.cic.tip.df
 
 import br.unb.cic.tip.*
 import br.unb.cic.tip.Expression.*
 import br.unb.cic.tip.Node.*
 import br.unb.cic.tip.Stmt.*
+import br.unb.cic.tip.df.ReachingDefinition
 import org.scalatest.funsuite.AnyFunSuite
 
 class RDTest extends AnyFunSuite {
 
+  /**
+   * X = 1
+   * Y = 2
+   * X = 3
+   */
   test("test_rd_using_only_statements") {
     val s1 = AssignmentStmt("x", ConstExp(1))
     val s2 = AssignmentStmt("y", ConstExp(2))
@@ -32,6 +38,13 @@ class RDTest extends AnyFunSuite {
     ))
   }
 
+  /**
+   * x = 1
+   * y = 2
+   * x = x + y
+   * z = x + 1
+   * z = y
+   */
   test("test_rd_using_only_statements_complex") {
     val s1 = AssignmentStmt("x", ConstExp(1))
     val s2 = AssignmentStmt("y", ConstExp(2))
@@ -142,6 +155,3 @@ class RDTest extends AnyFunSuite {
     ))
   }
 }
-//    ReachingDefinition.run(seq).foreach {
-//      case (key, value) => println(s"$key -> [Entry] ${value._1} [Exit] ${value._2}")
-//    }
