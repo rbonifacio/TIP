@@ -2,9 +2,9 @@ package br.unb.cic.tip.parser
 
 import org.scalatest.funsuite.AnyFunSuite
 import br.unb.cic.tip.*
-
-import br.unb.cic.tip.Stmt.*
-import br.unb.cic.tip.Expression.*
+import br.unb.cic.tip.utils.Stmt.*
+import br.unb.cic.tip.utils.Expression.*
+import br.unb.cic.tip.utils.ExpressionParser
 
 /* Exp → Int
  *     | Id

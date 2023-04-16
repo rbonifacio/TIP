@@ -1,8 +1,9 @@
 package br.unb.cic.tip
 
-import br.unb.cic.tip.Stmt.*
-import br.unb.cic.tip.Expression.*
-import br.unb.cic.tip.Node.*
+import br.unb.cic.tip.utils.Stmt.*
+import br.unb.cic.tip.utils.Expression.*
+import br.unb.cic.tip.utils.{Expression, FunDecl, Node, Stmt}
+import br.unb.cic.tip.utils.Node.*
 
 type Edge = (Node, Node)
 type Graph = Set[Edge]

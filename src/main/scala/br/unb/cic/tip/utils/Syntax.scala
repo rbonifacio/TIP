@@ -1,5 +1,4 @@
-package br.unb.cic.tip
-
+package br.unb.cic.tip.utils
 
 /**
  * The abstract syntax definition of the Tiny Imperative

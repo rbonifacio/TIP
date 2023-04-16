@@ -2,7 +2,8 @@ package br.unb.cic.tip
 
 import org.typelevel.paiges.Doc
 import br.unb.cic.tip.*
-import br.unb.cic.tip.Node.SimpleNode
+import br.unb.cic.tip.utils.Node.SimpleNode
+import br.unb.cic.tip.utils.Node
 
 def exportDot(cfg: Graph): String = {
   val prefix = Doc.text("digraph CFG { ")

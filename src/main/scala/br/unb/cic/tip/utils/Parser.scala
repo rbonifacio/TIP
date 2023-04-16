@@ -1,12 +1,13 @@
-package br.unb.cic.tip
+package br.unb.cic.tip.utils
+
+import br.unb.cic.tip.*
+import br.unb.cic.tip.utils.Expression.*
+import br.unb.cic.tip.utils.Stmt.*
+import br.unb.cic.tip.utils.{Expression, FunDecl, Stmt}
 
 import java.nio.file.Paths
 import scala.io.Source
-
-import br.unb.cic.tip.Stmt.*
-import br.unb.cic.tip.Expression.*
-
-import scala.util.parsing.combinator._
+import scala.util.parsing.combinator.*
 import scala.util.parsing.input.Positional
 
 class BasicParser extends RegexParsers {

@@ -1,9 +1,9 @@
 package br.unb.cic.tip.df
 
 import br.unb.cic.tip.*
-import br.unb.cic.tip.Expression.*
-import br.unb.cic.tip.Node.*
-import br.unb.cic.tip.Stmt.*
+import br.unb.cic.tip.utils.Expression.*
+import br.unb.cic.tip.utils.Node.*
+import br.unb.cic.tip.utils.Stmt.*
 import br.unb.cic.tip.df.LiveVariable
 import org.scalatest.funsuite.AnyFunSuite
 
