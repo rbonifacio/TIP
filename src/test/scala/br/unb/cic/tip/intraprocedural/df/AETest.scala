@@ -1,4 +1,4 @@
-package br.unb.cic.tip.df
+package br.unb.cic.tip.intraprocedural.df
 
 import br.unb.cic.tip.*
 import br.unb.cic.tip.utils.Expression.*
