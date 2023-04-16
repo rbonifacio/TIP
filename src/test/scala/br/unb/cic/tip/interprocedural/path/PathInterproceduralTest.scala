@@ -1,13 +1,31 @@
-package br.unb.cic.tip.interprocedural.cfg
+package br.unb.cic.tip.interprocedural.path
 
-import br.unb.cic.tip.{exportDot, flow}
-import br.unb.cic.tip.utils.*
+import br.unb.cic.tip.{findValidPath, flow, path}
 import br.unb.cic.tip.utils.Expression.*
 import br.unb.cic.tip.utils.Node.*
 import br.unb.cic.tip.utils.Stmt.*
+import br.unb.cic.tip.utils.{FunDecl, Stmt}
 import org.scalatest.funsuite.AnyFunSuite
 
-class CFGProgramTest extends AnyFunSuite {
+class PathInterproceduralTest extends AnyFunSuite {
+
+  /**
+   sum(x, y) {
+    z = x + y
+    return z
+   }
+
+   main() {
+    a = 1
+    b = 1
+    c = sum(a, b)
+    print c
+    d = 1
+    e = 1
+    f = sum(d, e)
+    print f
+   }
+   */
 
   test("sum program") {
     //sum function
@@ -40,7 +58,14 @@ class CFGProgramTest extends AnyFunSuite {
     val program = List(sumFunction, mainFunction)
 
     val cfg = flow(program)
-//    println(exportDot(cfg))
+
+    val paths = path(cfg, mainFunction.name)
+
+    paths.foreach(x => {
+      println(x)
+      print("is valid path: ")
+      println(findValidPath(x))
+    })
   }
 
   test("fibonacci program") {
@@ -61,6 +86,8 @@ class CFGProgramTest extends AnyFunSuite {
     val program = List(fibonacciFunction, mainFunction)
 
     val cfg = flow(program)
-//    println(exportDot(cfg))
+
+    val paths = path(cfg, mainFunction.name)
+//    paths.foreach(x => println(exportDot(cfg, x)))
   }
 }

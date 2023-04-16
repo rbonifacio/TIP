@@ -77,3 +77,13 @@ def variables(exp: Expression): Set[VariableExp] = exp match {
 //    case ConstExp(_) => Set()
   case _                      => Set()
 }
+
+def successors(stmt: Stmt, cfg: Graph): Set[Stmt] = {
+  var res = Set[Stmt]()
+  for ((from, to) <- cfg if from == SimpleNode(stmt)) {
+    to match {
+      case SimpleNode(s) => res = Set(s) union res
+    }
+  }
+  res
+}
