@@ -1,5 +1,4 @@
-package br.unb.cic.tip
-
+package br.unb.cic.tip.utils
 
 /**
  * The abstract syntax definition of the Tiny Imperative
@@ -37,9 +36,8 @@ enum Expression:
   case GTExp(left: Expression, right: Expression) extends Expression // Exp > Exp
   case BracketExp(exp: Expression) extends Expression // (Exp)
 
-  // function-call expressions
-  case DirectFunctionCallExp(name: Id, args: List[Expression]) extends Expression // Id ( Exp,. . . ,Exp )
-  case IndirectFunctionCallExp(exp: Expression, args: List[Expression]) extends Expression // Exp ( Exp , . . . , Exp )
+  // function-call expression
+  case FunctionCallExp(exp: Expression, args: List[Expression]) extends Expression
 
   // pointer-based expressions
   case AllocExp(exp: Expression) extends Expression // alloc Exp
@@ -60,6 +58,9 @@ enum Stmt:
   case SequenceStmt(s1: Stmt, s2: Stmt) extends Stmt // Stmt Stmt
   case StoreStmt(exp1: Expression, exp2: Expression) extends Stmt // *Exp = Exp
   case OutputStmt(exp: Expression) extends Stmt // output Exp
+  case RecordAssignmentStmt(name: Id, field: Id, exp: Expression) extends Stmt // Id.Id = Exp;
+  case RecordStoreStmt(exp1: Expression, id: Id, exp2: Expression) // (*Exp).Id = Exp;
+  case NopStmt extends Stmt // nop
   case CallStmt(name: Id, function: Id) extends Stmt //
   case AfterCallStmt(function: Id, name: Id) extends Stmt //
   case ReturnStmt(exp: Expression) extends Stmt //
