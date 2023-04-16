@@ -1,8 +1,9 @@
 package br.unb.cic.tip
 
-import org.scalatest.funsuite.AnyFunSuite
 import br.unb.cic.tip.Expression.{ConstExp, EqExp}
+import br.unb.cic.tip.Stmt
 import br.unb.cic.tip.Stmt.{AssignmentStmt, IfElseStmt, SequenceStmt}
+import org.scalatest.funsuite.AnyFunSuite
 
 class FinalStmtTest extends AnyFunSuite {
 

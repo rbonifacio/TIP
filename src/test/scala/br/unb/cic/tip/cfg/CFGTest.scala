@@ -1,10 +1,10 @@
-package br.unb.cic.tip
+package br.unb.cic.tip.cfg
 
-import org.scalatest.funsuite.AnyFunSuite
-import br.unb.cic.tip.Expression.*
-import br.unb.cic.tip.Stmt.*
-import br.unb.cic.tip.Node.*
 import br.unb.cic.tip.*
+import br.unb.cic.tip.Expression.*
+import br.unb.cic.tip.Node.*
+import br.unb.cic.tip.Stmt.*
+import org.scalatest.funsuite.AnyFunSuite
 
 class CFGTest extends AnyFunSuite {
 
