@@ -1,9 +1,10 @@
-package br.unb.cic.tip
+package br.unb.cic.tip.interprocedural.cfg
 
-import br.unb.cic.tip.*
-import br.unb.cic.tip.Expression.*
-import br.unb.cic.tip.Node.*
-import br.unb.cic.tip.Stmt.*
+import br.unb.cic.tip.{exportDot, flow}
+import br.unb.cic.tip.utils.*
+import br.unb.cic.tip.utils.Expression.*
+import br.unb.cic.tip.utils.Node.*
+import br.unb.cic.tip.utils.Stmt.*
 import org.scalatest.funsuite.AnyFunSuite
 
 class CFGProgramTest extends AnyFunSuite {
@@ -18,11 +19,11 @@ class CFGProgramTest extends AnyFunSuite {
     //main function
     val mainS1 = AssignmentStmt("a", ConstExp(1))
     val mainS2 = AssignmentStmt("b", ConstExp(1))
-    val mainS3 = AssignmentStmt("c", DirectFunctionCallExp(sumFunction.name, List(VariableExp("a"), VariableExp("b"))))
+    val mainS3 = AssignmentStmt("c", FunctionCallExp(NameExp(sumFunction.name), List(VariableExp("a"), VariableExp("b"))))
     val mainS4 = OutputStmt(VariableExp("c"))
     val mainS5 = AssignmentStmt("d", ConstExp(1))
     val mainS6 = AssignmentStmt("e", ConstExp(1))
-    val mainS7 = AssignmentStmt("f", DirectFunctionCallExp(sumFunction.name, List(VariableExp("d"), VariableExp("e"))))
+    val mainS7 = AssignmentStmt("f", FunctionCallExp(NameExp(sumFunction.name), List(VariableExp("d"), VariableExp("e"))))
     val mainS8 = OutputStmt(VariableExp("f"))
     val mainBody =
       SequenceStmt(mainS1,
@@ -45,15 +46,15 @@ class CFGProgramTest extends AnyFunSuite {
   test("fibonacci program") {
     //fibonacci function
     val fibonacciBodyIf: Stmt = AssignmentStmt("v", AddExp(VariableExp("u"), ConstExp(1)))
-    val fibonacciBodyElseS1: Stmt = AssignmentStmt("_f1", DirectFunctionCallExp("fibonacci", List(SubExp(VariableExp("z"), ConstExp(1)), VariableExp("u"), VariableExp("v"))))
-    val fibonacciBodyElseS2: Stmt = AssignmentStmt("_f2", DirectFunctionCallExp("fibonacci", List(SubExp(VariableExp("z"), ConstExp(2)), VariableExp("u"), VariableExp("v"))))
+    val fibonacciBodyElseS1: Stmt = AssignmentStmt("_f1", FunctionCallExp(NameExp("fibonacci"), List(SubExp(VariableExp("z"), ConstExp(1)), VariableExp("u"), VariableExp("v"))))
+    val fibonacciBodyElseS2: Stmt = AssignmentStmt("_f2", FunctionCallExp(NameExp("fibonacci"), List(SubExp(VariableExp("z"), ConstExp(2)), VariableExp("u"), VariableExp("v"))))
     val fibonacciBodyElse: Stmt = SequenceStmt(fibonacciBodyElseS1, fibonacciBodyElseS2)
     val fibonacciBody: Stmt = IfElseStmt(GTExp(VariableExp("z"), ConstExp(3)), fibonacciBodyIf, Some(fibonacciBodyElse))
 
     val fibonacciFunction = FunDecl("fibonacci", List("z", "u", "v"), List(), fibonacciBody, VariableExp("v"))
 
     //main function
-    val mainBody = AssignmentStmt("_m1", DirectFunctionCallExp(fibonacciFunction.name, List(VariableExp("x"), ConstExp(0), VariableExp("y"))))
+    val mainBody = AssignmentStmt("_m1", FunctionCallExp(NameExp(fibonacciFunction.name), List(VariableExp("x"), ConstExp(0), VariableExp("y"))))
 
     val mainFunction = FunDecl("main", List(), List("a", "b", "c","d", "e", "f"), mainBody, NullExp)
 

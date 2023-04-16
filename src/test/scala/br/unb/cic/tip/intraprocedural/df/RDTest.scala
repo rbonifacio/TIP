@@ -1,17 +1,18 @@
-package br.unb.cic.tip
+package br.unb.cic.tip.intraprocedural.df
 
 import br.unb.cic.tip.*
-import br.unb.cic.tip.Expression.*
-import br.unb.cic.tip.Node.*
-import br.unb.cic.tip.Stmt.*
+import br.unb.cic.tip.utils.Expression.*
+import br.unb.cic.tip.utils.Node.*
+import br.unb.cic.tip.utils.Stmt.*
+import br.unb.cic.tip.df.ReachingDefinition
 import org.scalatest.funsuite.AnyFunSuite
 
 class RDTest extends AnyFunSuite {
 
   /**
-   * x = 1
-   * y = 2
-   * x = 3
+   * X = 1
+   * Y = 2
+   * X = 3
    */
   test("test_rd_using_only_statements") {
     val s1 = AssignmentStmt("x", ConstExp(1))
@@ -22,12 +23,12 @@ class RDTest extends AnyFunSuite {
     val RD = ReachingDefinition.run(seq)
 
     assert( RD(s1) == (
-      Set(AssignmentStmt("x", NullExp), AssignmentStmt("y", NullExp)),
-      Set(AssignmentStmt("y", NullExp), s1)
+      Set(),
+      Set(s1)
     ))
 
     assert( RD(s2) == (
-      Set(AssignmentStmt("y", NullExp), s1),
+      Set(s1),
       Set(s1, s2)
     ))
 
@@ -55,28 +56,28 @@ class RDTest extends AnyFunSuite {
     val RD = ReachingDefinition.run(seq)
 
     assert( RD(s1) == (
-      Set(AssignmentStmt("x", NullExp), AssignmentStmt("y", NullExp), AssignmentStmt("z", NullExp)),
-      Set(s1, AssignmentStmt("y", NullExp), AssignmentStmt("z", NullExp))
+      Set(),
+      Set(s1)
     ))
 
     assert( RD(s2) == (
-      Set(s1, AssignmentStmt("y", NullExp), AssignmentStmt("z", NullExp)),
-      Set(s1, s2, AssignmentStmt("z", NullExp))
+      Set(s1),
+      Set(s1, s2)
     ))
 
     assert( RD(s3) == (
-      Set(s1, s2, AssignmentStmt("z", NullExp)),
-      Set(s3, s2, AssignmentStmt("z", NullExp))
+      Set(s1, s2),
+      Set(s2, s3)
     ))
 
     assert( RD(s4) == (
-      Set(s3, s2, AssignmentStmt("z", NullExp)),
-      Set(s3, s2, s4)
+      Set(s2, s3),
+      Set(s2, s3, s4)
     ))
 
     assert( RD(s5) == (
-      Set(s3, s2, s4),
-      Set(s3, s2, s5)
+      Set(s2, s3, s4),
+      Set(s2, s3, s5)
     ))
   }
 
@@ -91,28 +92,28 @@ class RDTest extends AnyFunSuite {
     val RD = ReachingDefinition.run(seq)
 
     assert( RD(s1) == (
-      Set(AssignmentStmt("x", NullExp), AssignmentStmt("y", NullExp), AssignmentStmt("z", NullExp)),
-      Set(s1, AssignmentStmt("y", NullExp), AssignmentStmt("z", NullExp))
+      Set(),
+      Set(s1)
     ))
 
     assert( RD(s2) == (
-      Set(s1, AssignmentStmt("y", NullExp), AssignmentStmt("z", NullExp)),
-      Set(s1, s2, AssignmentStmt("z", NullExp))
+      Set(s1),
+      Set(s1, s2)
     ))
 
     assert( RD(s3) == (
-      Set(AssignmentStmt("x", NullExp), AssignmentStmt("y", NullExp), AssignmentStmt("z", NullExp)),
-      Set(AssignmentStmt("x", NullExp), AssignmentStmt("y", NullExp), s3)
+      Set(),
+      Set(s3)
     ))
 
     assert( RD(s4) == (
-      Set(AssignmentStmt("x", NullExp), AssignmentStmt("y", NullExp), AssignmentStmt("z", NullExp)),
-      Set(AssignmentStmt("x", NullExp), AssignmentStmt("y", NullExp), AssignmentStmt("z", NullExp))
+      Set(),
+      Set()
     ))
 
     assert( RD(s5) == (
-      Set(s1, s2, AssignmentStmt("z", NullExp), AssignmentStmt("x", NullExp), AssignmentStmt("y", NullExp), s3),
-      Set(s1, s5, AssignmentStmt("z", NullExp), AssignmentStmt("x", NullExp), s3)
+      Set(s1, s2, s3),
+      Set(s1, s3, s5)
     ))
   }
 
@@ -134,26 +135,23 @@ class RDTest extends AnyFunSuite {
     val RD = ReachingDefinition.run(seq)
 
     assert( RD(s1) == (
-      Set(AssignmentStmt("f", NullExp), AssignmentStmt("n", NullExp)),
-      Set(s1, AssignmentStmt("n", NullExp))
+      Set(),
+      Set(s1)
     ))
 
     assert( RD(s4) == (
-      Set(s1, AssignmentStmt("n", NullExp), s2, s3),
-      Set(s1, AssignmentStmt("n", NullExp), s2, s3)
+      Set(s1, s2, s3),
+      Set(s1, s2, s3)
     ))
 
     assert( RD(s2) == (
-      Set(s1, AssignmentStmt("n", NullExp), s2, s3),
-      Set(AssignmentStmt("n", NullExp), s2, s3)
+      Set(s1, s2, s3),
+      Set(s2, s3)
     ))
 
     assert( RD(s3) == (
-      Set(AssignmentStmt("n", NullExp), s2, s3),
+      Set(s2, s3),
       Set(s2, s3)
     ))
   }
 }
-//    ReachingDefinition.run(seq).foreach {
-//      case (key, value) => println(s"$key -> [Entry] ${value._1} [Exit] ${value._2}")
-//    }
