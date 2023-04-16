@@ -35,9 +35,10 @@ enum Expression:
   case EqExp(left: Expression, right: Expression) extends Expression // Exp == Exp
   case GTExp(left: Expression, right: Expression) extends Expression // Exp > Exp
   case BracketExp(exp: Expression) extends Expression // (Exp)
+  case NameExp(name: Id) extends Expression // (Exp)
 
   // function-call expression
-  case FunctionCallExp(exp: Expression, args: List[Expression]) extends Expression
+  case FunctionCallExp(name: Expression, args: List[Expression]) extends Expression
 
   // pointer-based expressions
   case AllocExp(exp: Expression) extends Expression // alloc Exp
@@ -61,11 +62,14 @@ enum Stmt:
   case RecordAssignmentStmt(name: Id, field: Id, exp: Expression) extends Stmt // Id.Id = Exp;
   case RecordStoreStmt(exp1: Expression, id: Id, exp2: Expression) // (*Exp).Id = Exp;
   case NopStmt extends Stmt // nop
+  case CallStmt(id: Id, function: Id) extends Stmt //
+  case AfterCallStmt(id: Id, function: Id) extends Stmt //
+  case ReturnStmt(exp: Expression) extends Stmt //
 
 /** Node Types */
 enum Node:
-  case StartNode extends Node
-  case EndNode extends Node
+  case StartNode(function: Id) extends Node
+  case EndNode(function: Id) extends Node
   case SimpleNode(stmt: Stmt) extends Node
 
 

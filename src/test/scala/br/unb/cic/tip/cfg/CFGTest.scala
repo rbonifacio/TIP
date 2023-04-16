@@ -54,10 +54,10 @@ class CFGTest extends AnyFunSuite {
     val function = FunDecl("sum", List(), List(), body, VariableExp("z"))
 
     val expected = Set(
-        (StartNode, SimpleNode(s1)),
+        (StartNode(function.name), SimpleNode(s1)),
         (SimpleNode(s1), SimpleNode(s2)),
         (SimpleNode(s2), SimpleNode(s3)),
-        (SimpleNode(s3), EndNode),
+        (SimpleNode(s3), EndNode(function.name)),
       )
 
     val cfg = flow(function)
@@ -84,12 +84,12 @@ class CFGTest extends AnyFunSuite {
     val function = FunDecl("sum", List(), List(), s6, VariableExp("z"))
 
     val expected = Set(
-      (StartNode, SimpleNode(s1)),
+      (StartNode(function.name), SimpleNode(s1)),
       (SimpleNode(s1), SimpleNode(s5)),
       (SimpleNode(s5), SimpleNode(s2)),
       (SimpleNode(s2), SimpleNode(s3)),
       (SimpleNode(s3), SimpleNode(s5)),
-      (SimpleNode(s5), EndNode)
+      (SimpleNode(s5), EndNode(function.name))
     )
 
     assert(expected == flow(function))
@@ -110,19 +110,43 @@ class CFGTest extends AnyFunSuite {
     val s3 = AssignmentStmt("c", ConstExp(3))
     val s4 = AssignmentStmt("d", ConstExp(4))
     val s5 = IfElseStmt(EqExp(VariableExp("x"),ConstExp(2)), SequenceStmt(s2,s3), Some(s4))
-//    val s6 = AssignmentStmt("e", ConstExp(5))
 
     val body = SequenceStmt(s1, s5)
     val function = FunDecl("ifelse", List(), List(), body, VariableExp("z"))
 
     val expected = Set(
-      (StartNode, SimpleNode(s1)),
+      (StartNode(function.name), SimpleNode(s1)),
       (SimpleNode(s1), SimpleNode(s5)),
       (SimpleNode(s5), SimpleNode(s2)),
       (SimpleNode(s2), SimpleNode(s3)),
-      (SimpleNode(s3), EndNode),
+      (SimpleNode(s3), EndNode(function.name)),
       (SimpleNode(s5), SimpleNode(s4)),
-      (SimpleNode(s4), EndNode)
+      (SimpleNode(s4), EndNode(function.name))
+    )
+
+    val cfg = flow(function)
+    assert(expected == cfg)
+    println(exportDot(cfg))
+  }
+
+  test("cfg using function") {
+    val s1 = AssignmentStmt("a", ConstExp(1))
+    val s2 = AssignmentStmt("b", ConstExp(2))
+    val s3 = AssignmentStmt("c", ConstExp(3))
+    val s4 = AssignmentStmt("d", ConstExp(4))
+    val s5 = IfElseStmt(EqExp(VariableExp("x"),ConstExp(2)), SequenceStmt(s2,s3), Some(s4))
+
+    val body = SequenceStmt(s1, s5)
+    val function = FunDecl("ifelse", List(), List(), body, VariableExp("z"))
+
+    val expected = Set(
+      (StartNode(function.name), SimpleNode(s1)),
+      (SimpleNode(s1), SimpleNode(s5)),
+      (SimpleNode(s5), SimpleNode(s2)),
+      (SimpleNode(s2), SimpleNode(s3)),
+      (SimpleNode(s3), EndNode(function.name)),
+      (SimpleNode(s5), SimpleNode(s4)),
+      (SimpleNode(s4), EndNode(function.name))
     )
 
     val cfg = flow(function)
@@ -130,3 +154,11 @@ class CFGTest extends AnyFunSuite {
     println(exportDot(cfg))
   }
 }
+
+
+
+
+
+
+
+
