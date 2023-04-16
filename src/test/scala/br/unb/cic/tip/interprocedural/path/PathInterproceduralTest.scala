@@ -1,9 +1,10 @@
-package br.unb.cic.tip
+package br.unb.cic.tip.interprocedural.path
 
+import br.unb.cic.tip.{findValidPath, flow, path}
 import br.unb.cic.tip.utils.Expression.*
-import br.unb.cic.tip.utils.{FunDecl, Stmt}
 import br.unb.cic.tip.utils.Node.*
 import br.unb.cic.tip.utils.Stmt.*
+import br.unb.cic.tip.utils.{FunDecl, Stmt}
 import org.scalatest.funsuite.AnyFunSuite
 
 class PathInterproceduralTest extends AnyFunSuite {
