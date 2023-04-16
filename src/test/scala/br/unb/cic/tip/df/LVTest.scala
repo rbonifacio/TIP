@@ -1,20 +1,21 @@
-package br.unb.cic.tip
+package br.unb.cic.tip.df
 
-import org.scalatest.funsuite.AnyFunSuite
 import br.unb.cic.tip.*
 import br.unb.cic.tip.Expression.*
 import br.unb.cic.tip.Node.*
 import br.unb.cic.tip.Stmt.*
+import br.unb.cic.tip.df.LiveVariable
+import org.scalatest.funsuite.AnyFunSuite
 
 class LVTest extends AnyFunSuite {
 
-  test("Linear Control FLow Graph for Live Variables"){
+  /**
+   * x = a; Entry: {a, b}  Exit: {b}
+   * y = b; Entry: {b}     Exit: { }
+   * x = 3; Entry: { }     Exit: { }
+   */
+  test("test_lv_with_only_statements") {
 
-    /**
-    x = a; Entry: {a,b} Exit: {b}
-     y = b; Entry: {b}   Exit: { }
-     x = 3; Entry: { }   Exit: { }
-     */
     val s1 = AssignmentStmt("x", VariableExp("a"))
     val s2 = AssignmentStmt("y", VariableExp("b"))
     val s3 = AssignmentStmt("x", ConstExp(3))
@@ -38,12 +39,12 @@ class LVTest extends AnyFunSuite {
     ))
   }
 
-  test("Live Variables with Output command"){
-    /**
-    x = a;    Entry: {a,b} Exit: {b,x}
-     y = b+1;  Entry: {b,x}   Exit: {x}
-     output x; Entry: {x}     Exit: { }
-     */
+  /**
+   * x = a;     Entry: {a, b}   Exit: {b,x}
+   * y = b+1;   Entry: {b, x}   Exit: {x}
+   * output x;  Entry: {x}      Exit: { }
+   */
+  test("test_rd_with_output") {
 
     val s1 = AssignmentStmt("x", VariableExp("a"))
     val s2 = AssignmentStmt("y", AddExp(VariableExp("b"), ConstExp(1)))
@@ -68,17 +69,16 @@ class LVTest extends AnyFunSuite {
     ))
   }
 
-  test("Live Variables with If statement"){
-    /**
-    if (x < y){  Entry: {a, x, y} Exit: {a}
-      x = a;      Entry: {a}       Exit: { }
-     }
-     y = 1;       Entry: { }       Exit: { }
-     */
+  /**
+   * if (x < y) {   Entry: {a, x, y}  Exit: {a}
+   *    x = a;      Entry: {a}        Exit: { }
+   * }
+   * y = 1;         Entry: { }        Exit: { }
+   */
+  test("test_lv_with_if") {
 
     val s2 = AssignmentStmt("x", VariableExp("a"))
     val s1 = IfElseStmt(GTExp(VariableExp("x"), VariableExp("y")), s2, None)
-
     val s3 = AssignmentStmt("y", ConstExp(1))
     val seq = SequenceStmt(s1, s3)
     val LV = LiveVariable.run(seq)
@@ -99,19 +99,19 @@ class LVTest extends AnyFunSuite {
     ))
   }
 
-  test("Living Variables test from the book"){
-    /**
-    x = 2;       Entry: {}  Exit: {}
-     y = 4;       Entry: {}  Exit: {y}
-     x = 1;       Entry: {y} Exit: {x, y}
-     if (y < x){  Entry: {x,y} Exit: {y}
-      z = y;      Entry: {y} Exit: {z}
-     }
-     else{
-      z = y * y;  Entry: {y} Exit: {z}
-     }
-     x = z;       Entry: {z} Exit: {}
-     */
+  /**
+   * x = 2;         Entry: { }      Exit: {}
+   * y = 4;         Entry: { }      Exit: {y}
+   * x = 1;         Entry: {y}      Exit: {x, y}
+   * if (y < x) {   Entry: {x, y}   Exit: {y}
+   *  z = y;        Entry: {y}      Exit: {z}
+   * }
+   * else {
+   *  z = y * y;    Entry: {y}      Exit: {z}
+   * }
+   * x = z;         Entry: {z}      Exit: {}
+   */
+  test("test_lv_using_if_else") {
 
     val s1 = AssignmentStmt("x", ConstExp(2))
     val s2 = AssignmentStmt("y", ConstExp(4))
@@ -166,20 +166,17 @@ class LVTest extends AnyFunSuite {
     ))
   }
 
-  test("Live Variables with While loop"){
-
-    /**
-    while(x < 10){   Entry: {x} Exit: {x}
-      x = x+1;        Entry: {x} Exit: {x}
-     }
-     output x;        Entry: {x} Exit: { }
-     */
+  /**
+   * while(x < 10) {    Entry: {x}    Exit: {x}
+   *  x = x+1;          Entry: {x}    Exit: {x}
+   * }
+   * output x;          Entry: {x}    Exit: { }
+   */
+  test("test_lv_using_while") {
 
     val s2 = AssignmentStmt("x", AddExp(VariableExp("x"), ConstExp(1)))
     val s1 = WhileStmt(GTExp(VariableExp("x"), ConstExp(10)), s2)
-
     val s3 = OutputStmt(VariableExp("x"))
-
     val seq = SequenceStmt(s1, s3)
 
     val LV = LiveVariable.run(seq)

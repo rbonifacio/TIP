@@ -1,25 +1,23 @@
-package br.unb.cic.tip
+package br.unb.cic.tip.df
 
 import br.unb.cic.tip.*
-import br.unb.cic.tip.Stmt.*
 import br.unb.cic.tip.Expression.*
 import br.unb.cic.tip.Node.SimpleNode
+import br.unb.cic.tip.Stmt.*
 
 import scala.collection.mutable
 
-type LV = (Set[VariableExp], Set[VariableExp])
-type Result = mutable.HashMap[Stmt, LV]
+type LV = (Set[VariableExp], Set[VariableExp]) // IN - OUT for each stmt
+type ResultLV = mutable.HashMap[Stmt, LV]
 
 object LiveVariable {
 
-  def run(program: Stmt): Result = {
+  def run(program: Stmt): ResultLV = {
     var explore = true
 
-    val LV: Result = mutable.HashMap()
+    val LV: ResultLV = mutable.HashMap()
     var en = Set[VariableExp]()
     var ex = Set[VariableExp]()
-
-    val cfg = flowR(program)
 
     for (stmt <- blocks(program)) {
       LV(stmt) = (en, ex)
@@ -28,10 +26,11 @@ object LiveVariable {
     while (explore)
     {
       val lastLV = LV.clone()
+
       for (stmt <- blocks(program))
       {
         ex = exit(program, stmt, LV)
-        en = entry(program, stmt, LV)
+        en = entry(stmt, LV)
         LV(stmt) = (en, ex)
       }
       explore = lastLV != LV
@@ -39,12 +38,13 @@ object LiveVariable {
     LV
   }
 
-  def entry(program: Stmt, stmt: Stmt, LV: Result): Set[VariableExp] = stmt match {
-    case AssignmentStmt(id, exp) => (LV(stmt)._2 diff kill(stmt)) union gen(stmt)
+  def entry(stmt: Stmt, LV: ResultLV): Set[VariableExp] = stmt match {
+    case AssignmentStmt(_, _) => (LV(stmt)._2 diff kill(stmt)) union gen(stmt)
     case _ => LV(stmt)._2 union gen(stmt)
+    //to do; maybe there some stmt that does not create
   }
 
-  def exit(program: Stmt, stmt: Stmt, LV: Result): Set[VariableExp] = {
+  def exit(program: Stmt, stmt: Stmt, LV: ResultLV): Set[VariableExp] = {
     var res = Set[VariableExp]()
     for ((from, to) <- flowR(program) if to == SimpleNode(stmt)) {
       from match {
@@ -55,14 +55,14 @@ object LiveVariable {
   }
 
   def kill(stmt: Stmt): Set[VariableExp] = stmt match {
-    case AssignmentStmt(id, exp) => Set(VariableExp(id))
+    case AssignmentStmt(id, _) => Set(VariableExp(id))
     case _ => Set()
   }
 
   def gen(stmt: Stmt): Set[VariableExp] = stmt match {
-    case AssignmentStmt(id, exp) => variables(exp)
-    case IfElseStmt(condition, s1, s2) => variables(condition)
-    case WhileStmt(condition, s1) => variables(condition)
+    case AssignmentStmt(_, exp) => variables(exp)
+    case IfElseStmt(condition, _, _) => variables(condition)
+    case WhileStmt(condition, _) => variables(condition)
     case OutputStmt(exp) => variables(exp)
     case _ => Set()
   }
