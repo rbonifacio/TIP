@@ -1,9 +1,9 @@
 package br.unb.cic.tip
 
 import br.unb.cic.tip.*
-import br.unb.cic.tip.Stmt.*
-import br.unb.cic.tip.Expression.*
-import br.unb.cic.tip.Node.*
+import br.unb.cic.tip.utils.{Id, Node, Expression, Stmt}
+import br.unb.cic.tip.utils.Node.*
+import br.unb.cic.tip.utils.Stmt.*
 
 type Path = List[Node]
 
