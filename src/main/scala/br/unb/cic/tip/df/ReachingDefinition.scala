@@ -5,46 +5,30 @@ import br.unb.cic.tip.*
 import br.unb.cic.tip.utils.Expression.*
 import br.unb.cic.tip.utils.Node.SimpleNode
 import br.unb.cic.tip.utils.Stmt.*
-import br.unb.cic.tip.utils.{FunDecl, Program, Stmt}
+import br.unb.cic.tip.utils.Stmt
 
 type RD = (Set[AssignmentStmt], Set[AssignmentStmt])
 type ResultRD = mutable.HashMap[Stmt, RD]
 
 object ReachingDefinition {
 
-    def run(program: Program): ResultRD = {
-      run(getMethodBody(program), program)
-    }
-
-    def run(fBody: Stmt, program: Program = List[FunDecl]()): ResultRD = {
+    def run(program: Stmt): ResultRD = {
       var explore = true
 
-      var RD: ResultRD = mutable.HashMap()
+      val RD: ResultRD = mutable.HashMap()
       var en = Set[AssignmentStmt]() // it starts with empty Set
       var ex = Set[AssignmentStmt]()
 
-      for (stmt <- blocks(fBody)) {
+      for (stmt <- blocks(program)) {
         RD(stmt) = (en, ex)
       }
 
       while (explore) {
         val lastRD = RD.clone()
 
-        for (stmt <- blocks(fBody)) {
-          en = Set()
-          ex = Set()
-
-          stmt match
-            case AssignmentStmt(_, exp) => exp match
-              case FunctionCallExp(NameExp(name), _) => RD = RD ++ run(getMethodBody(program, name), program)
-              case _ => {
-                en = entry(fBody, stmt, RD)
-                ex = exit(stmt, RD)
-              }
-            case _ => {
-              en = entry(fBody, stmt, RD)
-              ex = exit(stmt, RD)
-            }
+        for (stmt <- blocks(program)) {
+          en = entry(program, stmt, RD)
+          ex = exit(stmt, RD)
           RD(stmt) = (en, ex)
         }
         explore = lastRD != RD
@@ -56,10 +40,7 @@ object ReachingDefinition {
       var res = Set[AssignmentStmt]()
       for ((from, to) <- flow(program) if to == SimpleNode(stmt)) {
         from match {
-          case SimpleNode(s) => s match
-            case AfterCallStmt(_, _) => null
-            case CallStmt(_, _) => null
-            case _ => res = RD(s)._2 union res
+          case SimpleNode(s) => res = RD(s)._2 union res
         }
       }
       res
