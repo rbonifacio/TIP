@@ -10,7 +10,7 @@ import org.scalatest.funsuite.AnyFunSuite
 
 import scala.collection.immutable.Set
 
-class RDInterproceduralTest extends AnyFunSuite {
+class RDInterproceduralTest extends AnyFunSuite { 
 
   /**
    * mymethod(a)

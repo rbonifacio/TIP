@@ -12,9 +12,9 @@ type ResultRD = mutable.HashMap[Stmt, RD]
 
 object ReachingDefinition {
 
-    def run(program: Program): ResultRD = {
-      run(getMethodBody(program), program)
-    }
+    def run(program: Program): ResultRD = { 
+      run(getMethodBody(program), program) 
+    } 
 
     def run(fBody: Stmt, program: Program = List[FunDecl]()): ResultRD = {
       var explore = true
@@ -31,20 +31,20 @@ object ReachingDefinition {
         val lastRD = RD.clone()
 
         for (stmt <- blocks(fBody)) {
-          en = Set()
-          ex = Set()
+          en = Set() 
+          ex = Set() 
 
-          stmt match
-            case AssignmentStmt(_, exp) => exp match
-              case FunctionCallExp(NameExp(name), _) => RD = RD ++ run(getMethodBody(program, name), program)
-              case _ => {
-                en = entry(fBody, stmt, RD)
-                ex = exit(stmt, RD)
-              }
-            case _ => {
-              en = entry(fBody, stmt, RD)
-              ex = exit(stmt, RD)
-            }
+          stmt match 
+            case AssignmentStmt(_, exp) => exp match 
+              case FunctionCallExp(NameExp(name), _) => RD = RD ++ run(getMethodBody(program, name), program) 
+              case _ => { 
+                en = entry(fBody, stmt, RD) 
+                ex = exit(stmt, RD) 
+              } 
+            case _ => { 
+              en = entry(fBody, stmt, RD) 
+              ex = exit(stmt, RD) 
+            } 
           RD(stmt) = (en, ex)
         }
         explore = lastRD != RD
@@ -55,11 +55,11 @@ object ReachingDefinition {
     def entry(program: Stmt, stmt: Stmt, RD: ResultRD): Set[AssignmentStmt] = {
       var res = Set[AssignmentStmt]()
       for ((from, to) <- flow(program) if to == SimpleNode(stmt)) {
-        from match {
-          case SimpleNode(s) => s match
-            case AfterCallStmt(_, _) => null
-            case CallStmt(_, _) => null
-            case _ => res = RD(s)._2 union res
+        from match { 
+          case SimpleNode(s) => s match 
+            case AfterCallStmt(_, _) => null 
+            case CallStmt(_, _) => null 
+            case _ => res = RD(s)._2 union res 
         }
       }
       res
