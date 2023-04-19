@@ -36,7 +36,11 @@ object ReachingDefinition {
 
           stmt match 
             case AssignmentStmt(_, exp) => exp match 
-              case FunctionCallExp(NameExp(name), _) => RD = RD ++ run(getMethodBody(program, name), program) 
+              case FunctionCallExp(NameExp(name), _) => {
+                en = entry(fBody, stmt, RD)
+                RD = RD ++ run(getMethodBody(program, name), program)
+//                ex = exit(stmt, RD)
+              }
               case _ => { 
                 en = entry(fBody, stmt, RD) 
                 ex = exit(stmt, RD) 
@@ -54,12 +58,21 @@ object ReachingDefinition {
 
     def entry(program: Stmt, stmt: Stmt, RD: ResultRD): Set[AssignmentStmt] = {
       var res = Set[AssignmentStmt]()
-      for ((from, to) <- flow(program) if to == SimpleNode(stmt)) {
-        from match { 
-          case SimpleNode(s) => s match 
-            case AfterCallStmt(_, _) => null 
-            case CallStmt(_, _) => null 
-            case _ => res = RD(s)._2 union res 
+      //validate if it is a call =
+      var _stmt: Stmt = NopStmt
+      stmt match
+        case AssignmentStmt(v, exp) => exp match
+          case FunctionCallExp(NameExp(name), _) => {
+            _stmt = CallStmt(v, name)
+          }
+          case _ => _stmt = stmt
+        case _ => _stmt = stmt
+
+      for ((from, to) <- flow(program) if to == SimpleNode(_stmt)) {
+        from match {
+          case SimpleNode(s) => s match
+            case AfterCallStmt(_, _) => null // it is coming, why?
+            case _ => res = RD(s)._2 union res
         }
       }
       res
