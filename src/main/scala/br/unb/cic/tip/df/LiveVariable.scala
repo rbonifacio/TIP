@@ -3,8 +3,7 @@ package br.unb.cic.tip.df
 import br.unb.cic.tip.*
 import br.unb.cic.tip.utils.Expression.*
 import br.unb.cic.tip.utils.Node.SimpleNode
-import br.unb.cic.tip.utils.Stmt.*
-import br.unb.cic.tip.utils.Stmt
+import br.unb.cic.tip.utils._
 
 import scala.collection.mutable
 
@@ -50,6 +49,7 @@ object LiveVariable {
     for ((from, to) <- flowR(program) if to == SimpleNode(stmt)) {
       from match {
         case SimpleNode(s) => res = LV(s)._1 union res
+        case _             => throw new Error("Match error")
       }
     }
     res
