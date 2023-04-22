@@ -18,7 +18,7 @@ object ReachingDefinition {
       run(getMethodBody(program), program) 
     } 
 
-    def run(fBody: Stmt, program: Program = List[FunDecl]()): ResultRD = {
+    def run(fBody: Stmt, program: Program = List[FunDecl](), predecessors: Set[AssignmentStmt] = Set()): ResultRD = {
       var explore = true
 
       var en = Set[AssignmentStmt]() // it starts with empty Set
@@ -38,8 +38,8 @@ object ReachingDefinition {
           stmt match 
             case AssignmentStmt(_, exp) => exp match 
               case FunctionCallExp(NameExp(name), _) => {
-                en = entry(fBody, stmt)
-                run(getMethodBody(program, name), program)
+                en = entry(fBody, stmt, predecessors)
+                run(getMethodBody(program, name), program, en)
                 // just for testing, a Interprocedural Exit Function was created in the next lines
                 val in: Set[AssignmentStmt] = exit(stmt)
                 val gen: Set[AssignmentStmt] = finalStmt(getMethodBody(program, name)).map(s => RD(s)._2).foldLeft(Set())(_ union _)
@@ -47,11 +47,11 @@ object ReachingDefinition {
                 ex = (in diff kill) union gen
               }
               case _ => { 
-                en = entry(fBody, stmt)
+                en = entry(fBody, stmt, predecessors)
                 ex = exit(stmt)
               } 
             case _ => { 
-              en = entry(fBody, stmt)
+              en = entry(fBody, stmt, predecessors)
               ex = exit(stmt)
             } 
           RD(stmt) = (en, ex)
@@ -61,8 +61,8 @@ object ReachingDefinition {
       RD
     }
 
-    def entry(program: Stmt, stmt: Stmt): Set[AssignmentStmt] = {
-      var res = Set[AssignmentStmt]()
+    def entry(program: Stmt, stmt: Stmt, predecessors: Set[AssignmentStmt]): Set[AssignmentStmt] = {
+      var res = predecessors
       //validate if it is a call =
       var _stmt: Stmt = NopStmt
       stmt match
