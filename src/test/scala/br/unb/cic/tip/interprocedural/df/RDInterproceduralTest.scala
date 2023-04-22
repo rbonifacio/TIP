@@ -61,15 +61,20 @@ class RDInterproceduralTest extends AnyFunSuite {
       Set(s1, s2),
       Set(s2, m1)
     ))
-//
+
 //    assert( RD(m1) == (
 //      Set(s2, m1),
 //      Set(),
 //    ))
-//
-//    assert( RD(s4) == (
-//      Set(),
-//      Set(AssignmentStmt("z", ConstExp(3)))
-//    ))
+
+    assert( RD(s4) == (
+      Set(s2, m1),
+      Set(s2, m1, s4)
+    ))
+
+    assert(RD(s5) == (
+      Set(s2, m1, s4),
+      Set(s2, m1, s4, s5)
+    ))
   } 
 }
