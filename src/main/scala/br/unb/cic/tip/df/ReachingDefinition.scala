@@ -39,7 +39,11 @@ object ReachingDefinition {
               case FunctionCallExp(NameExp(name), _) => {
                 en = entry(fBody, stmt, RD)
                 RD = RD ++ run(getMethodBody(program, name), program)
-//                ex = exit(stmt, RD)
+                // just for testing, a Interprocedural Exit Function was created in the next lines
+                val in: Set[AssignmentStmt] = exit(stmt, RD)
+                val gen: Set[AssignmentStmt] = finalStmt(getMethodBody(program, name)).map(s => RD(s)._2).foldLeft(Set())(_ union _)
+                val kill = in.filter( i => gen.exists( g => g.name == i.name))
+                ex = (in diff kill) union gen
               }
               case _ => { 
                 en = entry(fBody, stmt, RD) 
@@ -79,7 +83,11 @@ object ReachingDefinition {
     }
 
     def exit(stmt: Stmt, RD: ResultRD): Set[AssignmentStmt] = stmt match {
-      case AssignmentStmt(_, _) => (RD(stmt)._1 diff kill(RD(stmt)._1, stmt)) union gen(stmt)
+      case AssignmentStmt(v, exp) => exp match
+        case FunctionCallExp(_, _) => {
+            RD(stmt)._1
+        }
+        case _ => (RD(stmt)._1 diff kill(RD(stmt)._1, stmt)) union gen(stmt)
       case _ => RD(stmt)._1
     }
 

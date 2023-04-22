@@ -17,12 +17,12 @@ class RDInterproceduralTest extends AnyFunSuite {
    * P(var, stmt)
    *
    * mymethod(x)
-   * m1:  x = 5         entry:{(x,s1), (y,s2) U (x,m1)}    exit:{(y,s2), (x,m1)} // entry gets the values from the CALLER
+   * m1:  x = 5         entry:{(x,s1)} U {}                 exit:{(x,m1)} // entry gets the values from the CALLER
    *
    * main()
    * s1:   x = 1        entry:{}                            exit:{(x,s1)}
    * s2:   y = 2        entry:{(x,s1)}                      exit:{(x,s1), (y,s2)}
-   * s3:  mymethod(x)   entry:{(x,s1), (y,s2)}              exit:{(y,s2), (x,m1)} // exit get the values from the CALLEE
+   * s3:  mymethod(x)   entry:{(x,s1), (y,s2)}              exit:{(x,s1), (y,s2)} U  {(x,m1)} = {(y,s2), (x, m1)} // exit get the values from the CALLEE
    * s4:  a = y + 1     entry:{(y,s2), (x, m1)}             exit:{(y,s2), (x,m1), (a,s4)}
    * s5:  b = x + 1     entry:{(y,s2), (x, m1), (a, s4)}    exit:{(y,s2), (x,m1), (a,s4), (b,s5)}
    *
@@ -59,12 +59,12 @@ class RDInterproceduralTest extends AnyFunSuite {
 
     assert(RD(s3) == (
       Set(s1, s2),
-      Set()
+      Set(s2, m1)
     ))
 //
 //    assert( RD(m1) == (
+//      Set(s2, m1),
 //      Set(),
-//      Set(AssignmentStmt("a", ConstExp(999)))
 //    ))
 //
 //    assert( RD(s4) == (
