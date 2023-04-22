@@ -12,14 +12,15 @@ type ResultRD = mutable.HashMap[Stmt, RD]
 
 object ReachingDefinition {
 
-    def run(program: Program): ResultRD = { 
+    var RD: ResultRD = mutable.HashMap()
+
+    def run(program: Program): ResultRD = {
       run(getMethodBody(program), program) 
     } 
 
     def run(fBody: Stmt, program: Program = List[FunDecl]()): ResultRD = {
       var explore = true
 
-      var RD: ResultRD = mutable.HashMap()
       var en = Set[AssignmentStmt]() // it starts with empty Set
       var ex = Set[AssignmentStmt]()
 
@@ -37,21 +38,21 @@ object ReachingDefinition {
           stmt match 
             case AssignmentStmt(_, exp) => exp match 
               case FunctionCallExp(NameExp(name), _) => {
-                en = entry(fBody, stmt, RD)
-                RD = RD ++ run(getMethodBody(program, name), program)
+                en = entry(fBody, stmt)
+                run(getMethodBody(program, name), program)
                 // just for testing, a Interprocedural Exit Function was created in the next lines
-                val in: Set[AssignmentStmt] = exit(stmt, RD)
+                val in: Set[AssignmentStmt] = exit(stmt)
                 val gen: Set[AssignmentStmt] = finalStmt(getMethodBody(program, name)).map(s => RD(s)._2).foldLeft(Set())(_ union _)
                 val kill = in.filter( i => gen.exists( g => g.name == i.name))
                 ex = (in diff kill) union gen
               }
               case _ => { 
-                en = entry(fBody, stmt, RD) 
-                ex = exit(stmt, RD) 
+                en = entry(fBody, stmt)
+                ex = exit(stmt)
               } 
             case _ => { 
-              en = entry(fBody, stmt, RD) 
-              ex = exit(stmt, RD) 
+              en = entry(fBody, stmt)
+              ex = exit(stmt)
             } 
           RD(stmt) = (en, ex)
         }
@@ -60,7 +61,7 @@ object ReachingDefinition {
       RD
     }
 
-    def entry(program: Stmt, stmt: Stmt, RD: ResultRD): Set[AssignmentStmt] = {
+    def entry(program: Stmt, stmt: Stmt): Set[AssignmentStmt] = {
       var res = Set[AssignmentStmt]()
       //validate if it is a call =
       var _stmt: Stmt = NopStmt
@@ -82,7 +83,7 @@ object ReachingDefinition {
       res
     }
 
-    def exit(stmt: Stmt, RD: ResultRD): Set[AssignmentStmt] = stmt match {
+    def exit(stmt: Stmt): Set[AssignmentStmt] = stmt match {
       case AssignmentStmt(v, exp) => exp match
         case FunctionCallExp(_, _) => {
             RD(stmt)._1
