@@ -1,5 +1,7 @@
 package br.unb.cic.tip.utils
 
+import br.unb.cic.tip.utils.Stmt.AssignmentStmt
+
 /**
  * The abstract syntax definition of the Tiny Imperative
  * Language.
@@ -62,8 +64,8 @@ enum Stmt:
   case RecordAssignmentStmt(name: Id, field: Id, exp: Expression) extends Stmt // Id.Id = Exp;
   case RecordStoreStmt(exp1: Expression, id: Id, exp2: Expression) // (*Exp).Id = Exp;
   case NopStmt extends Stmt // nop
-  case CallStmt(id: Id, function: Id) extends Stmt //
-  case AfterCallStmt(id: Id, function: Id) extends Stmt //
+  case CallStmt(stmt: AssignmentStmt) extends Stmt //
+  case AfterCallStmt(stmt: AssignmentStmt) extends Stmt //
   case ReturnStmt(exp: Expression) extends Stmt //
 
 /** Node Types */
