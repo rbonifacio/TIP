@@ -2,7 +2,7 @@
 
 *Tiny Imperative Programming Language*
 
-This project was implemented by University dof Brasília **(UnB)** students from Science Computer Department **(CIC)** and the develpoment was based in [Static Program Analysis’ book](https://users-cs.au.dk/amoeller/spa/spa.pdf), where it is used a Tiny Imperative Programming language **(TIP)**, which is based in a context free grammar, that has a very simple syntax and implements basic ’s constructions like expressions and statements but does not high level features like global variables, objects and others. Moreover, [Principles of Program Analysis’ book] was used as a helper because the first book was not totally dense.
+This project was implemented by University dof Brasília **(UnB)** students from Science Computer Department **(CIC)** and the develpoment was based in [Static Program Analysis’ book](https://users-cs.au.dk/amoeller/spa/spa.pdf), where it is used a Tiny Imperative Programming language **(TIP)**, which is based in a context free grammar, that has a very simple syntax and implements basic ’s constructions like expressions and statements but does not high level features like global variables, objects and others. Moreover, [Principles of Program Analysis’ book](https://link.springer.com/book/10.1007/978-3-662-03811-6) was used as a helper because the first book was not totally dense.
 
 The goal of this projects is explore the concepts for Static Analysis and implement its basic algorithms.
 
