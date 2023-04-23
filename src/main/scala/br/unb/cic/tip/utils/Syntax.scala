@@ -40,7 +40,7 @@ enum Expression:
   case NameExp(name: Id) extends Expression // (Exp)
 
   // function-call expression
-  case FunctionCallExp(name: Expression, args: List[Expression]) extends Expression
+  case FunctionCallExp(name: Expression, args: List[Any]) extends Expression
 
   // pointer-based expressions
   case AllocExp(exp: Expression) extends Expression // alloc Exp
