@@ -4,7 +4,7 @@
 
 This project was implemented by University dof Brasília **(UnB)** students from Science Computer Department **(CIC)** and the develpoment was based in [Static Program Analysis’s book](https://users-cs.au.dk/amoeller/spa/spa.pdf), where it is used a Tiny Imperative Programming language **(TIP)**, which is based in a context free grammar, that has a very simple syntax and implements basic ’s constructions like expressions and statements but does not high level features like global variables, objects and others.
 
-The goal of this projects is explore the concepts for Static Analysis and implement its basic algorithms
+The goal of this projects is explore the concepts for Static Analysis and implement its basic algorithms.
 
 # Implementations
 
