@@ -2,7 +2,7 @@ package br.unb.cic.tip
 
 import br.unb.cic.tip.utils.Stmt.*
 import br.unb.cic.tip.utils.Expression.*
-import br.unb.cic.tip.utils.{Expression, FunDecl, Node, Program, Stmt}
+import br.unb.cic.tip.utils.{Expression, FunDecl, Id, Node, Program, Stmt}
 import br.unb.cic.tip.utils.Node.*
 
 type Edge = (Node, Node)
@@ -86,4 +86,10 @@ def successors(stmt: Stmt, cfg: Graph): Set[Stmt] = {
     }
   }
   res
+}
+
+def getMethodBody(program: Program, methodName: Id = "main"): Stmt = {
+  program.exists(f => f.name == methodName) match
+    case true => program.filter(f => f.name == methodName).head.body
+    case _ => null
 }
