@@ -17,9 +17,13 @@ In this study the next implementations  have been done:
         - [x] Available Expression
         - [x] Live Variables
         - [x] Reaching Definition
-        - [x] Very Busy Expression
+        - [ ] Very Busy Expression
     - [x] Monotone Framework
         - [x] MFP
+            - [x] Available Expression
+            - [x] Live Variables
+            - [x] Reaching Definition
+            - [ ] Very Busy Expression
         - [ ] ~~MOP~~
 - [ ] Interprocedural
     - [x] CFG
@@ -30,6 +34,10 @@ In this study the next implementations  have been done:
         - [ ] Very Busy Expression
     - [ ] Monotone Framework
         - [ ] MFP
+            - [ ] Available Expression
+            - [ ] Live Variables
+            - [ ] Reaching Definition
+            - [ ] Very Busy Expression
         - [ ] ~~MOP~~
     - [x] Path
         - [x] Valid 
