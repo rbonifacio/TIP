@@ -93,3 +93,32 @@ def getMethodBody(program: Program, methodName: Id = "main"): Stmt = {
     case true => program.filter(f => f.name == methodName).head.body
     case _ => null
 }
+
+
+def nonTrivialExps(exp: Expression): Set[Expression] = exp match {
+  case AddExp(l, r)   => Set(exp) | nonTrivialExps(l) | nonTrivialExps(r)
+  case SubExp(l, r)   => Set(exp) | nonTrivialExps(l) | nonTrivialExps(r)
+  case MultiExp(l, r) => Set(exp) | nonTrivialExps(l) | nonTrivialExps(r)
+  case DivExp(l, r)   => Set(exp) | nonTrivialExps(l) | nonTrivialExps(r)
+  case EqExp(l, r)    => Set(exp) | nonTrivialExps(l) | nonTrivialExps(r)
+  case GTExp(l, r)    => Set(exp) | nonTrivialExps(l) | nonTrivialExps(r)
+  case BracketExp(e)  => nonTrivialExps(e)
+  case ConstExp(_)    => Set()
+  case VariableExp(_) => Set()
+  case InputExp       => Set()
+  case _              => Set(exp)
+}
+
+def expDependsOn(exp: Expression, id: String): Boolean = exp match {
+  case VariableExp(name) => name == id
+  case AddExp(l, r)      => expDependsOn(l, id) || expDependsOn(r, id)
+  case SubExp(l, r)      => expDependsOn(l, id) || expDependsOn(r, id)
+  case MultiExp(l, r)    => expDependsOn(l, id) || expDependsOn(r, id)
+  case DivExp(l, r)      => expDependsOn(l, id) || expDependsOn(r, id)
+  case EqExp(l, r)       => expDependsOn(l, id) || expDependsOn(r, id)
+  case GTExp(l, r)       => expDependsOn(l, id) || expDependsOn(r, id)
+  case BracketExp(e)     => expDependsOn(e, id)
+  case ConstExp(_)       => false
+  case InputExp          => false
+  case _                 => true
+}
