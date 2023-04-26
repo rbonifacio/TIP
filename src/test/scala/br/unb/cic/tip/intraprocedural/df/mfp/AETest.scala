@@ -4,10 +4,10 @@ import br.unb.cic.tip.*
 import br.unb.cic.tip.utils.Expression.*
 import br.unb.cic.tip.utils.Node.*
 import br.unb.cic.tip.utils.Stmt.*
-import br.unb.cic.tip.df.mfp.MfpAvailableExpressions
+import br.unb.cic.tip.df.mfp.AvailableExpressionsMFP
 import org.scalatest.funsuite.AnyFunSuite
 
-class MfpAETest extends AnyFunSuite {
+class AETest extends AnyFunSuite {
 
   /** y = x {} x = 5 + 2 {5 + 2} y = 1 + y {5 + 2} z = y + x {5 + 2, y + x} x =
     * 3 {5 + 2}
@@ -23,7 +23,7 @@ class MfpAETest extends AnyFunSuite {
     val seq =
       SequenceStmt(s1, SequenceStmt(s2, SequenceStmt(s3, SequenceStmt(s4, s5))))
 
-    val AE = MfpAvailableExpressions.run(seq)
+    val AE = AvailableExpressionsMFP.run(seq)
 
     assert(
       AE(s1) == (
@@ -81,7 +81,7 @@ class MfpAETest extends AnyFunSuite {
     )
     val seq = SequenceStmt(s1, SequenceStmt(s2, s3))
 
-    val AE = MfpAvailableExpressions.run(seq)
+    val AE = AvailableExpressionsMFP.run(seq)
 
     assert(
       AE(s1) == (Set(),

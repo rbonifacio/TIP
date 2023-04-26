@@ -5,9 +5,10 @@ import br.unb.cic.tip.utils.Stmt._
 import br.unb.cic.tip.utils.Expression._
 import br.unb.cic.tip._
 
-object MfpReachingDefinition extends MFP[AssignmentStmt] {
+object ReachingDefinitionMFP extends MFP[AssignmentStmt] {
 
-  val direction = ForwardAnalysis
+  def direction = ForwardAnalysis
+
   def latticeOperator = Join
 
   def extremeAnalysisInformation(program: Stmt) = Set()

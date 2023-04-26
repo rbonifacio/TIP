@@ -4,10 +4,10 @@ import br.unb.cic.tip.*
 import br.unb.cic.tip.utils.Expression.*
 import br.unb.cic.tip.utils.Node.*
 import br.unb.cic.tip.utils.Stmt.*
-import br.unb.cic.tip.df.mfp.MfpLiveVariable
+import br.unb.cic.tip.df.mfp.LiveVariableMFP
 import org.scalatest.funsuite.AnyFunSuite
 
-class MfpLVTest extends AnyFunSuite {
+class LVTest extends AnyFunSuite {
 
   /** x = a; Entry: {a, b} Exit: {b} y = b; Entry: {b} Exit: { } x = 3; Entry: {
     * } Exit: { }
@@ -19,7 +19,7 @@ class MfpLVTest extends AnyFunSuite {
     val s3 = AssignmentStmt("x", ConstExp(3))
 
     val seq = SequenceStmt(s1, SequenceStmt(s2, s3))
-    val LV = MfpLiveVariable.run(seq)
+    val LV = LiveVariableMFP.run(seq)
 
     assert(
       LV(s1) == (
@@ -53,7 +53,7 @@ class MfpLVTest extends AnyFunSuite {
     val s3 = OutputStmt(VariableExp("x"))
 
     val seq = SequenceStmt(s1, SequenceStmt(s2, s3))
-    val LV = MfpLiveVariable.run(seq)
+    val LV = LiveVariableMFP.run(seq)
 
     assert(
       LV(s1) == (
@@ -86,7 +86,7 @@ class MfpLVTest extends AnyFunSuite {
     val s1 = IfElseStmt(GTExp(VariableExp("x"), VariableExp("y")), s2, None)
     val s3 = AssignmentStmt("y", ConstExp(1))
     val seq = SequenceStmt(s1, s3)
-    val LV = MfpLiveVariable.run(seq)
+    val LV = LiveVariableMFP.run(seq)
 
     assert(
       LV(s1) == (
@@ -130,7 +130,7 @@ class MfpLVTest extends AnyFunSuite {
     val seq =
       SequenceStmt(s1, SequenceStmt(s2, SequenceStmt(s3, SequenceStmt(s4, s7))))
 
-    val LV = MfpLiveVariable.run(seq)
+    val LV = LiveVariableMFP.run(seq)
 
     assert(
       LV(s1) == (
@@ -192,7 +192,7 @@ class MfpLVTest extends AnyFunSuite {
     val s3 = OutputStmt(VariableExp("x"))
     val seq = SequenceStmt(s1, s3)
 
-    val LV = MfpLiveVariable.run(seq)
+    val LV = LiveVariableMFP.run(seq)
 
     assert(
       LV(s1) == (

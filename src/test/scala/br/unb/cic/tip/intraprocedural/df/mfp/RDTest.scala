@@ -4,10 +4,10 @@ import br.unb.cic.tip.*
 import br.unb.cic.tip.utils.Expression.*
 import br.unb.cic.tip.utils.Node.*
 import br.unb.cic.tip.utils.Stmt.*
-import br.unb.cic.tip.df.mfp.MfpReachingDefinition
+import br.unb.cic.tip.df.mfp.ReachingDefinitionMFP
 import org.scalatest.funsuite.AnyFunSuite
 
-class MfpRDTest extends AnyFunSuite {
+class RDTest extends AnyFunSuite {
 
   /** X = 1 Y = 2 X = 3
     */
@@ -17,7 +17,7 @@ class MfpRDTest extends AnyFunSuite {
     val s3 = AssignmentStmt("x", ConstExp(3))
     val seq = SequenceStmt(s1, SequenceStmt(s2, s3))
 
-    val RD = MfpReachingDefinition.run(seq)
+    val RD = ReachingDefinitionMFP.run(seq)
 
     assert(
       RD(s1) == (
@@ -52,7 +52,7 @@ class MfpRDTest extends AnyFunSuite {
     val seq =
       SequenceStmt(s1, SequenceStmt(s2, SequenceStmt(s3, SequenceStmt(s4, s5))))
 
-    val RD = MfpReachingDefinition.run(seq)
+    val RD = ReachingDefinitionMFP.run(seq)
 
     assert(
       RD(s1) == (
@@ -102,7 +102,7 @@ class MfpRDTest extends AnyFunSuite {
     val s5 = AssignmentStmt("y", ConstExp(0))
     val seq = SequenceStmt(s4, s5)
 
-    val RD = MfpReachingDefinition.run(seq)
+    val RD = ReachingDefinitionMFP.run(seq)
 
     assert(
       RD(s1) == (
@@ -150,7 +150,7 @@ class MfpRDTest extends AnyFunSuite {
     val s4 = WhileStmt(GTExp(VariableExp("n"), ConstExp(0)), whileBody)
     val seq = SequenceStmt(s1, s4)
 
-    val RD = MfpReachingDefinition.run(seq)
+    val RD = ReachingDefinitionMFP.run(seq)
 
     assert(
       RD(s1) == (
