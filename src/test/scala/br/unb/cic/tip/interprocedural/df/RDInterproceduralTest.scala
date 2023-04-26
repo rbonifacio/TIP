@@ -10,11 +10,12 @@ import org.scalatest.funsuite.AnyFunSuite
 
 import scala.collection.immutable.Set
 
-class RDInterproceduralTest extends AnyFunSuite { 
-
+/**
+ * P(var, stmt)
+ */
+class RDInterproceduralTest extends AnyFunSuite {
 
   /**
-   * P(var, stmt)
    *
    * mymethod(x)
    * m1:  x = 5         entry:{(x,s1)} U {}                 exit:{(x,m1)} // entry gets the values from the CALLER
@@ -27,7 +28,7 @@ class RDInterproceduralTest extends AnyFunSuite {
    * s5:  b = x + 1     entry:{(y,s2), (x, m1), (a, s4)}    exit:{(y,s2), (x,m1), (a,s4), (b,s5)}
    *
    */
-  test("test_rd_using_only_statements") { 
+  test("test_rd_calling_function_one_time") {
 
     val m1 = AssignmentStmt("x", ConstExp(5))
     val myFunction = FunDecl("myFunction", List("x"), List(), m1, NullExp) 
@@ -76,5 +77,5 @@ class RDInterproceduralTest extends AnyFunSuite {
       Set(s2, m1, s4),
       Set(s2, m1, s4, s5)
     ))
-  } 
+  }
 }
