@@ -43,7 +43,7 @@ In this study the next implementations  have been done:
         - [x] Valid 
         - [x] Completed
     - [ ] Context Insensitivity
-    - [ ] Context Sensityvity
+    - [ ] Context Sensitivity
         - [ ] Basic
         - [ ] Call String
         - [ ] Functional Approach
