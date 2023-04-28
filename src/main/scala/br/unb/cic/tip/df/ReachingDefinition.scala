@@ -7,8 +7,8 @@ import br.unb.cic.tip.utils.Node.SimpleNode
 import br.unb.cic.tip.utils.Stmt.*
 import br.unb.cic.tip.utils.{FunDecl, Program, Stmt}
 
-type RD = (Set[AssignmentStmt], Set[AssignmentStmt])
-type ResultRD = mutable.HashMap[Stmt, RD]
+type ReachingDefinition = (Set[AssignmentStmt], Set[AssignmentStmt])
+type ResultRD = mutable.HashMap[Stmt, ReachingDefinition]
 
 object ReachingDefinition {
 
