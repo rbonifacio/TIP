@@ -3,7 +3,7 @@ package br.unb.cic.tip.intraprocedural.df
 import br.unb.cic.tip.*
 import br.unb.cic.tip.utils.Expression.*
 import br.unb.cic.tip.utils.Node.*
-import br.unb.cic.tip.utils.Stmt.*
+import br.unb.cic.tip.utils._
 import br.unb.cic.tip.df.AvailableExpressions
 import org.scalatest.funsuite.AnyFunSuite
 
@@ -108,5 +108,34 @@ class AETest extends AnyFunSuite {
 //        Set(AddExp(VariableExp("a"), VariableExp("b")))
 //      ),
 //    )
+  }
+
+  test("repeated statements") {
+    /*  y = x + 3           {},       {x + 3}
+        z = 8               {x + 3},  {x + 3}
+        y = x + 3           {x + 3},  {x + 3}
+     */
+
+    val s1 = AssignmentStmt("y", AddExp(VariableExp("x"), ConstExp(3)))
+    val s2 = AssignmentStmt("z", ConstExp(8))
+    val s3 = AssignmentStmt("y", AddExp(VariableExp("x"), ConstExp(3)))
+
+    val seq = SequenceStmt(s1, SequenceStmt(s2, s3))
+
+    val AE = AvailableExpressions.run(seq)
+
+    assert(AE(s1) == (Set(), Set(AddExp(VariableExp("x"), ConstExp(3)))))
+    assert(
+      AE(s2) == (
+        Set(AddExp(VariableExp("x"), ConstExp(3))),
+        Set(AddExp(VariableExp("x"), ConstExp(3)))
+      )
+    )
+    assert(
+      AE(s3) == (
+        Set(AddExp(VariableExp("x"), ConstExp(3))),
+        Set(AddExp(VariableExp("x"), ConstExp(3)))
+      )
+    )
   }
 }

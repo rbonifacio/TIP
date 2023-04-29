@@ -5,7 +5,7 @@ import br.unb.cic.tip.df.ReachingDefinition
 import br.unb.cic.tip.utils.Expression.*
 import br.unb.cic.tip.utils.FunDecl
 import br.unb.cic.tip.utils.Node.*
-import br.unb.cic.tip.utils.Stmt.*
+import br.unb.cic.tip.utils._
 import org.scalatest.funsuite.AnyFunSuite
 
 import scala.collection.immutable.Set
@@ -58,12 +58,12 @@ class RDInterproceduralTest extends AnyFunSuite {
 
     assert( RD(m1) == (
       Set(),
-      Set(AssignmentStmt("a", ConstExp(999)))
+      Set(m1)
     ))
 
     assert( RD(s4) == (
       Set(),
-      Set(AssignmentStmt("z", ConstExp(3)))
+      Set(s4)
     ))
   }
 }
