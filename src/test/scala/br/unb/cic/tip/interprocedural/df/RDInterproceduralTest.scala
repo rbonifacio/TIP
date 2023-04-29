@@ -31,49 +31,49 @@ class RDInterproceduralTest extends AnyFunSuite {
   test("test_rd_calling_function_one_time") {
 
     val m1 = AssignmentStmt("x", ConstExp(5))
-    val myFunction = FunDecl("myFunction", List("x"), List(), m1, NullExp) 
+    val myFunction = FunDecl("myFunction", List("x"), List(), m1, NullExp)
 
-    val s1 = AssignmentStmt("x", ConstExp(1)) 
-    val s2 = AssignmentStmt("y", ConstExp(2)) 
-    val s3 = AssignmentStmt("_m1", FunctionCallExp(NameExp(myFunction.name), List(VariableExp("x")))) 
+    val s1 = AssignmentStmt("x", ConstExp(1))
+    val s2 = AssignmentStmt("y", ConstExp(2))
+    val s3 = AssignmentStmt("_m1", FunctionCallExp(NameExp(myFunction.name), List(VariableExp("x"))))
     val s4 = AssignmentStmt("a", AddExp(VariableExp("y"), ConstExp(1)))
     val s5 = AssignmentStmt("b", AddExp(VariableExp("x"), ConstExp(1)))
 
     //main function
     val mainBody = SequenceStmt(s1, SequenceStmt(s2, SequenceStmt(s3, SequenceStmt(s4, s5))))
 
-    val mainFunction = FunDecl("main", List(), List("x", "y", "z"), mainBody, NullExp) 
+    val mainFunction = FunDecl("main", List(), List("x", "y", "z"), mainBody, NullExp)
 
-    val program = List(myFunction, mainFunction) 
+    val program = List(myFunction, mainFunction)
 
-    val RD = ReachingDefinition.run(mainBody, program) 
+    val RD = ReachingDefinition.run(mainBody, program)
 
-    assert( RD(s1) == ( 
-      Set(), 
-      Set(s1) 
-    )) 
+    assert( RD((s1, NopStmt)) == (
+      Set(),
+      Set(s1)
+    ))
 
-    assert( RD(s2) == ( 
-      Set(s1), 
-      Set(s1, s2) 
-    )) 
+    assert( RD((s2, NopStmt)) == (
+      Set(s1),
+      Set(s1, s2)
+    ))
 
-    assert(RD(s3) == (
+    assert(RD((s3, NopStmt)) == (
       Set(s1, s2),
       Set(s2, m1)
     ))
 
-    assert( RD(m1) == (
+    assert( RD((m1, s3)) == (
       Set(s1),
       Set(m1),
     ))
 
-    assert( RD(s4) == (
+    assert( RD((s4, NopStmt)) == (
       Set(s2, m1),
       Set(s2, m1, s4)
     ))
 
-    assert(RD(s5) == (
+    assert(RD((s5, NopStmt)) == (
       Set(s2, m1, s4),
       Set(s2, m1, s4, s5)
     ))
@@ -128,63 +128,59 @@ class RDInterproceduralTest extends AnyFunSuite {
 
     val RD = ReachingDefinition.run(mainBody, program)
 
-    assert(RD(s1) == (
+    assert(RD((s1, NopStmt)) == (
       Set(),
       Set(s1)
     ))
 
-    assert(RD(s2) == (
+    assert(RD((s2, NopStmt)) == (
       Set(s1),
       Set(s1, s2)
     ))
 
-    assert(RD(s3) == (
+    assert(RD((s3, NopStmt)) == (
       Set(s1, s2),
       Set(s2, m1)
     ))
 
-//    assert(RD(m1) == (
-//      Set(s1),
-//      Set(m1),
-//    ))
-
-    // for the second call
-    assert(RD(m1) == (
-      Set(s6),
+    // for the first call
+    assert(RD((m1, s3)) == (
+      Set(s1),
       Set(m1),
     ))
 
-    assert(RD(s4) == (
+    assert(RD((s4, NopStmt)) == (
       Set(s2, m1),
       Set(s2, m1, s4)
     ))
 
-    assert(RD(s5) == (
+    assert(RD((s5, NopStmt)) == (
       Set(s2, m1, s4),
       Set(s2, m1, s4, s5)
     ))
 
-    assert(RD(s6) == (
+    assert(RD((s6, NopStmt)) == (
       Set(s2, m1, s4, s5),
       Set(s2, s4, s5, s6)
     ))
 
-    assert(RD(s7) == (
+    assert(RD((s7, NopStmt)) == (
       Set(s2, s4, s5, s6),
       Set(s2, s4, s5, m1)
     ))
 
-    assert(RD(s7) == (
-      Set(s2, s4, s5, s6),
-      Set(s2, s4, s5, m1)
+    // for the second call
+    assert(RD((m1, s7)) == (
+      Set(s6),
+      Set(m1),
     ))
 
-    assert(RD(s8) == (
+    assert(RD((s8, NopStmt)) == (
       Set(s2, s4, s5, m1),
       Set(s2, s4, s5, m1, s8)
     ))
 
-    assert(RD(s9) == (
+    assert(RD((s9, NopStmt)) == (
       Set(s2, s4, s5, m1, s8),
       Set(s2, s4, s5, m1, s8, s9)
     ))
