@@ -2,7 +2,7 @@ package br.unb.cic.tip
 
 import br.unb.cic.tip.utils.{Expression, Stmt}
 import br.unb.cic.tip.utils.Expression.*
-import br.unb.cic.tip.utils.Stmt.*
+import br.unb.cic.tip.utils._
 
 import scala.collection.immutable.Set
 
@@ -11,7 +11,6 @@ def nonTrivialExpressions(stmt: Stmt): Set[Expression] = stmt match
   case AssignmentStmt(_, exp) => nonTrivialExpressions(exp)
   case IfElseStmt(condition, _, _) => nonTrivialExpressions(condition)
   case WhileStmt(condition, _) => nonTrivialExpressions(condition)
-  case SequenceStmt(s1, s2) => nonTrivialExpressions(s1) union nonTrivialExpressions(s2)
   case OutputStmt(exp: Expression) => nonTrivialExpressions(exp)
   case _ => Set()
 

@@ -1,6 +1,6 @@
 package br.unb.cic.tip
 
-import br.unb.cic.tip.utils.Stmt.*
+import br.unb.cic.tip.utils._
 import br.unb.cic.tip.utils.Expression.*
 import br.unb.cic.tip.utils.{Expression, FunDecl, Id, Node, Program, Stmt}
 import br.unb.cic.tip.utils.Node.*
@@ -8,7 +8,7 @@ import br.unb.cic.tip.utils.Node.*
 type Edge = (Node, Node)
 type Graph = Set[Edge]
 
-def initStmt(stmt: Stmt): Stmt = stmt match {
+def initStmt(stmt: Stmt): LabelSensitiveStmt = stmt match {
   case SequenceStmt(s1, _)      => initStmt(s1)
   case AssignmentStmt(id, exp)  => exp match {
     case FunctionCallExp(NameExp(_), _)  => CallStmt(AssignmentStmt(id, exp))
@@ -17,9 +17,9 @@ def initStmt(stmt: Stmt): Stmt = stmt match {
   case _                        => stmt
 }
 
-def finalStmt(stmt: Stmt): Set[Stmt] = stmt match {
+def finalStmt(stmt: Stmt): Set[LabelSensitiveStmt] = stmt match {
   case SequenceStmt(_, s2)      => finalStmt(s2)
-  case IfElseStmt(_, s1, s2)    => finalStmt(s1) union (if (s2.isDefined) finalStmt(s2.get) else Set[Stmt]())
+  case IfElseStmt(_, s1, s2)    => finalStmt(s1) union (if (s2.isDefined) finalStmt(s2.get) else Set())
   case AssignmentStmt(id, exp)  => exp match {
     case FunctionCallExp(NameExp(function), _)  => Set(AfterCallStmt(AssignmentStmt(id, exp)))
     case _                                      => Set(stmt)
@@ -27,11 +27,11 @@ def finalStmt(stmt: Stmt): Set[Stmt] = stmt match {
   case _                        => Set(stmt)
 }
 
-def blocks(stmt: Stmt): Set[Stmt] = stmt match {
+def blocks(stmt: Stmt): Set[LabelSensitiveStmt] = stmt match {
   case SequenceStmt(s1, s2)         => blocks(s1) union blocks(s2)
-  case IfElseStmt(_, s1, Some(s2))  => Set(stmt) union blocks(s1) union blocks(s2)
-  case IfElseStmt(_, s1, None)      => Set(stmt) union blocks(s1)
-  case WhileStmt(_, s1)             => Set(stmt) union blocks(s1)
+  case IfElseStmt(_, s1, Some(s2))  => blocks(s1) union blocks(s2) union Set(stmt) 
+  case IfElseStmt(_, s1, None)      => blocks(s1) union Set(stmt) 
+  case WhileStmt(_, s1)             => blocks(s1) union Set(stmt) 
   case _                            => Set(stmt)
 }
 
@@ -78,11 +78,12 @@ def variables(exp: Expression): Set[VariableExp] = exp match {
   case _                      => Set()
 }
 
-def successors(stmt: Stmt, cfg: Graph): Set[Stmt] = {
-  var res = Set[Stmt]()
+def successors(stmt: Stmt, cfg: Graph): Set[LabelSensitiveStmt] = {
+  var res = Set[LabelSensitiveStmt]()
   for ((from, to) <- cfg if from == SimpleNode(stmt)) {
     to match {
-      case SimpleNode(s) => res = Set(s) union res
+      case SimpleNode(s) => res = res union Set(s)
+      case _             => throw new Error("Match error")
     }
   }
   res
@@ -92,4 +93,33 @@ def getMethodBody(program: Program, methodName: Id = "main"): Stmt = {
   program.exists(f => f.name == methodName) match
     case true => program.filter(f => f.name == methodName).head.body
     case _ => null
+}
+
+
+def nonTrivialExps(exp: Expression): Set[Expression] = exp match {
+  case AddExp(l, r)   => Set(exp) | nonTrivialExps(l) | nonTrivialExps(r)
+  case SubExp(l, r)   => Set(exp) | nonTrivialExps(l) | nonTrivialExps(r)
+  case MultiExp(l, r) => Set(exp) | nonTrivialExps(l) | nonTrivialExps(r)
+  case DivExp(l, r)   => Set(exp) | nonTrivialExps(l) | nonTrivialExps(r)
+  case EqExp(l, r)    => Set(exp) | nonTrivialExps(l) | nonTrivialExps(r)
+  case GTExp(l, r)    => Set(exp) | nonTrivialExps(l) | nonTrivialExps(r)
+  case BracketExp(e)  => nonTrivialExps(e)
+  case ConstExp(_)    => Set()
+  case VariableExp(_) => Set()
+  case InputExp       => Set()
+  case _              => Set(exp)
+}
+
+def expDependsOn(exp: Expression, id: String): Boolean = exp match {
+  case VariableExp(name) => name == id
+  case AddExp(l, r)      => expDependsOn(l, id) || expDependsOn(r, id)
+  case SubExp(l, r)      => expDependsOn(l, id) || expDependsOn(r, id)
+  case MultiExp(l, r)    => expDependsOn(l, id) || expDependsOn(r, id)
+  case DivExp(l, r)      => expDependsOn(l, id) || expDependsOn(r, id)
+  case EqExp(l, r)       => expDependsOn(l, id) || expDependsOn(r, id)
+  case GTExp(l, r)       => expDependsOn(l, id) || expDependsOn(r, id)
+  case BracketExp(e)     => expDependsOn(e, id)
+  case ConstExp(_)       => false
+  case InputExp          => false
+  case _                 => true
 }

@@ -3,7 +3,7 @@ package br.unb.cic.tip
 import br.unb.cic.tip.*
 import br.unb.cic.tip.utils.{Id, Node, Expression, Stmt}
 import br.unb.cic.tip.utils.Node.*
-import br.unb.cic.tip.utils.Stmt.*
+import br.unb.cic.tip.utils._
 
 type Path = List[Node]
 

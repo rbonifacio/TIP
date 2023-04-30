@@ -2,7 +2,7 @@ package br.unb.cic.tip.utils
 
 import br.unb.cic.tip.*
 import br.unb.cic.tip.utils.Expression.*
-import br.unb.cic.tip.utils.Stmt.*
+import br.unb.cic.tip.utils._
 import br.unb.cic.tip.utils.{Expression, FunDecl, Stmt}
 
 import java.nio.file.Paths
@@ -12,7 +12,7 @@ import scala.util.parsing.input.Positional
 
 class BasicParser extends RegexParsers {
   def id: Parser[Id] = """[a-zA-Z]+""".r
-  def int: Parser[Int] = """-?[0-9]+""".r ^^ { (s) => Integer(s) }
+  def int: Parser[Integer] = """-?[0-9]+""".r ^^ { (s) => Integer(s) }
 }
 
 /* Exp → Int

@@ -2,9 +2,10 @@ package br.unb.cic.tip.syntax
 
 import org.scalatest.funsuite.AnyFunSuite
 import br.unb.cic.tip.utils.Expression.{ConstExp, EqExp}
-import br.unb.cic.tip.utils.Stmt
-import br.unb.cic.tip.utils.Stmt.{AssignmentStmt, IfElseStmt, SequenceStmt}
+import br.unb.cic.tip.utils._
 import br.unb.cic.tip.finalStmt
+
+import br.unb.cic.tip.utils.LabelSensitiveStmt.given
 
 class FinalStmtTest extends AnyFunSuite {
 
@@ -13,7 +14,7 @@ class FinalStmtTest extends AnyFunSuite {
     val s2 = AssignmentStmt("y", ConstExp(2))
     val seq = SequenceStmt(s1, s2)
 
-    assert(Set[Stmt](s2) == finalStmt(seq))
+    assert(finalStmt(seq) == Set(s2))
   }
 
   test("final of sequence for if stmt") {
@@ -22,7 +23,7 @@ class FinalStmtTest extends AnyFunSuite {
     val s3 = AssignmentStmt("z", ConstExp(3))
     val s4 = IfElseStmt(EqExp(ConstExp(1),ConstExp(2)), SequenceStmt(s1,s2), None)
 
-    assert(Set[Stmt](s2) == finalStmt(s4))
+    assert(finalStmt(s4) == Set(s2))
   }
 
   test("final of sequence for if else stmt") {
@@ -31,6 +32,6 @@ class FinalStmtTest extends AnyFunSuite {
     val s3 = AssignmentStmt("z", ConstExp(3))
     val s4 = IfElseStmt(EqExp(ConstExp(1),ConstExp(2)), SequenceStmt(s1,s2), Some(s3))
 
-    assert(Set[Stmt](s2, s3) == finalStmt(s4))
+    assert(finalStmt(s4) == Set(s2, s3))
   }
 }

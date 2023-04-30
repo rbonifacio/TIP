@@ -4,12 +4,14 @@ import br.unb.cic.tip.*
 import br.unb.cic.tip.utils.{Expression, Stmt}
 import br.unb.cic.tip.utils.Expression.*
 import br.unb.cic.tip.utils.Node.SimpleNode
-import br.unb.cic.tip.utils.Stmt.*
+import br.unb.cic.tip.utils._
 
 import scala.collection.mutable
 
+import br.unb.cic.tip.utils.LabelSensitiveStmt.given
+
 type AE = (Set[Expression], Set[Expression])
-type ResultAE = mutable.HashMap[Stmt, AE]
+type ResultAE = mutable.HashMap[LabelSensitiveStmt, AE]
 
 object AvailableExpressions {
 
@@ -25,11 +27,9 @@ object AvailableExpressions {
       AE(stmt) = (en, ex)
     }
 
-    while (explore)
-    {
+    while (explore) {
       val lastRD = AE.clone()
-      for (stmt <- blocks(program))
-      {
+      for (stmt <- blocks(program)) {
         en = entry(program, stmt, AE, allExpressions)
         ex = exit(stmt, AE, allExpressions)
         AE(stmt) = (en, ex)
@@ -40,13 +40,14 @@ object AvailableExpressions {
   }
 
   def entry(program: Stmt, stmt: Stmt, AE: ResultAE, allExpressions: Set[Expression]): Set[Expression] = {
-    if (stmt == initStmt(program)) {
+    if (stmtToLabeled(stmt) == initStmt(program)) {
       Set()
     } else {
       var res = allExpressions
       for ((from, to) <- flow(program) if to == SimpleNode(stmt)) {
         from match {
           case SimpleNode(s) => res = AE(s)._2 & res
+          case _             => throw new Error("Match error")
         }
       }
       res
@@ -57,11 +58,10 @@ object AvailableExpressions {
     (AE(stmt)._1 union gen(stmt, allExpressions)) diff kill(stmt, allExpressions)
   }
 
-
   def kill(stmt: Stmt, allExpressions: Set[Expression]): Set[Expression] = stmt match {
-    case AssignmentStmt(id, _) => allExpressions.filter(exp => expHasVariable(exp, id))
-    case _ => Set()
-  }
+      case AssignmentStmt(id, _) => allExpressions.filter(exp => expHasVariable(exp, id))
+      case _ => Set()
+    }
 
   def gen(stmt: Stmt, allExpressions: Set[Expression]): Set[Expression] = nonTrivialExpressions(stmt)
 }
