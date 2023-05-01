@@ -7,7 +7,7 @@ import br.unb.cic.tip.utils.Node.SimpleNode
 import br.unb.cic.tip.utils._
 
 type ReachingDefinition = (Set[AssignmentStmt], Set[AssignmentStmt])
-type ResultRD = mutable.HashMap[(LabelSensitiveStmt, LabelSensitiveStmt), ReachingDefinition]
+type ResultRD = mutable.HashMap[(Stmt, Stmt), ReachingDefinition]
 
 object ReachingDefinition {
 
