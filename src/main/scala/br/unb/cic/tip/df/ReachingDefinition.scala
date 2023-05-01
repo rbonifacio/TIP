@@ -4,11 +4,10 @@ import scala.collection.mutable
 import br.unb.cic.tip.*
 import br.unb.cic.tip.utils.Expression.*
 import br.unb.cic.tip.utils.Node.SimpleNode
-import br.unb.cic.tip.utils.Stmt.*
-import br.unb.cic.tip.utils.{FunDecl, Program, Stmt}
+import br.unb.cic.tip.utils._
 
 type ReachingDefinition = (Set[AssignmentStmt], Set[AssignmentStmt])
-type ResultRD = mutable.HashMap[(Stmt, Stmt), ReachingDefinition]
+type ResultRD = mutable.HashMap[(LabelSensitiveStmt, LabelSensitiveStmt), ReachingDefinition]
 
 object ReachingDefinition {
 
