@@ -5,14 +5,19 @@ import br.unb.cic.tip.*
 import br.unb.cic.tip.utils.Node.SimpleNode
 import br.unb.cic.tip.utils.Node
 
-def exportDot(cfg: Graph, path: Path): String = {
+def exportDot(cfg: Graph, path: Path = List()): String = {
   val prefix = Doc.text("digraph CFG { ")
-  val p = createPath(path)
+
   val edges = cfg.map { case (from, to) =>
       createNode(from) + Doc.space + Doc.text("->") + Doc.space + createNode(to)
   }
   var body = Doc.intercalate(Doc.text("\n"), edges)
-  body = p + body
+
+  //work with path
+  if (! path.isEmpty) {
+    body = createPath(path) + body
+  }
+
   val suffix = Doc.text("}")
   val res = body.tightBracketBy(prefix, suffix)
   res.render(20)
