@@ -43,9 +43,9 @@ In this study the next implementations  have been done:
         - [x] Valid 
         - [x] Completed
     - [x] Context Insensitivity
-    - [ ] Context Sensityvity
-        - [ ] Basic
-        - [ ] Call String
+    - [x] Context Sensityvity
+        - [x] Basic
+        - [x] Call String
         - [ ] Functional Approach
 
 # Version
