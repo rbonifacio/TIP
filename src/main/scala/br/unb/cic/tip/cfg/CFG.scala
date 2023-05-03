@@ -41,7 +41,7 @@ def flow(stmt: Stmt): Graph = stmt match {
   case IfElseStmt(_, s1, None)      => flow(s1) union Set((SimpleNode(stmt), SimpleNode(initStmt(s1))))
   case WhileStmt(_, s1)             => flow(s1) union Set((SimpleNode(stmt), SimpleNode(initStmt(s1)))) union finalStmt(s1).map(s => (SimpleNode(s),SimpleNode(stmt)))
     case AssignmentStmt(id, exp) => exp match {
-      case FunctionCallExp(NameExp(function), _)  => Set((SimpleNode(CallStmt(id, function)), StartNode(function))) union Set((EndNode(function), SimpleNode(AfterCallStmt(id, function))))
+      case FunctionCallExp(NameExp(function), _)  => Set((SimpleNode(CallStmt(id, function)), StartNode(function))) union Set((EndNode(function), SimpleNode(AfterCallStmt(id, function)))) union Set((SimpleNode(CallStmt(id, function)), SimpleNode(AfterCallStmt(id, function))))
       case _                                      => Set()
     }
   case _                            => Set()
