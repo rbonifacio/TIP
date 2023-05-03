@@ -3,13 +3,13 @@ package br.unb.cic.tip
 import org.typelevel.paiges.Doc
 import br.unb.cic.tip.*
 import br.unb.cic.tip.utils.Node.SimpleNode
-import br.unb.cic.tip.utils.Node
+import br.unb.cic.tip.utils.{AfterCallStmt, CallStmt, Node}
 
 def exportDot(cfg: Graph, path: Path = List()): String = {
   val prefix = Doc.text("digraph CFG { ")
 
   val edges = cfg.map { case (from, to) =>
-      createNode(from) + Doc.space + Doc.text("->") + Doc.space + createNode(to)
+    createNode(from) + Doc.space + Doc.text("->") + Doc.space + createNode(to) + (if (isCallStmt(from) && isCallStmt(to)) Doc.space + Doc.text("[color=\"red\"]") else Doc.text(""))
   }
   var body = Doc.intercalate(Doc.text("\n"), edges)
 
@@ -28,6 +28,14 @@ def createNode(v: Node): Doc = {
     case SimpleNode(s) => Doc.text(s.toString)
     case _ => Doc.text(v.toString)
   }) + Doc.text("\"")
+}
+
+def isCallStmt(v: Node): Boolean = v match {
+  case SimpleNode(stmt) => stmt match
+    case CallStmt(_, _) => true
+    case AfterCallStmt(_, _) => true
+    case _ => false
+  case _ => false
 }
 
 def createPath(path: Path):  Doc = {
