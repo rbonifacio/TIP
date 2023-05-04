@@ -2,7 +2,8 @@ package br.unb.cic.tip
 
 import br.unb.cic.tip.utils.{Expression, Stmt}
 import br.unb.cic.tip.utils.Expression.*
-import br.unb.cic.tip.utils._
+import br.unb.cic.tip.utils.*
+import br.unb.cic.tip.utils.Node.SimpleNode
 
 import scala.collection.immutable.Set
 
@@ -39,4 +40,21 @@ def expHasVariable(exp: Expression, id: String): Boolean = exp match {
   case ConstExp(_) => false
   case InputExp => false
   case _ => false
+}
+
+def callStatement(cfg: Graph): Set[Stmt] = {
+  cfg.map(node => callStatement(node)).foldLeft(Set())(_ union _)
+}
+
+def callStatement(edge: Edge): Set[Stmt] = {
+  callStatement(edge._1) union callStatement(edge._2)
+}
+
+def callStatement(node: Node): Set[Stmt] = node match {
+  case SimpleNode(stmt) => stmt match {
+    case CallStmt(_, _) => Set(stmt)
+    case AfterCallStmt(_, _) => Set(stmt)
+    case _ => Set()
+  }
+  case _ => Set()
 }
