@@ -6,18 +6,23 @@ import br.unb.cic.tip.utils.Node.SimpleNode
 import br.unb.cic.tip.utils.{AfterCallStmt, CallStmt, Node}
 
 def exportDot(cfg: Graph, path: Path = List()): String = {
-  val prefix = Doc.text("digraph CFG { ")
 
   val edges = cfg.map { case (from, to) =>
     createNode(from) + Doc.space + Doc.text("->") + Doc.space + createNode(to) + (if (isCallStmt(from) && isCallStmt(to)) Doc.space + Doc.text("[color=\"red\"]") else Doc.text(""))
   }
   var body = Doc.intercalate(Doc.text("\n"), edges)
 
-  //work with path
+  // add path if it was sent
   if (! path.isEmpty) {
     body = createPath(path) + body
   }
 
+  // add color nodes
+  val callNodes = callStatement(cfg).map( stmt => Doc.text("\"") + Doc.text(stmt.toString) + Doc.text("\"") + Doc.space + Doc.text("[style=filled, fillcolor=blue]"))
+  body = body + Doc.text("\n") + Doc.intercalate(Doc.text("\n"), callNodes)
+
+  // add prefix and sufix
+  val prefix = Doc.text("digraph CFG { ")
   val suffix = Doc.text("}")
   val res = body.tightBracketBy(prefix, suffix)
   res.render(20)
@@ -47,5 +52,6 @@ def createPath(path: Path):  Doc = {
   val suffix = Doc.text("}")
 
   prefix + colorNode + edges + colorBackground + suffix
-
 }
+
+//"CallStmt(c,sum)" [style=filled, fillcolor=red]
