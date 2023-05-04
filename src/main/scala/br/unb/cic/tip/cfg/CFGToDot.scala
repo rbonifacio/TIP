@@ -2,7 +2,7 @@ package br.unb.cic.tip
 
 import org.typelevel.paiges.Doc
 import br.unb.cic.tip.*
-import br.unb.cic.tip.utils.Node.SimpleNode
+import br.unb.cic.tip.utils.Node.{SimpleNode, StartNode, EndNode}
 import br.unb.cic.tip.utils.{AfterCallStmt, CallStmt, Node}
 
 def exportDot(cfg: Graph, path: Path = List()): String = {
@@ -17,9 +17,13 @@ def exportDot(cfg: Graph, path: Path = List()): String = {
     body = createPath(path) + body
   }
 
-  // add color nodes
-  val callNodes = callStatement(cfg).map( stmt => Doc.text("\"") + Doc.text(stmt.toString) + Doc.text("\"") + Doc.space + Doc.text("[style=filled, fillcolor=blue]"))
-  body = body + Doc.text("\n") + Doc.intercalate(Doc.text("\n"), callNodes)
+  // add color for call nodes
+  val callNodes = callStatement(cfg).map( stmt => createNode(stmt.toString, "blue"))
+  // add color for limit nodes (start and end)
+  val limitNodes = functions(cfg).map( stmt => createNode(StartNode(stmt).toString, "green") + Doc.space + createNode(EndNode(stmt).toString, "green"))
+
+  // add nodes that will have some styles at the end of the body
+  body = body + Doc.text("\n") + Doc.intercalate(Doc.text("\n"), limitNodes union callNodes)
 
   // add prefix and sufix
   val prefix = Doc.text("digraph CFG { ")
@@ -33,6 +37,10 @@ def createNode(v: Node): Doc = {
     case SimpleNode(s) => Doc.text(s.toString)
     case _ => Doc.text(v.toString)
   }) + Doc.text("\"")
+}
+
+def createNode(body: String, color: String): Doc = {
+  Doc.text("\"") + Doc.text(body) + Doc.text("\"") + Doc.space + Doc.text(s"[style=filled, fillcolor=$color]")
 }
 
 def isCallStmt(v: Node): Boolean = v match {
