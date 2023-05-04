@@ -1,7 +1,7 @@
 package br.unb.cic.tip.syntax
 
-import br.unb.cic.tip.{callStatement, flow}
-import br.unb.cic.tip.utils.{AfterCallStmt, AssignmentStmt, CallStmt, FunDecl, SequenceStmt}
+import br.unb.cic.tip.{callStatement, flow, functions}
+import br.unb.cic.tip.utils.{AfterCallStmt, AssignmentStmt, CallStmt, FunDecl, NopStmt, SequenceStmt}
 import br.unb.cic.tip.utils.Expression.{ConstExp, FunctionCallExp, NameExp, NullExp, VariableExp}
 import br.unb.cic.tip.utils.Node.*
 import org.scalatest.funsuite.AnyFunSuite
@@ -60,6 +60,20 @@ class CallStmtHelperTest extends AnyFunSuite {
     assert(callStatement(flow(program)) == Set(
       CallStmt(s3.name, myFunction.name),
       AfterCallStmt(s3.name, myFunction.name)
+    ))
+  }
+
+  test("test_get_functions_names") {
+
+    val myFunction1 = FunDecl("my_function_1", List(), List(), NopStmt, NullExp)
+
+    val mainFunction = FunDecl("main", List(), List(), NopStmt, NullExp)
+
+    val program = List(mainFunction, myFunction1)
+
+    assert(functions(program) == Set(
+      myFunction1.name,
+      mainFunction.name
     ))
   }
 }

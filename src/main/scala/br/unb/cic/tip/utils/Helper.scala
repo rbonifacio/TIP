@@ -3,7 +3,7 @@ package br.unb.cic.tip
 import br.unb.cic.tip.utils.{Expression, Stmt}
 import br.unb.cic.tip.utils.Expression.*
 import br.unb.cic.tip.utils.*
-import br.unb.cic.tip.utils.Node.SimpleNode
+import br.unb.cic.tip.utils.Node.*
 
 import scala.collection.immutable.Set
 
@@ -42,6 +42,9 @@ def expHasVariable(exp: Expression, id: String): Boolean = exp match {
   case _ => false
 }
 
+/**
+ * Call Statement section
+ */
 def callStatement(cfg: Graph): Set[Stmt] = {
   cfg.map(node => callStatement(node)).foldLeft(Set())(_ union _)
 }
@@ -58,3 +61,24 @@ def callStatement(node: Node): Set[Stmt] = node match {
   }
   case _ => Set()
 }
+
+/**
+ * Get List of function names 
+ */
+
+def functions(p: Program): Set[Id] = p.map(f => Set(f.name)).foldLeft(Set())(_ union _)
+
+def functions(cfg: Graph): Set[Id] = {
+  cfg.map(edge => functions(edge)).foldLeft(Set())(_ union _)
+}
+
+def functions(edge: Edge): Set[Id] = {
+  functions(edge._1) union functions(edge._2)
+}
+
+def functions(node: Node): Set[Id] = node match {
+  case SimpleNode(_) => Set()
+  case StartNode(f) => Set(f)
+  case EndNode(f) => Set(f)
+}
+
