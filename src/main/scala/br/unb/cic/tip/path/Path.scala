@@ -55,6 +55,7 @@ def validPath(callers: List[Stmt]): Boolean = callers.isEmpty match
     case CallStmt(name, function) => callers.tail.contains(AfterCallStmt(name, function)) match
       case true => validPath(callers.tail.filter( _ != AfterCallStmt(name, function)))
       case _ => false
+
 def gatherCallerAndCallee(path: Path): List[Stmt] = path.isEmpty match
   case true => List()
   case false => path.head match
