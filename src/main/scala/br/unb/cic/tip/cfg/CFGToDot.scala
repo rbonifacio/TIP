@@ -8,7 +8,7 @@ import br.unb.cic.tip.utils.{AfterCallStmt, CallStmt, Node}
 def exportDot(cfg: Graph, path: Path = List()): String = {
 
   val edges = cfg.map { case (from, to) =>
-    createNode(from) + Doc.space + Doc.text("->") + Doc.space + createNode(to) + (if (isCallStmt(from) && isCallStmt(to)) Doc.space + Doc.text("[color=\"red\"]") else Doc.text(""))
+    createNode(from) + Doc.space + Doc.text("->") + Doc.space + createNode(to) + (if (isCallStmt(from) && isCallStmt(to)) Doc.space + Doc.text("[color=\"gray\"]") else Doc.text(""))
   }
   var body = Doc.intercalate(Doc.text("\n"), edges)
 
@@ -18,9 +18,9 @@ def exportDot(cfg: Graph, path: Path = List()): String = {
   }
 
   // add color for call nodes
-  val callNodes = callStatement(cfg).map( stmt => createNode(stmt.toString, "blue"))
+  val callNodes = callStatement(cfg).map( stmt => createNode(stmt.toString, "skyblue"))
   // add color for limit nodes (start and end)
-  val limitNodes = functions(cfg).map( stmt => createNode(StartNode(stmt).toString, "green") + Doc.space + createNode(EndNode(stmt).toString, "green"))
+  val limitNodes = functions(cfg).map( stmt => createNode(StartNode(stmt).toString, "yellow") + Doc.space + createNode(EndNode(stmt).toString, "yellow"))
 
   // add nodes that will have some styles at the end of the body
   body = body + Doc.text("\n") + Doc.intercalate(Doc.text("\n"), limitNodes union callNodes)
