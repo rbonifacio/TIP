@@ -44,7 +44,7 @@ class CFGProgramTest extends AnyFunSuite {
     val program = List(sumFunction, mainFunction)
 
     val cfg = flow(program)
-    println(exportDot(cfg))
+//    println(exportDot(cfg))
   }
 
   /**
@@ -53,7 +53,7 @@ class CFGProgramTest extends AnyFunSuite {
    *    return z
    * }
    *
-   * main(){
+   * main() {
    *    a = 1
    *    b = 2
    *    c = sum(a, b)
@@ -94,7 +94,7 @@ class CFGProgramTest extends AnyFunSuite {
 
     val program = List(sumFunction, mainFunction)
 
-    val cfg = flow(program)
+//    val cfg = flow(program)
 //    println(exportDot(cfg))
   }
 
@@ -115,7 +115,7 @@ class CFGProgramTest extends AnyFunSuite {
 
     val program = List(fibonacciFunction, mainFunction)
 
-    val cfg = flow(program)
-//    println(exportDot(cfg))
+    //    val cfg = flow(program)
+    //    println(exportDot(cfg))
   }
 }
