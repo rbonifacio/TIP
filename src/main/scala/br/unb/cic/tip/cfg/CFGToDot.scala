@@ -47,7 +47,7 @@ def createPath(path: Path):  Doc = {
   val prefix = Doc.text("subgraph cluster_0 { ")
 //  val colorNode = Doc.text(  "node[color = red];")
   val colorBackground = Doc.text(  "color = white")
-  val colorEdges = Doc.text(  "[color = green]")
+  val colorEdges = if (isValidPath(path)) Doc.text(  "[color = green]") else Doc.text(  "[color = red]")
 
   val e = path.map { p => Doc.space + createNode(p) + Doc.space}
   val edges = Doc.intercalate(Doc.text("->"), e)
