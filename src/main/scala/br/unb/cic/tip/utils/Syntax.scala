@@ -43,7 +43,7 @@ enum Expression:
   case NameExp(name: Id) extends Expression // (Exp)
 
   // function-call expression
-  case FunctionCallExp(name: Expression, args: List[Expression]) extends Expression
+  case FunctionCallExp(name: Expression, args: List[Any]) extends Expression
 
   // pointer-based expressions
   case AllocExp(exp: Expression) extends Expression // alloc Exp
@@ -79,10 +79,9 @@ case class SequenceStmt(s1: Stmt, s2: Stmt) extends Stmt // Stmt Stmt
 case class StoreStmt(exp1: Expression, exp2: Expression) extends Stmt // *Exp = Exp
 case class OutputStmt(exp: Expression) extends Stmt // output Exp
 case class RecordAssignmentStmt(name: Id, field: Id, exp: Expression) extends Stmt // Id.Id = Exp;
-case class RecordStoreStmt(exp1: Expression, id: Id, exp2: Expression)
-    extends Stmt // (*Exp).Id = Exp;
-case class CallStmt(id: Id, function: Id) extends Stmt //
-case class AfterCallStmt(id: Id, function: Id) extends Stmt //
+case class RecordStoreStmt(exp1: Expression, id: Id, exp2: Expression) extends Stmt // (*Exp).Id = Exp;
+case class CallStmt(stmt: AssignmentStmt) extends Stmt //
+case class AfterCallStmt(stmt: AssignmentStmt) extends Stmt //
 case class ReturnStmt(exp: Expression) extends Stmt //
 case object NopStmt extends Stmt // nop
 

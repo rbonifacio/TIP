@@ -53,8 +53,8 @@ def findValidPath(path: Path): Boolean =
 def validPath(callers: List[Stmt]): Boolean = callers.isEmpty match
   case true => true
   case _ => callers.head match
-    case CallStmt(name, function) => callers.tail.contains(AfterCallStmt(name, function)) match
-      case true => validPath(callers.tail.filter( _ != AfterCallStmt(name, function)))
+    case CallStmt(stmt) => callers.tail.contains(AfterCallStmt(stmt)) match
+      case true => validPath(callers.tail.filter( _ != AfterCallStmt(stmt)))
       case _ => false
 
 
@@ -78,7 +78,7 @@ def gatherCallerAndCallee(path: Path): List[Stmt] = path.isEmpty match
   case true => List()
   case false => path.head match
     case SimpleNode(stmt) => stmt match
-      case CallStmt(_, _) => stmt :: gatherCallerAndCallee(path.tail)
-      case AfterCallStmt(_, _) => stmt :: gatherCallerAndCallee(path.tail)
+      case CallStmt(_) => stmt :: gatherCallerAndCallee(path.tail)
+      case AfterCallStmt(_) => stmt :: gatherCallerAndCallee(path.tail)
       case _ => gatherCallerAndCallee(path.tail)
     case _ => gatherCallerAndCallee(path.tail)

@@ -30,7 +30,7 @@ In this study the next implementations  have been done:
     - [x] Classic Algorithms
         - [ ] Available Expression
         - [ ] Live Variables
-        - [ ] Reaching Definition
+        - [x] Reaching Definition
         - [ ] Very Busy Expression
     - [ ] Monotone Framework
         - [ ] MFP
@@ -42,10 +42,10 @@ In this study the next implementations  have been done:
     - [x] Path
         - [x] Valid 
         - [x] Completed
-    - [ ] Context Insensitivity
-    - [ ] Context Sensitivity
-        - [ ] Basic
-        - [ ] Call String
+    - [x] Context Insensitivity
+    - [x] Context Sensityvity
+        - [x] Basic
+        - [x] Call String
         - [ ] Functional Approach
 
 # Version

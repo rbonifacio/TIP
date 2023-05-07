@@ -9,7 +9,7 @@ import org.scalatest.funsuite.AnyFunSuite
 class CallStmtHelperTest extends AnyFunSuite {
 
   test("find_call_stmt") {
-    val stmt = CallStmt("c", "my_function")
+    val stmt = CallStmt(AssignmentStmt("_m1", FunctionCallExp(NameExp("my_function"), List(VariableExp("x")))))
     val node = SimpleNode(stmt)
     assert(callStatement(node) == Set(stmt))
   }
@@ -58,8 +58,8 @@ class CallStmtHelperTest extends AnyFunSuite {
     val program = List(myFunction, mainFunction)
 
     assert(callStatement(flow(program)) == Set(
-      CallStmt(s3.name, myFunction.name),
-      AfterCallStmt(s3.name, myFunction.name)
+      CallStmt(s3),
+      AfterCallStmt(s3)
     ))
   }
 

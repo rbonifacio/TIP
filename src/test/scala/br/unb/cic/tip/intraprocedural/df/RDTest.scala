@@ -22,17 +22,17 @@ class RDTest extends AnyFunSuite {
 
     val RD = ReachingDefinition.run(seq)
 
-    assert( RD(s1) == (
+    assert( RD((s1, NopStmt)) == (
       Set(),
       Set(s1)
     ))
 
-    assert( RD(s2) == (
+    assert( RD((s2, NopStmt)) == (
       Set(s1),
       Set(s1, s2)
     ))
 
-    assert( RD(s3) == (
+    assert( RD((s3, NopStmt)) == (
       Set(s1, s2),
       Set(s2, s3)
     ))
@@ -55,27 +55,27 @@ class RDTest extends AnyFunSuite {
 
     val RD = ReachingDefinition.run(seq)
 
-    assert( RD(s1) == (
+    assert( RD((s1, NopStmt)) == (
       Set(),
       Set(s1)
     ))
 
-    assert( RD(s2) == (
+    assert( RD((s2, NopStmt)) == (
       Set(s1),
       Set(s1, s2)
     ))
 
-    assert( RD(s3) == (
+    assert( RD((s3, NopStmt)) == (
       Set(s1, s2),
       Set(s2, s3)
     ))
 
-    assert( RD(s4) == (
+    assert( RD((s4, NopStmt)) == (
       Set(s2, s3),
       Set(s2, s3, s4)
     ))
 
-    assert( RD(s5) == (
+    assert( RD((s5, NopStmt)) == (
       Set(s2, s3, s4),
       Set(s2, s3, s5)
     ))
@@ -91,27 +91,27 @@ class RDTest extends AnyFunSuite {
 
     val RD = ReachingDefinition.run(seq)
 
-    assert( RD(s1) == (
+    assert( RD((s1, NopStmt)) == (
       Set(),
       Set(s1)
     ))
 
-    assert( RD(s2) == (
+    assert( RD((s2, NopStmt)) == (
       Set(s1),
       Set(s1, s2)
     ))
 
-    assert( RD(s3) == (
+    assert( RD((s3, NopStmt)) == (
       Set(),
       Set(s3)
     ))
 
-    assert( RD(s4) == (
+    assert( RD((s4, NopStmt)) == (
       Set(),
       Set()
     ))
 
-    assert( RD(s5) == (
+    assert( RD((s5, NopStmt)) == (
       Set(s1, s2, s3),
       Set(s1, s3, s5)
     ))
@@ -134,22 +134,22 @@ class RDTest extends AnyFunSuite {
 
     val RD = ReachingDefinition.run(seq)
 
-    assert( RD(s1) == (
+    assert( RD((s1, NopStmt)) == (
       Set(),
       Set(s1)
     ))
 
-    assert( RD(s4) == (
+    assert( RD((s4, NopStmt)) == (
       Set(s1, s2, s3),
       Set(s1, s2, s3)
     ))
 
-    assert( RD(s2) == (
+    assert( RD((s2, NopStmt)) == (
       Set(s1, s2, s3),
       Set(s2, s3)
     ))
 
-    assert( RD(s3) == (
+    assert( RD((s3, NopStmt)) == (
       Set(s2, s3),
       Set(s2, s3)
     ))
