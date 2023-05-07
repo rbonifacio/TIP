@@ -9,7 +9,20 @@ import org.scalatest.funsuite.AnyFunSuite
 
 class CFGProgramTest extends AnyFunSuite {
 
-  test("sum program") {
+  /**
+   * sum(x, y) {
+   * z = x + y
+   * return z
+   * }
+   *
+   * main() {
+   * a = 1
+   * b = 2
+   * c = sum(a, b)
+   * print c
+   * }
+   */
+  test("sum_program") {
     //sum function
     val sumS1 = AssignmentStmt("z", AddExp(VariableExp("x"), VariableExp("y")))
     val sumS2 = ReturnStmt(VariableExp("z"))
@@ -18,11 +31,53 @@ class CFGProgramTest extends AnyFunSuite {
 
     //main function
     val mainS1 = AssignmentStmt("a", ConstExp(1))
-    val mainS2 = AssignmentStmt("b", ConstExp(1))
+    val mainS2 = AssignmentStmt("b", ConstExp(2))
     val mainS3 = AssignmentStmt("c", FunctionCallExp(NameExp(sumFunction.name), List(VariableExp("a"), VariableExp("b"))))
     val mainS4 = OutputStmt(VariableExp("c"))
-    val mainS5 = AssignmentStmt("d", ConstExp(1))
-    val mainS6 = AssignmentStmt("e", ConstExp(1))
+    val mainBody =
+      SequenceStmt(mainS1,
+        SequenceStmt(mainS2,
+          SequenceStmt(mainS3, mainS4)))
+
+    val mainFunction = FunDecl("main", List(), List("a", "b", "c"), mainBody, NullExp)
+
+    val program = List(sumFunction, mainFunction)
+
+    val cfg = flow(program)
+//    println(exportDot(cfg))
+  }
+
+  /**
+   * sum(x, y) {
+   *    z = x + y
+   *    return z
+   * }
+   *
+   * main() {
+   *    a = 1
+   *    b = 2
+   *    c = sum(a, b)
+   *    print c
+   *    d = 3
+   *    e = 4
+   *    f = sum(d, e)
+   *    print f
+   * }
+   */
+  test("sum_program_called_two_times") {
+    //sum function
+    val sumS1 = AssignmentStmt("z", AddExp(VariableExp("x"), VariableExp("y")))
+    val sumS2 = ReturnStmt(VariableExp("z"))
+    val sumBody = SequenceStmt(sumS1, sumS2)
+    val sumFunction = FunDecl("sum", List("x", "y"), List("z"), sumBody, VariableExp("z"))
+
+    //main function
+    val mainS1 = AssignmentStmt("a", ConstExp(1))
+    val mainS2 = AssignmentStmt("b", ConstExp(2))
+    val mainS3 = AssignmentStmt("c", FunctionCallExp(NameExp(sumFunction.name), List(VariableExp("a"), VariableExp("b"))))
+    val mainS4 = OutputStmt(VariableExp("c"))
+    val mainS5 = AssignmentStmt("d", ConstExp(3))
+    val mainS6 = AssignmentStmt("e", ConstExp(4))
     val mainS7 = AssignmentStmt("f", FunctionCallExp(NameExp(sumFunction.name), List(VariableExp("d"), VariableExp("e"))))
     val mainS8 = OutputStmt(VariableExp("f"))
     val mainBody =
@@ -39,7 +94,7 @@ class CFGProgramTest extends AnyFunSuite {
 
     val program = List(sumFunction, mainFunction)
 
-    val cfg = flow(program)
+//    val cfg = flow(program)
 //    println(exportDot(cfg))
   }
 
@@ -60,7 +115,7 @@ class CFGProgramTest extends AnyFunSuite {
 
     val program = List(fibonacciFunction, mainFunction)
 
-    val cfg = flow(program)
-//    println(exportDot(cfg))
+    //    val cfg = flow(program)
+    //    println(exportDot(cfg))
   }
 }

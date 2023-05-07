@@ -47,7 +47,8 @@ def path(from: Node, to: Node, cfg: Graph, visited: List[Node], limit: Int): Set
 //  }
 //}
 def findValidPath(path: Path): Boolean =
-  validPath(gatherCallerAndCallee(path))
+  validPath(gatherCallerAndCallee(path)) 
+  // && validPath2(path)
 
 def validPath(callers: List[Stmt]): Boolean = callers.isEmpty match
   case true => true
@@ -55,6 +56,24 @@ def validPath(callers: List[Stmt]): Boolean = callers.isEmpty match
     case CallStmt(stmt) => callers.tail.contains(AfterCallStmt(stmt)) match
       case true => validPath(callers.tail.filter( _ != AfterCallStmt(stmt)))
       case _ => false
+
+
+//def validPath2(path: Path) : Boolean = path match {
+//  case Nil => true
+//  case _ :: Nil => true
+//  case x :: y :: xs => x match
+//    case SimpleNode(stmt) => stmt.isInstanceOf[CallStmt] match
+//      case true => y match
+//        case SimpleNode(stmt) => stmt.isInstanceOf[AfterCallStmt] match
+//          case true => true
+//          case _ => validPath2(y :: xs)
+//      case _ => validPath2(y :: xs)
+//      case _ => validPath2 (y :: xs)
+//    case _ => validPath2 (y :: xs)
+////    if (x.isInstanceOf[CallStmt]) false else validPath2 (y :: xs)
+//}
+
+
 def gatherCallerAndCallee(path: Path): List[Stmt] = path.isEmpty match
   case true => List()
   case false => path.head match
