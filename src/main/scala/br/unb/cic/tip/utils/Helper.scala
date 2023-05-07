@@ -82,3 +82,15 @@ def functions(node: Node): Set[Id] = node match {
   case EndNode(f) => Set(f)
 }
 
+/**
+ * check if the node is a call or after-call statement
+ */
+def isCallStmt(v: Node): Boolean = v match {
+  case SimpleNode(stmt) => stmt match
+    case CallStmt(_) => true
+    case AfterCallStmt(_) => true
+    case _ => false
+  case _ => false
+}
+
+

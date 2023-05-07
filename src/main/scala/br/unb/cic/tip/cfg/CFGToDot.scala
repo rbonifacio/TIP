@@ -43,14 +43,6 @@ def createNode(body: String, color: String): Doc = {
   Doc.text("\"") + Doc.text(body) + Doc.text("\"") + Doc.space + Doc.text(s"[style=filled, fillcolor=$color]")
 }
 
-def isCallStmt(v: Node): Boolean = v match {
-  case SimpleNode(stmt) => stmt match
-    case CallStmt(_) => true
-    case AfterCallStmt(_) => true
-    case _ => false
-  case _ => false
-}
-
 def createPath(path: Path):  Doc = {
   val prefix = Doc.text("subgraph cluster_0 { ")
 //  val colorNode = Doc.text(  "node[color = red];")
