@@ -32,46 +32,23 @@ def path(from: Node, to: Node, cfg: Graph, visited: List[Node], limit: Int): Set
 }
 
 
-//def validPath(path: Path, stack: List[Stmt]): Boolean = path match
-////  case List() if stack.isEmpty => true // base case + succeeded to recognize the path
-////  case List() if ! stack.isEmpty => false // base case + failed to recognize the path
-////  case _ => { // the recursive case
-////
-////  }
-//{
-//  case List() => stack.isEmpty
-//  case _ => path.head match {
-//    case SimpleNode(stmt) => stmt match
-//      case CallStmt(_, _) => stmt :: stack
-//      case _ => false
-//  }
-//}
-def findValidPath(path: Path): Boolean =
-  validPath(gatherCallerAndCallee(path)) 
-  // && validPath2(path)
 
-def validPath(callers: List[Stmt]): Boolean = callers.isEmpty match
+def isValidPath(path: Path): Boolean =
+  areCallersBalanced(gatherCallerAndCallee(path)) && AreCallersEdgesDirected(path)
+
+def areCallersBalanced(callers: List[Stmt]): Boolean = callers.isEmpty match
   case true => true
   case _ => callers.head match
     case CallStmt(stmt) => callers.tail.contains(AfterCallStmt(stmt)) match
-      case true => validPath(callers.tail.filter( _ != AfterCallStmt(stmt)))
+      case true => areCallersBalanced(callers.tail.filter( _ != AfterCallStmt(stmt)))
       case _ => false
 
+def AreCallersEdgesDirected(path: Path) : Boolean = path match {
+  case Nil => true
+  case _ :: Nil => true
+  case x :: y :: xs => if (isCallStmt(x) && isCallStmt(y)) true else AreCallersEdgesDirected (y :: xs)
+}
 
-//def validPath2(path: Path) : Boolean = path match {
-//  case Nil => true
-//  case _ :: Nil => true
-//  case x :: y :: xs => x match
-//    case SimpleNode(stmt) => stmt.isInstanceOf[CallStmt] match
-//      case true => y match
-//        case SimpleNode(stmt) => stmt.isInstanceOf[AfterCallStmt] match
-//          case true => true
-//          case _ => validPath2(y :: xs)
-//      case _ => validPath2(y :: xs)
-//      case _ => validPath2 (y :: xs)
-//    case _ => validPath2 (y :: xs)
-////    if (x.isInstanceOf[CallStmt]) false else validPath2 (y :: xs)
-//}
 
 
 def gatherCallerAndCallee(path: Path): List[Stmt] = path.isEmpty match

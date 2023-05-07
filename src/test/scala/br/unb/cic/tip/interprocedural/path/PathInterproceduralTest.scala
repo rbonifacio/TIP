@@ -1,6 +1,6 @@
 package br.unb.cic.tip.interprocedural.path
 
-import br.unb.cic.tip.{exportDot, findValidPath, flow, path}
+import br.unb.cic.tip.{exportDot, isValidPath, flow, path}
 import br.unb.cic.tip.utils.Expression.*
 import br.unb.cic.tip.utils.Node.*
 import br.unb.cic.tip.utils.*
@@ -65,7 +65,7 @@ class PathInterproceduralTest extends AnyFunSuite {
 
     paths.foreach(x => {
       println(x.size)
-      println(s"is valid path: ${findValidPath(x)}")
+      println(s"is valid path: ${isValidPath(x)}")
       println(exportDot(cfg, x))
     })
   }
