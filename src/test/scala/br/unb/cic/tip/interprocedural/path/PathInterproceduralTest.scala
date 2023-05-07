@@ -1,9 +1,9 @@
 package br.unb.cic.tip.interprocedural.path
 
-import br.unb.cic.tip.{findValidPath, flow, path}
+import br.unb.cic.tip.{exportDot, findValidPath, flow, path}
 import br.unb.cic.tip.utils.Expression.*
 import br.unb.cic.tip.utils.Node.*
-import br.unb.cic.tip.utils._
+import br.unb.cic.tip.utils.*
 import br.unb.cic.tip.utils.{FunDecl, Stmt}
 import org.scalatest.funsuite.AnyFunSuite
 
@@ -61,10 +61,12 @@ class PathInterproceduralTest extends AnyFunSuite {
 
     val paths = path(cfg, mainFunction.name)
 
+    println(s"${paths.size} paths where found.")
+
     paths.foreach(x => {
-      println(x)
-      print("is valid path: ")
-      println(findValidPath(x))
+      println(x.size)
+      println(s"is valid path: ${findValidPath(x)}")
+      println(exportDot(cfg, x))
     })
   }
 
