@@ -34,7 +34,7 @@ def path(from: Node, to: Node, cfg: Graph, visited: List[Node], limit: Int): Set
 
 
 def isValidPath(path: Path): Boolean =
-  areCallersBalanced(gatherCallerAndCallee(path)) && AreCallersEdgesDirected(path)
+  areCallersBalanced(gatherCallerAndCallee(path)) && AreCallersEdgesNotDirected(path)
 
 def areCallersBalanced(callers: List[Stmt]): Boolean = callers.isEmpty match
   case true => true
@@ -43,10 +43,10 @@ def areCallersBalanced(callers: List[Stmt]): Boolean = callers.isEmpty match
       case true => areCallersBalanced(callers.tail.filter( _ != AfterCallStmt(stmt)))
       case _ => false
 
-def AreCallersEdgesDirected(path: Path) : Boolean = path match {
+def AreCallersEdgesNotDirected(path: Path) : Boolean = path match {
   case Nil => true
   case _ :: Nil => true
-  case x :: y :: xs => if (isCallStmt(x) && isCallStmt(y)) true else AreCallersEdgesDirected (y :: xs)
+  case x :: y :: xs => if (isCallStmt(x) && isCallStmt(y)) false else AreCallersEdgesNotDirected (y :: xs)
 }
 
 
