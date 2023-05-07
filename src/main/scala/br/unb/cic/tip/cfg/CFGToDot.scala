@@ -45,8 +45,8 @@ def createNode(body: String, color: String): Doc = {
 
 def isCallStmt(v: Node): Boolean = v match {
   case SimpleNode(stmt) => stmt match
-    case CallStmt(_, _) => true
-    case AfterCallStmt(_, _) => true
+    case CallStmt(_) => true
+    case AfterCallStmt(_) => true
     case _ => false
   case _ => false
 }

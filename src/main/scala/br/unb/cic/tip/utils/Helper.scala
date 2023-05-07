@@ -55,8 +55,8 @@ def callStatement(edge: Edge): Set[Stmt] = {
 
 def callStatement(node: Node): Set[Stmt] = node match {
   case SimpleNode(stmt) => stmt match {
-    case CallStmt(_, _) => Set(stmt)
-    case AfterCallStmt(_, _) => Set(stmt)
+    case CallStmt(_) => Set(stmt)
+    case AfterCallStmt(_) => Set(stmt)
     case _ => Set()
   }
   case _ => Set()
