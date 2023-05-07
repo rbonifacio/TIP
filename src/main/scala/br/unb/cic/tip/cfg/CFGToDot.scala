@@ -53,13 +53,16 @@ def isCallStmt(v: Node): Boolean = v match {
 
 def createPath(path: Path):  Doc = {
   val prefix = Doc.text("subgraph cluster_0 { ")
-  val colorNode = Doc.text(  "node[color = red];")
+//  val colorNode = Doc.text(  "node[color = red];")
   val colorBackground = Doc.text(  "color = white")
-  val e = path.map { p => Doc.space + createNode(p) + Doc.space}
-  val edges = Doc.intercalate(Doc.text(""), e)
-  val suffix = Doc.text("}")
+  val colorEdges = Doc.text(  "[color = green]")
 
-  prefix + colorNode + edges + colorBackground + suffix
+  val e = path.map { p => Doc.space + createNode(p) + Doc.space}
+  val edges = Doc.intercalate(Doc.text("->"), e)
+  val suffix = Doc.text(" }")
+
+  prefix + edges + colorEdges + Doc.space + colorBackground + suffix
+//  prefix + edges + Doc.space + Doc.text("[color=\"green\"]") + suffix
 }
 
 //"CallStmt(c,sum)" [style=filled, fillcolor=red]
