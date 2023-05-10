@@ -10,6 +10,55 @@ import org.scalatest.funsuite.AnyFunSuite
 class PathInterproceduralTest extends AnyFunSuite {
 
   /**
+   * sum(x, y) {
+   * z = x + y
+   * return z
+   * }
+   *
+   * main() {
+   * a = 1
+   * b = 1
+   * c = sum(a, b)
+   * }
+   */
+
+  test("path_f-sum_simple_call") {
+    //sum function
+    val sumS1 = AssignmentStmt("z", AddExp(VariableExp("x"), VariableExp("y")))
+    val sumS2 = ReturnStmt(VariableExp("z"))
+    val sumBody = SequenceStmt(sumS1, sumS2)
+    val sumFunction = FunDecl("sum", List("x", "y"), List("z"), sumBody, VariableExp("z"))
+
+    //main function
+    val mainS1 = AssignmentStmt("a", ConstExp(1))
+    val mainS2 = AssignmentStmt("b", ConstExp(1))
+    val mainS3 = AssignmentStmt("c", FunctionCallExp(NameExp(sumFunction.name), List(VariableExp("a"), VariableExp("b"))))
+    val mainS4 = OutputStmt(VariableExp("c"))
+    val mainBody =
+      SequenceStmt(mainS1,
+        SequenceStmt(mainS2,
+          SequenceStmt(mainS3, mainS4)
+        )
+      )
+
+    val mainFunction = FunDecl("main", List(), List("a", "b", "c"), mainBody, NullExp)
+
+    val program = List(sumFunction, mainFunction)
+
+    val cfg = flow(program)
+
+    val paths = path(cfg, mainFunction.name)
+
+    println(s"${paths.size} paths where found.")
+
+    paths.foreach(x => {
+      println(x.size)
+      println(s"is valid path: ${isValidPath(x)}")
+      println(exportDot(cfg, x))
+    })
+  }
+
+  /**
    sum(x, y) {
     z = x + y
     return z
@@ -27,7 +76,7 @@ class PathInterproceduralTest extends AnyFunSuite {
    }
    */
 
-  test("sum program") {
+  test("path_f-sum_two_calls\"") {
     //sum function
     val sumS1 = AssignmentStmt("z", AddExp(VariableExp("x"), VariableExp("y")))
     val sumS2 = ReturnStmt(VariableExp("z"))
@@ -63,14 +112,14 @@ class PathInterproceduralTest extends AnyFunSuite {
 
     println(s"${paths.size} paths where found.")
 
-    paths.foreach(x => {
-      println(x.size)
-      println(s"is valid path: ${isValidPath(x)}")
-      println(exportDot(cfg, x))
-    })
+//    paths.foreach(x => {
+//      println(x.size)
+//      println(s"is valid path: ${isValidPath(x)}")
+//      println(exportDot(cfg, x))
+//    })
   }
 
-  test("fibonacci program") {
+  test("fibonacci_path") {
     //fibonacci function
     val fibonacciBodyIf: Stmt = AssignmentStmt("v", AddExp(VariableExp("u"), ConstExp(1)))
     val fibonacciBodyElseS1: Stmt = AssignmentStmt("_f1", FunctionCallExp(NameExp("fibonacci"), List(SubExp(VariableExp("z"), ConstExp(1)), VariableExp("u"), VariableExp("v"))))
