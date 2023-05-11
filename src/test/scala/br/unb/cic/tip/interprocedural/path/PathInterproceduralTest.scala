@@ -51,11 +51,11 @@ class PathInterproceduralTest extends AnyFunSuite {
 
     println(s"${paths.size} paths where found.")
 
-    paths.foreach(x => {
-      println(x.size)
-      println(s"is valid path: ${isValidPath(x)}")
-      println(exportDot(cfg, x))
-    })
+//    paths.foreach(x => {
+//      println(x.size)
+//      println(s"is valid path: ${isValidPath(x)}")
+//      println(exportDot(cfg, x))
+//    })
   }
 
   /**
@@ -112,14 +112,14 @@ class PathInterproceduralTest extends AnyFunSuite {
 
     println(s"${paths.size} paths where found.")
 
-//    paths.foreach(x => {
-//      println(x.size)
-//      println(s"is valid path: ${isValidPath(x)}")
-//      println(exportDot(cfg, x))
-//    })
+    paths.foreach(x => {
+      println(x.size)
+      println(s"is valid path: ${isValidPath(x)}")
+      println(exportDot(cfg, x))
+    })
   }
 
-  test("fibonacci_path") {
+  test("path_from_fibonacci") {
     //fibonacci function
     val fibonacciBodyIf: Stmt = AssignmentStmt("v", AddExp(VariableExp("u"), ConstExp(1)))
     val fibonacciBodyElseS1: Stmt = AssignmentStmt("_f1", FunctionCallExp(NameExp("fibonacci"), List(SubExp(VariableExp("z"), ConstExp(1)), VariableExp("u"), VariableExp("v"))))
