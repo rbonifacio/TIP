@@ -33,6 +33,7 @@ case class FunDecl(
 enum Expression:
   case ConstExp(v: Integer) extends Expression // 0 | 1 | -1 | 2 | -2 | ...
   case VariableExp(name: Id) extends Expression // x | y | z | . . .
+  case PointerExp(name: Id) extends Expression // x | y | z | . . .
   case AddExp(left: Expression, right: Expression) extends Expression // Exp + Exp
   case SubExp(left: Expression, right: Expression) extends Expression // Exp - Exp
   case MultiExp(left: Expression, right: Expression) extends Expression // Exp * Exp
@@ -73,6 +74,7 @@ object Stmt {
 }
 
 case class AssignmentStmt(name: Id, exp: Expression) extends Stmt // Id = Exp
+//case class AssignmentPointerStmt(name: Expression, exp: Expression) extends Stmt // Id = Exp
 case class IfElseStmt(condition: Expression, s1: Stmt, s2: Option[Stmt]) extends Stmt // if ( Exp ) { Stmt } [else { Stmt }]
 case class WhileStmt(condition: Expression, stmt: Stmt) extends Stmt // while ( Exp ) { Stmt }
 case class SequenceStmt(s1: Stmt, s2: Stmt) extends Stmt // Stmt Stmt

@@ -78,6 +78,15 @@ def variables(exp: Expression): Set[VariableExp] = exp match {
   case _                      => Set()
 }
 
+def variables(stmt: Stmt): Set[VariableExp] = stmt match {
+  case SequenceStmt(s1, s2)   => variables(s1) union variables(s2)
+  case AssignmentStmt(name, exp) => variables(exp) + VariableExp(name)
+  case IfElseStmt(condition, _, _) => variables(condition)
+  case WhileStmt(condition, _) => variables(condition)
+  case OutputStmt(exp) => variables(exp)
+  case _ => Set()
+}
+
 def successors(stmt: Stmt, cfg: Graph): Set[LabelSensitiveStmt] = {
   var res = Set[LabelSensitiveStmt]()
   for ((from, to) <- cfg if from == SimpleNode(stmt)) {
