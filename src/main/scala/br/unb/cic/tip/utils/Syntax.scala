@@ -74,7 +74,7 @@ object Stmt {
 }
 
 case class AssignmentStmt(name: Id, exp: Expression) extends Stmt // Id = Exp
-//case class AssignmentPointerStmt(name: Expression, exp: Expression) extends Stmt // Id = Exp
+case class AssignmentPointerStmt(name: Expression, exp: Expression) extends Stmt // Id = Exp
 case class IfElseStmt(condition: Expression, s1: Stmt, s2: Option[Stmt]) extends Stmt // if ( Exp ) { Stmt } [else { Stmt }]
 case class WhileStmt(condition: Expression, stmt: Stmt) extends Stmt // while ( Exp ) { Stmt }
 case class SequenceStmt(s1: Stmt, s2: Stmt) extends Stmt // Stmt Stmt
