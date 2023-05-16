@@ -21,7 +21,6 @@ object BasicAndersen {
       pt(variable) = Set()
     }
 
-
     while (explore) {
       val lastPT = pt.clone()
 

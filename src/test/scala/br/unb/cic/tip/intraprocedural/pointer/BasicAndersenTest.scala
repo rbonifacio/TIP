@@ -27,16 +27,10 @@ class BasicAndersenTest extends AnyFunSuite {
     val s5 = AssignmentPointerStmt(VariableExp("e"), LoadExp(PointerExp("c")))
     val s6 = AssignmentPointerStmt(LoadExp(PointerExp("f")), VariableExp("e"))
     val s7 = AssignmentPointerStmt(VariableExp("g"), NullExp)
-    //main function7u
+
     val mainBody = SequenceStmt(s1, SequenceStmt(s2, SequenceStmt(s3, SequenceStmt(s4, SequenceStmt(s5, SequenceStmt(s6, s7))))))
 
-//    val mainFunction = FunDecl("main", List(), List(), mainBody, NullExp)
-
-//    val program = List(mainFunction)
-
     val RD = BasicAndersen.pointTo(mainBody)
-
-//    println(RD)
 
     assert(RD(s1.name.asInstanceOf[VariableExp]) == (
       Set(ConstExp(1))
@@ -99,8 +93,6 @@ class BasicAndersenTest extends AnyFunSuite {
     val mainBody = SequenceStmt(s1, SequenceStmt(s2, SequenceStmt(s3, SequenceStmt(s4, SequenceStmt(s5, SequenceStmt(s6, SequenceStmt(s7, s8)))))))
 
     val RD = BasicAndersen.pointTo(mainBody)
-
-    //    println(RD)
 
     assert(RD(VariableExp("p")) == (
       Set(AllocExp(NullExp), VariableExp("y"), VariableExp("z"))
