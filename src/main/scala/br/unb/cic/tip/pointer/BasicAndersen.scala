@@ -7,29 +7,30 @@ import br.unb.cic.tip.utils.{AssignmentPointerStmt, AssignmentStmt, Expression, 
 
 import scala.collection.mutable
 
-type Result = mutable.HashMap[VariableExp, Set[Expression]]
+type Cell = Expression
+type Result = mutable.HashMap[VariableExp, Set[Cell]]
 
 object BasicAndersen {
 
-  var result: Result = mutable.HashMap()
+  var pt: Result = mutable.HashMap()
 
-  def pt(body: Stmt): Result = {
+  def pointTo(body: Stmt): Result = {
 
     var explore = true
     for (variable <- variables(body)) {
-      result(variable) = Set()
+      pt(variable) = Set()
     }
 
 
     while (explore) {
-      val lastLV = result.clone()
+      val lastPT = pt.clone()
 
       for (stmt <- blocks(body)) {
           gen(stmt)
       }
-      explore = lastLV != result
+      explore = lastPT != pt
     }
-    result
+    pt
   }
 
   def gen(stmt: Stmt): Unit = stmt match {
@@ -40,7 +41,7 @@ object BasicAndersen {
       case (l: VariableExp, r: PointerExp) => ruleCopy(l, r) // assign: x1 = x2
       case (l: VariableExp, r: LoadExp) => ruleLoad(l, r) // load: x1 = *x2
 //      case (l: VariableExp, r: NullExp) => ruleDeferred(l, r) // deferred: X = null
-      case (l: VariableExp, _) => result(l) = result(l) + right //any other thing
+      case (l: VariableExp, _) => pt(l) = pt(l) + right // any other thing
     }
   }
 
@@ -49,7 +50,7 @@ object BasicAndersen {
    * Rule: alloc-i ∈ pt(x)
    */
   def ruleAllocation(left: VariableExp, right: AllocExp): Unit = {
-      result(left) = result(left) + right
+    pt(left) = pt(left) + right
   }
 
   /**
@@ -57,7 +58,7 @@ object BasicAndersen {
    * Rule: x2 ∈ pt(x1)
    */
   def ruleLocation(left: VariableExp, right: LocationExp): Unit = {
-    result(left) = result(left) + VariableExp(right.pointer)
+    pt(left) = pt(left) + VariableExp(right.pointer)
   }
 
   /**
@@ -65,7 +66,7 @@ object BasicAndersen {
    * Rule: pt(x2) ⊆ pt(x1)
    */
   def ruleCopy(left: VariableExp, right: PointerExp): Unit = {
-    result(left) = result(left) union result(VariableExp(right.name))
+    pt(left) = pt(left) union pt(VariableExp(right.name))
   }
 
     /**
@@ -74,8 +75,8 @@ object BasicAndersen {
      */
     def ruleLoad(left: VariableExp, right: LoadExp): Unit = right.exp match {
         case PointerExp (name) => {
-          for (v <- result (VariableExp (name) ) if v.isInstanceOf[VariableExp] )
-            result (left) = result (left) union result (v.asInstanceOf[VariableExp] )
+          for (v <- pt(VariableExp (name) ) if v.isInstanceOf[VariableExp] )
+            pt(left) = pt(left) union pt(v.asInstanceOf[VariableExp] )
           }
     }
 
@@ -85,8 +86,8 @@ object BasicAndersen {
      */
     def ruleStore(left: LoadExp, right: Expression): Unit = left.exp match {
       case PointerExp(name) => {
-        for (v <- result(VariableExp(name)) if v.isInstanceOf[VariableExp])
-          result(v.asInstanceOf[VariableExp]) = result(v.asInstanceOf[VariableExp]) union result(variables(right).head)
+        for (v <- pt(VariableExp(name)) if v.isInstanceOf[VariableExp])
+          pt(v.asInstanceOf[VariableExp]) = pt(v.asInstanceOf[VariableExp]) union pt(variables(right).head)
       }
     }
 
@@ -94,7 +95,7 @@ object BasicAndersen {
      * Case: x1 = null
      * Rule: pt(x1) = ()
      */
-//    def ruleDeferred(left: VariableExp, right: NullExp): Unit = result(left) = Set()
+//    def ruleDeferred(left: VariableExp, right: NullExp): Unit = pt(left) = Set()
 }
 //template for rules
 //  /**
