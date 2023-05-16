@@ -34,26 +34,73 @@ object BasicAndersen {
 
   def gen(stmt: Stmt): Unit = stmt match {
     case AssignmentPointerStmt(left, right) => (left, right) match {
-      case (l: LoadExp, _) => l.exp match { // assign: *X1 = X2
-         case PointerExp (name) => {
-           for (v <- result (VariableExp(name)) if v.isInstanceOf[VariableExp] )
-             result (v.asInstanceOf[VariableExp]) = result (v.asInstanceOf[VariableExp]) union result (variables(right).head)
-         }
-         case _ => Set ()
-      }
-      case (l: VariableExp, r: AllocExp) => result(l) = result(l) + r // alloc: X = alloc P
-      case (l: VariableExp, r: LocationExp) => result(l) = result(l) + VariableExp(r.pointer)  // location: X1 = &X2
-      case (l: VariableExp, r: PointerExp) => result(l) = result(l) union result(VariableExp(r.name)) // assign: X1 = X2
-      case (l: VariableExp, r: LoadExp) => r.exp match { // assign: *X1 = X2
-        case PointerExp(name) => {
-          for (v <- result(VariableExp(name)) if v.isInstanceOf[VariableExp])
-            result(l) = result(l) union result(v.asInstanceOf[VariableExp])
-        }
-        case _ => Set()
-      }
-//      case (l: VariableExp, r: NullExp) => result(l) = Set() pre: X = null
+      case (l: LoadExp, _) => ruleStore(l, right) // store: *x1 = x2
+      case (l: VariableExp, r: AllocExp) => ruleAllocation(l, r) // alloc: x = alloc i
+      case (l: VariableExp, r: LocationExp) => ruleLocation (l, r) // location: x1 = &x2
+      case (l: VariableExp, r: PointerExp) => ruleCopy(l, r) // assign: x1 = x2
+      case (l: VariableExp, r: LoadExp) => ruleLoad(l, r) // load: x1 = *x2
+//      case (l: VariableExp, r: NullExp) => ruleDeferred(l, r) // deferred: X = null
       case (l: VariableExp, _) => result(l) = result(l) + right //any other thing
     }
-    case _ => Set()
   }
+
+  /**
+   * Case: x = alloc i
+   * Rule: alloc-i ∈ pt(x)
+   */
+  def ruleAllocation(left: VariableExp, right: AllocExp): Unit = {
+      result(left) = result(left) + right
+  }
+
+  /**
+   * Case: x1 = &x2
+   * Rule: x2 ∈ pt(x1)
+   */
+  def ruleLocation(left: VariableExp, right: LocationExp): Unit = {
+    result(left) = result(left) + VariableExp(right.pointer)
+  }
+
+  /**
+   * Case: x1 = x2
+   * Rule: pt(x2) ⊆ pt(x1)
+   */
+  def ruleCopy(left: VariableExp, right: PointerExp): Unit = {
+    result(left) = result(left) union result(VariableExp(right.name))
+  }
+
+    /**
+     * Case: x1 = *x2
+     * Rule: c ∈ pt(x2) =⇒ pt(c) ⊆ pt(x1) for each c ∈ Cells
+     */
+    def ruleLoad(left: VariableExp, right: LoadExp): Unit = right.exp match {
+        case PointerExp (name) => {
+          for (v <- result (VariableExp (name) ) if v.isInstanceOf[VariableExp] )
+            result (left) = result (left) union result (v.asInstanceOf[VariableExp] )
+          }
+    }
+
+    /**
+     * Case: *x1 = x2
+     * Rule: c ∈ pt(x1) =⇒ pt(x2) ⊆ pt(c) for each c ∈ Cells
+     */
+    def ruleStore(left: LoadExp, right: Expression): Unit = left.exp match {
+      case PointerExp(name) => {
+        for (v <- result(VariableExp(name)) if v.isInstanceOf[VariableExp])
+          result(v.asInstanceOf[VariableExp]) = result(v.asInstanceOf[VariableExp]) union result(variables(right).head)
+      }
+    }
+
+    /**
+     * Case: x1 = null
+     * Rule: pt(x1) = ()
+     */
+//    def ruleDeferred(left: VariableExp, right: NullExp): Unit = result(left) = Set()
 }
+//template for rules
+//  /**
+//   * Case:
+//   * Rule:
+//   */
+//  def rule?(left: VariableExp, right: ?): Unit = {
+//
+//  }
