@@ -33,14 +33,16 @@ object BasicAndersen {
   }
 
   def gen(stmt: Stmt): Unit = stmt match {
-//    case AssignmentPointerStmt(id, exp) =>  id match {
-////      case PointerExp(v) => Set()
-////      case LoadExp(v) => genLeft(VariableExp(v.name), exp)
-//      case _ => {
-//        genLeft(variables(id).head, exp)
-//      }
-//    }
-    case AssignmentPointerStmt(id, exp) => genLeft(variables(id).head, exp)
+    case AssignmentPointerStmt(id, exp) =>  id match {
+      case LoadExp(e) => e match { // assign: *X1 = X2
+          case PointerExp (name) => {
+            for (v <- result (VariableExp(name)) if v.isInstanceOf[VariableExp] )
+              result (v.asInstanceOf[VariableExp]) = result (v.asInstanceOf[VariableExp]) union result (variables(exp).head)
+          }
+          case _ => Set ()
+      }
+      case _ => genLeft(variables(id).head, exp)
+    }
     case _ => Set()
   }
 
