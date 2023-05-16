@@ -49,25 +49,20 @@ object BasicAndersen {
    * Case: x = alloc i
    * Rule: alloc-i ∈ pt(x)
    */
-  def ruleAllocation(left: VariableExp, right: AllocExp): Unit = {
-    pt(left) = pt(left) + right
-  }
+  def ruleAllocation(left: VariableExp, right: AllocExp): Unit = pt(left) = pt(left) + right
 
   /**
    * Case: x1 = &x2
    * Rule: x2 ∈ pt(x1)
    */
-  def ruleLocation(left: VariableExp, right: LocationExp): Unit = {
-    pt(left) = pt(left) + VariableExp(right.pointer)
-  }
+  def ruleLocation(left: VariableExp, right: LocationExp): Unit = pt(left) = pt(left) + VariableExp(right.pointer)
 
   /**
    * Case: x1 = x2
    * Rule: pt(x2) ⊆ pt(x1)
    */
-  def ruleCopy(left: VariableExp, right: PointerExp): Unit = {
-    pt(left) = pt(left) union pt(VariableExp(right.name))
-  }
+  def ruleCopy(left: VariableExp, right: PointerExp): Unit = pt(left) = pt(left) union pt(VariableExp(right.name))
+
 
     /**
      * Case: x1 = *x2
