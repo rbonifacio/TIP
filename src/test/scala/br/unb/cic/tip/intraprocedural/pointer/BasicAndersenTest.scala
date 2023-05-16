@@ -34,7 +34,7 @@ class BasicAndersenTest extends AnyFunSuite {
 
 //    val program = List(mainFunction)
 
-    val RD = BasicAndersen.run(mainBody)
+    val RD = BasicAndersen.pt(mainBody)
 
 //    println(RD)
 
@@ -98,7 +98,7 @@ class BasicAndersenTest extends AnyFunSuite {
 
     val mainBody = SequenceStmt(s1, SequenceStmt(s2, SequenceStmt(s3, SequenceStmt(s4, SequenceStmt(s5, SequenceStmt(s6, SequenceStmt(s7, s8)))))))
 
-    val RD = BasicAndersen.run(mainBody)
+    val RD = BasicAndersen.pt(mainBody)
 
     //    println(RD)
 

@@ -13,7 +13,7 @@ object BasicAndersen {
 
   var result: Result = mutable.HashMap()
 
-  def run(body: Stmt): Result = {
+  def pt(body: Stmt): Result = {
 
     var explore = true
     for (variable <- variables(body)) {
