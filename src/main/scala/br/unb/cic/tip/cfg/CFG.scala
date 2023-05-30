@@ -1,6 +1,7 @@
 package br.unb.cic.tip
 
-import br.unb.cic.tip.utils._
+import br.unb.cic.tip.svf.GraphSVF
+import br.unb.cic.tip.utils.*
 import br.unb.cic.tip.utils.Expression.*
 import br.unb.cic.tip.utils.{Expression, FunDecl, Id, Node, Program, Stmt}
 import br.unb.cic.tip.utils.Node.*
@@ -137,3 +138,5 @@ def expDependsOn(exp: Expression, id: String): Boolean = exp match {
   case InputExp          => false
   case _                 => true
 }
+
+def convertSVFtoGraph(svf: GraphSVF): Graph = svf.map { case(l,r) => (SVFNode(l), SVFNode(r)) }.foldLeft(Set())(_ + _)
