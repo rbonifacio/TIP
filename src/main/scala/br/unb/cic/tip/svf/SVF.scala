@@ -1,8 +1,8 @@
 package br.unb.cic.tip.svf
 
 
-import br.unb.cic.tip.{blocks, getMethodBody}
-import br.unb.cic.tip.utils.{Expression, FunDecl, Program, ReturnStmt, Stmt}
+import br.unb.cic.tip.{blocks, getMethodBody, variables}
+import br.unb.cic.tip.utils.{AssignmentStmt, Expression, FunDecl, Program, ReturnStmt, Stmt}
 import br.unb.cic.tip.utils.Expression.{FunctionCallExp, LoadExp, PointerExp, VariableExp}
 
 import scala.collection.mutable
@@ -28,6 +28,7 @@ object SVF {
   }
 
   private def analyzer(stmt: Stmt): Unit = stmt match {
+    case AssignmentStmt(left, right) => rulePhi(VariableExp(left), right)
     case _ => Set()
   }
 
@@ -43,7 +44,9 @@ object SVF {
    *  - v1@l1-> v3@l
    *  - v2@l2-> v3@l
    */
-  private def rulePhi(left: VariableExp, right: Stmt): Unit = {}
+  private def rulePhi(left: VariableExp, right: Expression): Unit = {
+      variables(right).foreach(v => graph += (v, left))
+  }
 
 
   /**
