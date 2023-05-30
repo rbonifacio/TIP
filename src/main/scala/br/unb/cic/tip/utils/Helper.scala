@@ -77,9 +77,9 @@ def functions(edge: Edge): Set[Id] = {
 }
 
 def functions(node: Node): Set[Id] = node match {
-  case SimpleNode(_) => Set()
   case StartNode(f) => Set(f)
   case EndNode(f) => Set(f)
+  case _ => Set()
 }
 
 /**
