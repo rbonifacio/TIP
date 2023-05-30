@@ -1,5 +1,7 @@
 package br.unb.cic.tip.utils
 
+import br.unb.cic.tip.utils.Expression.VariableExp
+
 /**
  * The abstract syntax definition of the Tiny Imperative
  * Language.
@@ -92,6 +94,7 @@ enum Node:
   case StartNode(function: Id) extends Node
   case EndNode(function: Id) extends Node
   case SimpleNode(stmt: Stmt) extends Node
+  case SVFNode(variable: Expression) extends Node
 
 class LabelSensitiveStmt(val s: Stmt) {
   override def equals(x: Any): Boolean = {
