@@ -1,8 +1,8 @@
 package br.unb.cic.tip.svf
 
 import br.unb.cic.tip.{convertSVFtoGraph, exportDot}
-import br.unb.cic.tip.utils.{AssignmentStmt, FunDecl, SequenceStmt}
-import br.unb.cic.tip.utils.Expression.{AddExp, ConstExp, NullExp, VariableExp}
+import br.unb.cic.tip.utils.{AssignmentPointerStmt, AssignmentStmt, FunDecl, SequenceStmt}
+import br.unb.cic.tip.utils.Expression.{AddExp, AllocExp, ConstExp, NullExp, PointerExp, VariableExp}
 import br.unb.cic.tip.utils.Node.SimpleNode
 import org.scalatest.funsuite.AnyFunSuite
 
@@ -38,6 +38,32 @@ class SVFTest extends AnyFunSuite {
     )
     assert(expected == svf)
 
-    println(exportDot(convertSVFtoGraph(svf)))
+//    println(exportDot(convertSVFtoGraph(svf)))
   }
+
+  /**
+   * p = alloc i1
+   * q = alloc i2
+   * p = q
+   */
+  test("test_simple_rule_copy") {
+    val s1 = AssignmentPointerStmt(PointerExp("p"), AllocExp(NullExp))
+    val s2 = AssignmentPointerStmt(PointerExp("q"), AllocExp(ConstExp(1)))
+    val s3 = AssignmentPointerStmt(PointerExp("p"), PointerExp("q"))
+
+    val mainBody = SequenceStmt(s1, SequenceStmt(s2, s3))
+    val mainFunction = FunDecl("main", List(), List(), mainBody, NullExp)
+
+    val program = List(mainFunction)
+
+    val svf = SVF.run(program)
+
+    val expected = Set(
+      (PointerExp("q"), PointerExp("p"))
+    )
+    assert(expected == svf)
+
+//    println(exportDot(convertSVFtoGraph(svf)))
+  }
+
 }

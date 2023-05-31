@@ -2,7 +2,7 @@ package br.unb.cic.tip.svf
 
 
 import br.unb.cic.tip.{blocks, getMethodBody, variables}
-import br.unb.cic.tip.utils.{AssignmentStmt, Expression, FunDecl, Program, ReturnStmt, Stmt}
+import br.unb.cic.tip.utils.{AssignmentPointerStmt, AssignmentStmt, Expression, FunDecl, Program, ReturnStmt, Stmt}
 import br.unb.cic.tip.utils.Expression.{FunctionCallExp, LoadExp, PointerExp, VariableExp}
 
 import scala.collection.mutable
@@ -17,6 +17,7 @@ object SVF {
   private var graph: GraphSVF = Set()
 
   def run(program: Program): GraphSVF = {
+    graph = Set()
     run(getMethodBody(program))
   }
 
@@ -29,14 +30,22 @@ object SVF {
 
   private def analyzer(stmt: Stmt): Unit = stmt match {
     case AssignmentStmt(left, right) => rulePhi(VariableExp(left), right)
+    case AssignmentPointerStmt(left, right) => pointersOperations(left, right)
     case _ => Set()
+  }
+
+  private def pointersOperations(left: Expression, right: Expression): Unit = {
+    (left, right) match {
+      case (l: PointerExp, r: PointerExp) => ruleCopy(l, r) // l: p = q
+      case _ =>
+    }
   }
 
   /**
    * Case: l: p = q
    * Rule: q@l1 -> p@l
   */
-  private def ruleCopy(left: PointerExp, right: PointerExp): Unit = {}
+  private def ruleCopy(left: PointerExp, right: PointerExp): Unit = graph += (right, left)
 
   /**
    * Case: l: v3 = phi(v1, v2)
