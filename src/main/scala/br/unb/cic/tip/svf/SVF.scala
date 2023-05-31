@@ -46,16 +46,16 @@ object SVF {
   }
 
   /**
-   * Case: l: p = q
-   * Rule: q@l1 -> p@l
+   * Case: L: p = q
+   * Rule: q@L1 -> p@L
   */
   private def ruleCopy(left: PointerExp, right: PointerExp): Unit = graph += (right, left)
 
   /**
-   * Case: l: v3 = phi(v1, v2)
+   * Case: L: v3 = phi(v1, v2)
    * Rule:
-   *  - v1@l1-> v3@l
-   *  - v2@l2-> v3@l
+   *  - v1@L1-> v3@L
+   *  - v2@L2-> v3@L
    */
   private def rulePhi(left: VariableExp, right: Expression): Unit = {
       variables(right).foreach(v => graph += (v, left))
@@ -67,17 +67,17 @@ object SVF {
    *
    * Case: l: p = *q
    * Rule: ∀ o pt(q)
-   *  - o@ln -> p@l
+   *  - ∀ o@Ln -> p@L
    */
   private def ruleLoad(left: PointerExp, right: LoadExp): Unit = {}
 
 
   /**
    * This is an "use and definition" operation so its represented by [o = x(o1)]
-   * Case: l: *p = q
+   * Case: L: *p = q
    * Rule: ∀ o pt(p)
-   *  - q@l1 -> o@l (strong)
-   *  - o1@l1 --> o@l (weak)
+   *  - q@L1 -> ∀ o@L (strong)
+   *  - o1@L1 --> ∀ o@L (weak)
    */
   private def ruleStore(left: LoadExp, right: PointerExp): Unit = {}
 
