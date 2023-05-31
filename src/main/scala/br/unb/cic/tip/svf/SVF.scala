@@ -37,6 +37,10 @@ object SVF {
   private def pointersOperations(left: Expression, right: Expression): Unit = {
     (left, right) match {
       case (l: PointerExp, r: PointerExp) => ruleCopy(l, r) // l: p = q
+      case (l: PointerExp, r: LoadExp) =>  // l: p = *q
+      case (l: LoadExp, r: PointerExp) =>  // l: *p = q
+//      case call rule
+//      case return rule
       case _ =>
     }
   }
