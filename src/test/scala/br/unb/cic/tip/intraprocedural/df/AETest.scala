@@ -18,11 +18,11 @@ class AETest extends AnyFunSuite {
    */
   test("test_ae_stmts") {
 
-    val s1 = AssignmentStmt("y", VariableExp("x"))
-    val s2 = AssignmentStmt("x", AddExp(ConstExp(5), ConstExp(2)))
-    val s3 = AssignmentStmt("y", AddExp(ConstExp(1), VariableExp("y")))
-    val s4 = AssignmentStmt("z", AddExp(VariableExp("y"), VariableExp("x")))
-    val s5 = AssignmentStmt("x", ConstExp(3))
+    val s1 = AssignmentStmt(VariableExp("y"), VariableExp("x"))
+    val s2 = AssignmentStmt(VariableExp("x"), AddExp(ConstExp(5), ConstExp(2)))
+    val s3 = AssignmentStmt(VariableExp("y"), AddExp(ConstExp(1), VariableExp("y")))
+    val s4 = AssignmentStmt(VariableExp("z"), AddExp(VariableExp("y"), VariableExp("x")))
+    val s5 = AssignmentStmt(VariableExp("x"), ConstExp(3))
 
     val seq = SequenceStmt(s1, SequenceStmt(s2, SequenceStmt(s3, SequenceStmt(s4, s5))))
 
@@ -63,10 +63,10 @@ class AETest extends AnyFunSuite {
       }
    */
   test("test_ae_example_from_SPA_p.67") {
-    val s1 = AssignmentStmt("z", AddExp(VariableExp("a"), VariableExp("b")))
-    val s2 = AssignmentStmt("y", MultiExp(VariableExp("a"), VariableExp("b")))
-    val s4 = AssignmentStmt("a", AddExp(VariableExp("a"), ConstExp(1)))
-    val s5 = AssignmentStmt("x", AddExp(VariableExp("a"), VariableExp("b")))
+    val s1 = AssignmentStmt(VariableExp("z"), AddExp(VariableExp("a"), VariableExp("b")))
+    val s2 = AssignmentStmt(VariableExp("y"), MultiExp(VariableExp("a"), VariableExp("b")))
+    val s4 = AssignmentStmt(VariableExp("a"), AddExp(VariableExp("a"), ConstExp(1)))
+    val s5 = AssignmentStmt(VariableExp("x"), AddExp(VariableExp("a"), VariableExp("b")))
     val s3 = WhileStmt(
       GTExp(VariableExp("y"), AddExp(VariableExp("a"), VariableExp("b"))),
       SequenceStmt(s4, s5)
@@ -116,9 +116,9 @@ class AETest extends AnyFunSuite {
         y = x + 3           {x + 3},  {x + 3}
      */
 
-    val s1 = AssignmentStmt("y", AddExp(VariableExp("x"), ConstExp(3)))
-    val s2 = AssignmentStmt("z", ConstExp(8))
-    val s3 = AssignmentStmt("y", AddExp(VariableExp("x"), ConstExp(3)))
+    val s1 = AssignmentStmt(VariableExp("y"), AddExp(VariableExp("x"), ConstExp(3)))
+    val s2 = AssignmentStmt(VariableExp("z"), ConstExp(8))
+    val s3 = AssignmentStmt(VariableExp("y"), AddExp(VariableExp("x"), ConstExp(3)))
 
     val seq = SequenceStmt(s1, SequenceStmt(s2, s3))
 

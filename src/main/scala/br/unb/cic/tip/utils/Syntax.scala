@@ -63,26 +63,9 @@ enum Expression:
 /** 
 * Algebraic data type for statements 
 */
-
-case class AssignmentStmt(name: Expression.VariableExp, exp: Expression) extends Stmt // Id = Exp
-case class SequenceStmt(s1: Stmt, s2: Stmt) extends Stmt // Stmt Stmt
-case object NopStmt extends Stmt // nop
-
-//algebraic
-case class IfElseStmt(condition: Expression, s1: Stmt, s2: Option[Stmt]) extends Stmt // if ( Exp ) { Stmt } [else { Stmt }]
-case class WhileStmt(condition: Expression, stmt: Stmt) extends Stmt // while ( Exp ) { Stmt }
-
-//function
-case class CallStmt(stmt: AssignmentStmt) extends Stmt //
-case class AfterCallStmt(stmt: AssignmentStmt) extends Stmt //
-case class ReturnStmt(exp: Expression) extends Stmt //
-
-/**
- * Algebraic data type for statements
- */
 enum Stmt:
   //basic
-  case AssignmentStmt(name: Id, exp: Expression) extends Stmt // Id = Exp
+  case AssignmentStmt(name: Expression.VariableExp, exp: Expression) extends Stmt // Id = Exp
   case SequenceStmt(s1: Stmt, s2: Stmt) extends Stmt // Stmt Stmt
   case NopStmt extends Stmt // nop
 
