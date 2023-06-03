@@ -156,36 +156,33 @@ class RDTest extends AnyFunSuite {
   }
 
   /**
-   * p = alloc _ 1
-   * q = alloc _ 2
-   * p = q
+   * p = alloc _ 1      entry:{}                    exit:{(p,s1)}
+   * q = alloc _ 2      entry:{(p,s1)}              exit:{(p,s1), (q, s2)}
+   * p = q              entry:{(p,s1), (q, s2)}     exit:{(p,s3), (q, s2)}
    */
   test("test_rd_using_pointers") {
-    val s1 = AssignmentStmt("p", AllocExp(ConstExp(1)))
-    val s2 = AssignmentStmt("q", AllocExp(ConstExp(2)))
-    val s3 = AssignmentStmt("n", SubExp(VariableExp("n"), ConstExp(1)))
+    val s1 = AssignmentStmt(VariableExp("p"), AllocExp(ConstExp(1)))
+    val s2 = AssignmentStmt(VariableExp("q"), AllocExp(ConstExp(2)))
+    val s3 = AssignmentStmt(VariableExp("p"), VariableExp("q"))
     val seq = SequenceStmt(s1, SequenceStmt(s2, s3))
 
     val RD = ReachingDefinition.run(seq)
 
-//    assert(RD((s1, NopStmt)) == (
-//      Set(),
-//      Set(s1)
-//    ))
-//
-//    assert(RD((s4, NopStmt)) == (
-//      Set(s1, s2, s3),
-//      Set(s1, s2, s3)
-//    ))
-//
-//    assert(RD((s2, NopStmt)) == (
-//      Set(s1, s2, s3),
-//      Set(s2, s3)
-//    ))
-//
-//    assert(RD((s3, NopStmt)) == (
-//      Set(s2, s3),
-//      Set(s2, s3)
-//    ))
+    println(RD)
+
+    assert(RD((s1, NopStmt)) == (
+      Set(),
+      Set(s1)
+    ))
+
+    assert(RD((s2, NopStmt)) == (
+      Set(s1),
+      Set(s1, s2)
+    ))
+
+    assert(RD((s3, NopStmt)) == (
+      Set(s1, s2),
+      Set(s2, s3)
+    ))
   }
 }
