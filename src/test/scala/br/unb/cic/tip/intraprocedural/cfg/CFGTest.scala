@@ -3,15 +3,15 @@ package br.unb.cic.tip.intraprocedural.cfg
 import br.unb.cic.tip.*
 import br.unb.cic.tip.utils.Expression.*
 import br.unb.cic.tip.utils.Node.*
-import br.unb.cic.tip.utils._
+import br.unb.cic.tip.utils.Stmt.*
 import br.unb.cic.tip.utils.FunDecl
 import org.scalatest.funsuite.AnyFunSuite
 
 class CFGTest extends AnyFunSuite {
 
   test("cfg simple stmts") {
-    val s1 = AssignmentStmt("x", ConstExp(1))
-    val s2 = AssignmentStmt("y", ConstExp(2))
+    val s1 = AssignmentStmt(VariableExp("x"), ConstExp(1))
+    val s2 = AssignmentStmt(VariableExp("y"), ConstExp(2))
     val seq = SequenceStmt(s1, s2)
 
     val expected = Set(
@@ -29,9 +29,9 @@ class CFGTest extends AnyFunSuite {
       }
    */
   test("cfg factorial") {
-    val s1 = AssignmentStmt("f", ConstExp(1))
-    val s2 = AssignmentStmt("f", MultiExp(VariableExp("f"), VariableExp("n")))
-    val s3 = AssignmentStmt("n", SubExp(VariableExp("n"), ConstExp(1)))
+    val s1 = AssignmentStmt(VariableExp("f"), ConstExp(1))
+    val s2 = AssignmentStmt(VariableExp("f"), MultiExp(VariableExp("f"), VariableExp("n")))
+    val s3 = AssignmentStmt(VariableExp("n"), SubExp(VariableExp("n"), ConstExp(1)))
     val s4 = SequenceStmt(s2,s3)
     val s5 = WhileStmt(GTExp(VariableExp("n"), ConstExp(0)),s4)
     val s6 = SequenceStmt(s1, s5)
@@ -46,9 +46,9 @@ class CFGTest extends AnyFunSuite {
   }
 
   test("Test CFG using function with only statements") {
-    val s1 = AssignmentStmt("x", ConstExp(1))
-    val s2 = AssignmentStmt("y", ConstExp(1))
-    val s3 = AssignmentStmt("z", AddExp(VariableExp("x"),VariableExp("y")))
+    val s1 = AssignmentStmt(VariableExp("x"), ConstExp(1))
+    val s2 = AssignmentStmt(VariableExp("y"), ConstExp(1))
+    val s3 = AssignmentStmt(VariableExp("z"), AddExp(VariableExp("x"),VariableExp("y")))
 
     val body = SequenceStmt(s1, SequenceStmt(s2, s3))
     val function = FunDecl("sum", List(), List(), body, VariableExp("z"))
@@ -74,9 +74,9 @@ class CFGTest extends AnyFunSuite {
       }
    */
   test("Test CFG using function: Factorial") {
-    val s1 = AssignmentStmt("f", ConstExp(1))
-    val s2 = AssignmentStmt("f", MultiExp(VariableExp("f"), VariableExp("n")))
-    val s3 = AssignmentStmt("n", SubExp(VariableExp("n"), ConstExp(1)))
+    val s1 = AssignmentStmt(VariableExp("f"), ConstExp(1))
+    val s2 = AssignmentStmt(VariableExp("f"), MultiExp(VariableExp("f"), VariableExp("n")))
+    val s3 = AssignmentStmt(VariableExp("n"), SubExp(VariableExp("n"), ConstExp(1)))
     val s4 = SequenceStmt(s2,s3)
     val s5 = WhileStmt(GTExp(VariableExp("n"), ConstExp(0)),s4)
     val s6 = SequenceStmt(s1, s5)
@@ -105,10 +105,10 @@ class CFGTest extends AnyFunSuite {
    * e = 5
    */
   test("Function for if else stmt") {
-    val s1 = AssignmentStmt("a", ConstExp(1))
-    val s2 = AssignmentStmt("b", ConstExp(2))
-    val s3 = AssignmentStmt("c", ConstExp(3))
-    val s4 = AssignmentStmt("d", ConstExp(4))
+    val s1 = AssignmentStmt(VariableExp("a"), ConstExp(1))
+    val s2 = AssignmentStmt(VariableExp("b"), ConstExp(2))
+    val s3 = AssignmentStmt(VariableExp("c"), ConstExp(3))
+    val s4 = AssignmentStmt(VariableExp("d"), ConstExp(4))
     val s5 = IfElseStmt(EqExp(VariableExp("x"),ConstExp(2)), SequenceStmt(s2,s3), Some(s4))
 
     val body = SequenceStmt(s1, s5)
@@ -130,10 +130,10 @@ class CFGTest extends AnyFunSuite {
   }
 
   test("cfg using function") {
-    val s1 = AssignmentStmt("a", ConstExp(1))
-    val s2 = AssignmentStmt("b", ConstExp(2))
-    val s3 = AssignmentStmt("c", ConstExp(3))
-    val s4 = AssignmentStmt("d", ConstExp(4))
+    val s1 = AssignmentStmt(VariableExp("a"), ConstExp(1))
+    val s2 = AssignmentStmt(VariableExp("b"), ConstExp(2))
+    val s3 = AssignmentStmt(VariableExp("c"), ConstExp(3))
+    val s4 = AssignmentStmt(VariableExp("d"), ConstExp(4))
     val s5 = IfElseStmt(EqExp(VariableExp("x"),ConstExp(2)), SequenceStmt(s2,s3), Some(s4))
 
     val body = SequenceStmt(s1, s5)

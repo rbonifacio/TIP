@@ -2,8 +2,9 @@ package br.unb.cic.tip
 
 import org.typelevel.paiges.Doc
 import br.unb.cic.tip.*
-import br.unb.cic.tip.utils.Node.{SimpleNode, StartNode, EndNode}
-import br.unb.cic.tip.utils.{AfterCallStmt, CallStmt, Node}
+import br.unb.cic.tip.utils.Node
+import br.unb.cic.tip.utils.Node.{EndNode, SimpleNode, StartNode}
+import br.unb.cic.tip.utils.Stmt.{AfterCallStmt, CallStmt}
 
 def exportDot(cfg: Graph, path: Path = List()): String = {
 

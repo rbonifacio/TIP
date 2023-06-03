@@ -3,7 +3,7 @@ package br.unb.cic.tip.intraprocedural.df.mfp
 import br.unb.cic.tip.*
 import br.unb.cic.tip.utils.Expression.*
 import br.unb.cic.tip.utils.Node.*
-import br.unb.cic.tip.utils._
+import br.unb.cic.tip.utils.Stmt.*
 import br.unb.cic.tip.df.mfp.LiveVariableMFP
 import org.scalatest.funsuite.AnyFunSuite
 
@@ -14,9 +14,9 @@ class LVTest extends AnyFunSuite {
     */
   test("test_lv_with_only_statements") {
 
-    val s1 = AssignmentStmt("x", VariableExp("a"))
-    val s2 = AssignmentStmt("y", VariableExp("b"))
-    val s3 = AssignmentStmt("x", ConstExp(3))
+    val s1 = AssignmentStmt(VariableExp("x"), VariableExp("a"))
+    val s2 = AssignmentStmt(VariableExp("y"), VariableExp("b"))
+    val s3 = AssignmentStmt(VariableExp("x"), ConstExp(3))
 
     val seq = SequenceStmt(s1, SequenceStmt(s2, s3))
     val LV = LiveVariableMFP.run(seq)
@@ -48,8 +48,8 @@ class LVTest extends AnyFunSuite {
     */
   test("test_rd_with_output") {
 
-    val s1 = AssignmentStmt("x", VariableExp("a"))
-    val s2 = AssignmentStmt("y", AddExp(VariableExp("b"), ConstExp(1)))
+    val s1 = AssignmentStmt(VariableExp("x"), VariableExp("a"))
+    val s2 = AssignmentStmt(VariableExp("y"), AddExp(VariableExp("b"), ConstExp(1)))
     val s3 = OutputStmt(VariableExp("x"))
 
     val seq = SequenceStmt(s1, SequenceStmt(s2, s3))
@@ -82,9 +82,9 @@ class LVTest extends AnyFunSuite {
     */
   test("test_lv_with_if") {
 
-    val s2 = AssignmentStmt("x", VariableExp("a"))
+    val s2 = AssignmentStmt(VariableExp("x"), VariableExp("a"))
     val s1 = IfElseStmt(GTExp(VariableExp("x"), VariableExp("y")), s2, None)
-    val s3 = AssignmentStmt("y", ConstExp(1))
+    val s3 = AssignmentStmt(VariableExp("y"), ConstExp(1))
     val seq = SequenceStmt(s1, s3)
     val LV = LiveVariableMFP.run(seq)
 
@@ -116,16 +116,16 @@ class LVTest extends AnyFunSuite {
     */
   test("test_lv_using_if_else") {
 
-    val s1 = AssignmentStmt("x", ConstExp(2))
-    val s2 = AssignmentStmt("y", ConstExp(4))
-    val s3 = AssignmentStmt("x", ConstExp(1))
+    val s1 = AssignmentStmt(VariableExp("x"), ConstExp(2))
+    val s2 = AssignmentStmt(VariableExp("y"), ConstExp(4))
+    val s3 = AssignmentStmt(VariableExp("x"), ConstExp(1))
 
-    val s5 = AssignmentStmt("z", VariableExp("y"))
-    val s6 = AssignmentStmt("z", MultiExp(VariableExp("y"), VariableExp("y")))
+    val s5 = AssignmentStmt(VariableExp("z"), VariableExp("y"))
+    val s6 = AssignmentStmt(VariableExp("z"), MultiExp(VariableExp("y"), VariableExp("y")))
     val s4 =
       IfElseStmt(GTExp(VariableExp("y"), VariableExp("x")), s5, Option(s6))
 
-    val s7 = AssignmentStmt("x", VariableExp("z"))
+    val s7 = AssignmentStmt(VariableExp("x"), VariableExp("z"))
 
     val seq =
       SequenceStmt(s1, SequenceStmt(s2, SequenceStmt(s3, SequenceStmt(s4, s7))))
@@ -187,7 +187,7 @@ class LVTest extends AnyFunSuite {
     */
   test("test_lv_using_while") {
 
-    val s2 = AssignmentStmt("x", AddExp(VariableExp("x"), ConstExp(1)))
+    val s2 = AssignmentStmt(VariableExp("x"), AddExp(VariableExp("x"), ConstExp(1)))
     val s1 = WhileStmt(GTExp(VariableExp("x"), ConstExp(10)), s2)
     val s3 = OutputStmt(VariableExp("x"))
     val seq = SequenceStmt(s1, s3)
