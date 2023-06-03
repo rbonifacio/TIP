@@ -139,4 +139,4 @@ def expDependsOn(exp: Expression, id: String): Boolean = exp match {
   case _                 => true
 }
 
-def convertSVFtoGraph(svf: GraphSVF): Graph = svf.map { case(l,r) => (SVFNode(l), SVFNode(r)) }.foldLeft(Set())(_ + _)
+def convertSVFtoGraph(svf: GraphSVF): Graph = svf.map { case(l,r) => (SVFNode(l._1, l._2), SVFNode(r._1, r._2)) }.foldLeft(Set())(_ + _)

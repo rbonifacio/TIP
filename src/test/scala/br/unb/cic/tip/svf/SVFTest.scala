@@ -1,6 +1,6 @@
 package br.unb.cic.tip.svf
 
-import br.unb.cic.tip.{exportDot}
+import br.unb.cic.tip.{convertSVFtoGraph, exportDot}
 import br.unb.cic.tip.utils.{AssignmentPointerStmt, AssignmentStmt, FunDecl, SequenceStmt}
 import br.unb.cic.tip.utils.Expression.{AddExp, AllocExp, ConstExp, NullExp, PointerExp, VariableExp}
 import br.unb.cic.tip.utils.Node.SimpleNode
@@ -38,7 +38,7 @@ class SVFTest extends AnyFunSuite {
     )
     assert(expected == svf)
 
-//    println(exportDot(convertSVFtoGraph(svf)))
+    println(exportDot(convertSVFtoGraph(svf)))
   }
 
 //  /**
