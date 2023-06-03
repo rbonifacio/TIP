@@ -10,13 +10,13 @@ import org.scalatest.funsuite.AnyFunSuite
 class CallStmtHelperTest extends AnyFunSuite {
 
   test("find_call_stmt") {
-    val stmt = CallStmt(AssignmentStmt("_m1", FunctionCallExp(NameExp("my_function"), List(VariableExp("x")))))
+    val stmt = CallStmt(AssignmentStmt(VariableExp("_m1"), FunctionCallExp(NameExp("my_function"), List(VariableExp("x")))))
     val node = SimpleNode(stmt)
     assert(callStatement(node) == Set(stmt))
   }
 
   test("find_call_stmt_using_simple_node") {
-    val stmt = AssignmentStmt("x", ConstExp(2))
+    val stmt = AssignmentStmt(VariableExp("x"), ConstExp(2))
     val node = SimpleNode(stmt)
     assert(callStatement(node) == Set())
   }
@@ -43,13 +43,13 @@ class CallStmtHelperTest extends AnyFunSuite {
    */
   test("test_rd_using_only_statements") {
 
-    val m1 = AssignmentStmt("a", ConstExp(999))
+    val m1 = AssignmentStmt(VariableExp("a"), ConstExp(999))
     val myFunction = FunDecl("myFunction", List("x"), List(), m1, NullExp)
 
-    val s1 = AssignmentStmt("x", ConstExp(1))
-    val s2 = AssignmentStmt("y", ConstExp(2))
-    val s3 = AssignmentStmt("_m1", FunctionCallExp(NameExp(myFunction.name), List(VariableExp("x"))))
-    val s4 = AssignmentStmt("z", ConstExp(3))
+    val s1 = AssignmentStmt(VariableExp("x"), ConstExp(1))
+    val s2 = AssignmentStmt(VariableExp("y"), ConstExp(2))
+    val s3 = AssignmentStmt(VariableExp("_m1"), FunctionCallExp(NameExp(myFunction.name), List(VariableExp("x"))))
+    val s4 = AssignmentStmt(VariableExp("z"), ConstExp(3))
 
     //main function
     val mainBody = SequenceStmt(s1, SequenceStmt(s2, SequenceStmt(s3, s4)))

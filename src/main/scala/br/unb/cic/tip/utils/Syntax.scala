@@ -5,8 +5,8 @@ package br.unb.cic.tip.utils
  * Language.
  */
 type Program = List[FunDecl]
-
 type Id = String
+//type Int = Integer
 type Field = (Id, Expression)
 
 /** Algebraic definition of function declaration.
@@ -61,33 +61,35 @@ enum Expression:
   case FieldAccess(record: Expression, field: Id) // Exp . Id
   case InputExp extends Expression // input
 
-/**
- * Algebraic data type for statements
- */
+/** 
+* Algebraic data type for statements 
+*/
 enum Stmt:
-  // Basic
-  case AssignmentStmt(name: Id, exp: Expression) extends Stmt // Id = Exp
+  //basic
+  case AssignmentStmt(name: Expression.VariableExp, exp: Expression) extends Stmt // Id = Exp
   case SequenceStmt(s1: Stmt, s2: Stmt) extends Stmt // Stmt Stmt
-  case OutputStmt(exp: Expression) extends Stmt // output Exp
-  case ReturnStmt(exp: Expression) extends Stmt // return Exp
   case NopStmt extends Stmt // nop
 
-  // Conditional
+  //algebraic
   case IfElseStmt(condition: Expression, s1: Stmt, s2: Option[Stmt]) extends Stmt // if ( Exp ) { Stmt } [else { Stmt }]
   case WhileStmt(condition: Expression, stmt: Stmt) extends Stmt // while ( Exp ) { Stmt }
 
-  // Function
+  //function
   case CallStmt(stmt: Stmt) extends Stmt //
   case AfterCallStmt(stmt: Stmt) extends Stmt //
+  case ReturnStmt(exp: Expression) extends Stmt //
 
-  // Pointers
+  //pointers
   case StoreStmt(exp1: Expression, exp2: Expression) extends Stmt // *Exp = Exp
+  case OutputStmt(exp: Expression) extends Stmt // output Exp
 
-  // Records
+  //records
   case RecordAssignmentStmt(name: Id, field: Id, exp: Expression) extends Stmt // Id.Id = Exp;
   case RecordStoreStmt(exp1: Expression, id: Id, exp2: Expression) extends Stmt // (*Exp).Id = Exp;
 
-/** Node Types */
+/**
+ * Node Types
+ */
 enum Node:
   case StartNode(function: Id) extends Node
   case EndNode(function: Id) extends Node
