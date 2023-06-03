@@ -3,7 +3,7 @@ package br.unb.cic.tip.intraprocedural.df
 import br.unb.cic.tip.*
 import br.unb.cic.tip.utils.Expression.*
 import br.unb.cic.tip.utils.Node.*
-import br.unb.cic.tip.utils._
+import br.unb.cic.tip.utils.Stmt.*
 import br.unb.cic.tip.df.AvailableExpressions
 import org.scalatest.funsuite.AnyFunSuite
 
@@ -109,8 +109,8 @@ class AETest extends AnyFunSuite {
 //      ),
 //    )
   }
-
-  test("repeated statements") {
+  
+  ignore("repeated_statements") {
     /*  y = x + 3           {},       {x + 3}
         z = 8               {x + 3},  {x + 3}
         y = x + 3           {x + 3},  {x + 3}

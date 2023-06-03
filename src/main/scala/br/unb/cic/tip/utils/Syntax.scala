@@ -60,23 +60,10 @@ enum Expression:
   case FieldAccess(record: Expression, field: Id) // Exp . Id
   case InputExp extends Expression // input
 
+/** 
+* Algebraic data type for statements 
+*/
 
-abstract class Stmt {
-  val label = Stmt.getLabel()
-}
-
-object Stmt {
-  var label = 0
-
-  def getLabel(): Int = {
-    label += 1
-    label
-  }
-}
-
-/** Algebraic data type for statements */
-
-//basic
 case class AssignmentStmt(name: Expression.VariableExp, exp: Expression) extends Stmt // Id = Exp
 case class SequenceStmt(s1: Stmt, s2: Stmt) extends Stmt // Stmt Stmt
 case object NopStmt extends Stmt // nop
@@ -90,41 +77,36 @@ case class CallStmt(stmt: AssignmentStmt) extends Stmt //
 case class AfterCallStmt(stmt: AssignmentStmt) extends Stmt //
 case class ReturnStmt(exp: Expression) extends Stmt //
 
-//pointers
-case class StoreStmt(exp1: Expression, exp2: Expression) extends Stmt // *Exp = Exp
-case class OutputStmt(exp: Expression) extends Stmt // output Exp
+/**
+ * Algebraic data type for statements
+ */
+enum Stmt:
+  //basic
+  case AssignmentStmt(name: Id, exp: Expression) extends Stmt // Id = Exp
+  case SequenceStmt(s1: Stmt, s2: Stmt) extends Stmt // Stmt Stmt
+  case NopStmt extends Stmt // nop
 
-//records
-case class RecordAssignmentStmt(name: Id, field: Id, exp: Expression) extends Stmt // Id.Id = Exp;
-case class RecordStoreStmt(exp1: Expression, id: Id, exp2: Expression) extends Stmt // (*Exp).Id = Exp;
+  //algebraic
+  case IfElseStmt(condition: Expression, s1: Stmt, s2: Option[Stmt]) extends Stmt // if ( Exp ) { Stmt } [else { Stmt }]
+  case WhileStmt(condition: Expression, stmt: Stmt) extends Stmt // while ( Exp ) { Stmt }
+
+  //function
+  case CallStmt(stmt: Stmt) extends Stmt //
+  case AfterCallStmt(stmt: Stmt) extends Stmt //
+  case ReturnStmt(exp: Expression) extends Stmt //
+
+  //pointers
+  case StoreStmt(exp1: Expression, exp2: Expression) extends Stmt // *Exp = Exp
+  case OutputStmt(exp: Expression) extends Stmt // output Exp
+
+  //records
+  case RecordAssignmentStmt(name: Id, field: Id, exp: Expression) extends Stmt // Id.Id = Exp;
+  case RecordStoreStmt(exp1: Expression, id: Id, exp2: Expression) extends Stmt // (*Exp).Id = Exp;
 
 /**
  * Node Types
  */
-
 enum Node:
   case StartNode(function: Id) extends Node
   case EndNode(function: Id) extends Node
   case SimpleNode(stmt: Stmt) extends Node
-
-class LabelSensitiveStmt(val s: Stmt) {
-  override def equals(x: Any): Boolean = {
-    if (x.isInstanceOf[Stmt]) {
-      val otherStmt = x.asInstanceOf[Stmt]
-      s.label == otherStmt.label && s == otherStmt
-    } else if (x.isInstanceOf[LabelSensitiveStmt]) {
-      val otherStmt = x.asInstanceOf[LabelSensitiveStmt]
-      s.label == otherStmt.s.label && s == otherStmt.s
-    } else {
-      false
-    }
-  }
-
-  override def hashCode(): Int = s.hashCode()
-}
-
-object LabelSensitiveStmt {
-  given stmtToLabeled: Conversion[Stmt, LabelSensitiveStmt] =
-    LabelSensitiveStmt(_)
-  given labeledToStmt: Conversion[LabelSensitiveStmt, Stmt] = _.s
-}
