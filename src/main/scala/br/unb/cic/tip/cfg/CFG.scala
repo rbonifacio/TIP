@@ -92,8 +92,6 @@ def variables(stmt: Stmt): Set[VariableExp] = stmt match {
   case _ => Set()
 }
 
-def successors(stmt: Stmt, cfg: Graph): Set[LabelSensitiveStmt] = {
-  var res = Set[LabelSensitiveStmt]()
 def successors(stmt: Stmt, cfg: Graph): Set[Stmt] = {
   var res = Set[Stmt]()
   for ((from, to) <- cfg if from == SimpleNode(stmt)) {
