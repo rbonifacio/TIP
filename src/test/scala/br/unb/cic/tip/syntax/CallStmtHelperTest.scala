@@ -1,9 +1,10 @@
 package br.unb.cic.tip.syntax
 
 import br.unb.cic.tip.{callStatement, flow, functions}
-import br.unb.cic.tip.utils.{AfterCallStmt, AssignmentStmt, CallStmt, FunDecl, NopStmt, SequenceStmt}
+import br.unb.cic.tip.utils.{FunDecl}
 import br.unb.cic.tip.utils.Expression.{ConstExp, FunctionCallExp, NameExp, NullExp, VariableExp}
 import br.unb.cic.tip.utils.Node.*
+import br.unb.cic.tip.utils.Stmt.*
 import org.scalatest.funsuite.AnyFunSuite
 
 class CallStmtHelperTest extends AnyFunSuite {

@@ -3,7 +3,7 @@ package br.unb.cic.tip.intraprocedural.cfg
 import br.unb.cic.tip.*
 import br.unb.cic.tip.utils.Expression.*
 import br.unb.cic.tip.utils.Node.*
-import br.unb.cic.tip.utils._
+import br.unb.cic.tip.utils.Stmt.*
 import br.unb.cic.tip.utils.FunDecl
 import org.scalatest.funsuite.AnyFunSuite
 

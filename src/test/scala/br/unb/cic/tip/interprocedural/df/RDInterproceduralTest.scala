@@ -5,6 +5,7 @@ import br.unb.cic.tip.df.ReachingDefinition
 import br.unb.cic.tip.utils.Expression.*
 import br.unb.cic.tip.utils.FunDecl
 import br.unb.cic.tip.utils.Node.*
+import br.unb.cic.tip.utils.Stmt.*
 import br.unb.cic.tip.utils._
 import org.scalatest.funsuite.AnyFunSuite
 

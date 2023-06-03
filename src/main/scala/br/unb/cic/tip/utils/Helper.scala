@@ -4,6 +4,7 @@ import br.unb.cic.tip.utils.{Expression, Stmt}
 import br.unb.cic.tip.utils.Expression.*
 import br.unb.cic.tip.utils.*
 import br.unb.cic.tip.utils.Node.*
+import br.unb.cic.tip.utils.Stmt.*
 
 import scala.collection.immutable.Set
 

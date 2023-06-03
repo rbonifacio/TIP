@@ -3,7 +3,8 @@ package br.unb.cic.tip.df
 import br.unb.cic.tip.*
 import br.unb.cic.tip.utils.Expression.*
 import br.unb.cic.tip.utils.Node.SimpleNode
-import br.unb.cic.tip.utils._
+import br.unb.cic.tip.utils.Stmt
+import br.unb.cic.tip.utils.Stmt.*
 
 import scala.collection.mutable
 

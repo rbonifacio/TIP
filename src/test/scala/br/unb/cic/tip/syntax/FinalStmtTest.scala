@@ -2,10 +2,10 @@ package br.unb.cic.tip.syntax
 
 import org.scalatest.funsuite.AnyFunSuite
 import br.unb.cic.tip.utils.Expression.{ConstExp, EqExp}
-import br.unb.cic.tip.utils._
+import br.unb.cic.tip.utils.Stmt.*
 import br.unb.cic.tip.finalStmt
 
-import br.unb.cic.tip.utils.LabelSensitiveStmt.given
+import br.unb.cic.tip.utils.Stmt.given
 
 class FinalStmtTest extends AnyFunSuite {
 

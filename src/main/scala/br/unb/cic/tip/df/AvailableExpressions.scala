@@ -4,14 +4,14 @@ import br.unb.cic.tip.*
 import br.unb.cic.tip.utils.{Expression, Stmt}
 import br.unb.cic.tip.utils.Expression.*
 import br.unb.cic.tip.utils.Node.SimpleNode
-import br.unb.cic.tip.utils._
+import br.unb.cic.tip.utils.Stmt.AssignmentStmt
 
 import scala.collection.mutable
 
-import br.unb.cic.tip.utils.LabelSensitiveStmt.given
+import br.unb.cic.tip.utils.Stmt.given
 
 type AE = (Set[Expression], Set[Expression])
-type ResultAE = mutable.HashMap[LabelSensitiveStmt, AE]
+type ResultAE = mutable.HashMap[Stmt, AE]
 
 object AvailableExpressions {
 
@@ -40,7 +40,7 @@ object AvailableExpressions {
   }
 
   def entry(program: Stmt, stmt: Stmt, AE: ResultAE, allExpressions: Set[Expression]): Set[Expression] = {
-    if (stmtToLabeled(stmt) == initStmt(program)) {
+    if (stmt == initStmt(program)) {
       Set()
     } else {
       var res = allExpressions
