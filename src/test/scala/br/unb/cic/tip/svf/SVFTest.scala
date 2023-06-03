@@ -23,8 +23,7 @@ class SVFTest extends AnyFunSuite {
     val s4 = AssignmentStmt("d", AddExp(VariableExp("b"), VariableExp("c")))
     val s5 = AssignmentStmt("e", VariableExp("c"))
 
-    val mainBody = SequenceStmt(s1, SequenceStmt(s2, s3))
-//    val mainBody = SequenceStmt(s1, SequenceStmt(s2, SequenceStmt(s3, SequenceStmt(s4, s5))))
+    val mainBody = SequenceStmt(s1, SequenceStmt(s2, SequenceStmt(s3, SequenceStmt(s4, s5))))
     val mainFunction = FunDecl("main", List(), List(), mainBody, NullExp)
 
     val program = List(mainFunction)
@@ -33,9 +32,9 @@ class SVFTest extends AnyFunSuite {
 
     val expected = Set(
       ((s1, VariableExp("a")), (s3, VariableExp("c"))),
-//      (VariableExp("b"), VariableExp("d")),
-//      (VariableExp("c"), VariableExp("d")),
-//      (VariableExp("c"), VariableExp("e"))
+      ((s2, VariableExp("b")), (s4, VariableExp("d"))),
+      ((s3, VariableExp("c")), (s4, VariableExp("d"))),
+      ((s3, VariableExp("c")), (s5, VariableExp("e")))
     )
     assert(expected == svf)
 
