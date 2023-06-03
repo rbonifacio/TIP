@@ -28,8 +28,8 @@ def nonTrivialExpressions(exp: Expression): Set[Expression] = exp match
   case InputExp => Set()
   case _ => Set()
 
-def expHasVariable(exp: Expression, id: String): Boolean = exp match {
-  case VariableExp(name) => name == id
+def expHasVariable(exp: Expression, id: VariableExp): Boolean = exp match {
+  case VariableExp(name) => name == id.name
   case AddExp(left, right) => expHasVariable(left, id) || expHasVariable(right, id)
   case SubExp(left, right) => expHasVariable(left, id) || expHasVariable(right, id)
   case MultiExp(left, right) => expHasVariable(left, id) || expHasVariable(right, id)

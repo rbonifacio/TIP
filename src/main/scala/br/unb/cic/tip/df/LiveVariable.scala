@@ -56,7 +56,7 @@ object LiveVariable {
   }
 
   def kill(stmt: Stmt): Set[VariableExp] = stmt match {
-    case AssignmentStmt(id, _) => Set(VariableExp(id))
+    case AssignmentStmt(id, _) => Set(id)
     case _ => Set()
   }
 

@@ -77,7 +77,7 @@ object Stmt {
 /** Algebraic data type for statements */
 
 //basic
-case class AssignmentStmt(name: Id, exp: Expression) extends Stmt // Id = Exp
+case class AssignmentStmt(name: Expression.VariableExp, exp: Expression) extends Stmt // Id = Exp
 case class SequenceStmt(s1: Stmt, s2: Stmt) extends Stmt // Stmt Stmt
 case object NopStmt extends Stmt // nop
 

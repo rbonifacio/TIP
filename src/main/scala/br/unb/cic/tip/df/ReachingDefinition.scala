@@ -40,7 +40,7 @@ object ReachingDefinition {
               case FunctionCallExp(NameExp(name), args) => {
                 en = entry(fBody, stmt, predecessors, context)
                 // filter and get predecessor that are send as parameters to the function
-                val usedPredecessors = en.filter( e => args.exists(_ == VariableExp(e.name)))
+                val usedPredecessors = en.filter( e => args.exists(_ == e))
                 run(getMethodBody(program, name), program, usedPredecessors, stmt)
                 // a kind of Interprocedural Exit Function was created in the next lines
                 val in: Set[AssignmentStmt] = exit(stmt)
