@@ -15,6 +15,7 @@ object ReachingDefinition {
     var RD: ResultRD = mutable.HashMap()
 
     def run(program: Program): ResultRD = {
+      RD = mutable.HashMap()
       run(getMethodBody(program), program) 
     } 
 
