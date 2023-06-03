@@ -34,7 +34,7 @@ object SVF {
   }
 
   private def analyzer(stmt: Stmt): Unit = stmt match {
-    case AssignmentStmt(left, right) => rulePhi(stmt, VariableExp(left), right)
+    case AssignmentStmt(left, right) => ruleCopy(stmt, VariableExp(left), right)
     case AssignmentPointerStmt(left, right) => pointersOperations(stmt, left, right)
     case _ => Set()
   }
@@ -51,21 +51,23 @@ object SVF {
   }
 
   /**
+   * Case:
+   *  - s: v = v1
+   *  - s: v = v1 op v2
+   * Rule:
+   *  - v1@s1-> v@s
+   *  - v2@s2-> v@s
+   */
+  private def ruleCopy(stmt: Stmt, left: VariableExp, right: Expression): Unit = {
+    variables(right).foreach(v => graph += ((findDefinition(stmt, v), v), (stmt, left)))
+  }
+
+
+  /**
    * Case: L: p = q
    * Rule: q@L1 -> p@L
   */
   private def ruleCopy(left: PointerExp, right: PointerExp): Unit = {} //graph += (right, left)
-
-  /**
-   * Case: L: v3 = phi(v1, v2)
-   * Rule:
-   *  - v1@L1-> v3@L
-   *  - v2@L2-> v3@L
-   */
-  private def rulePhi(stmt: Stmt, left: VariableExp, right: Expression): Unit = {
-      variables(right).foreach(v => graph += ((findDefinition(stmt, v), v), (stmt, left)))
-  }
-
 
   /**
    * This is a "use" operation so its represented by [u(o)]
