@@ -1,27 +1,32 @@
 package br.unb.cic.tip.svf
 
 
+import br.unb.cic.tip.df.{ReachingDefinition, ResultRD}
 import br.unb.cic.tip.{blocks, getMethodBody, variables}
-import br.unb.cic.tip.utils.{AssignmentPointerStmt, AssignmentStmt, Expression, FunDecl, Program, ReturnStmt, Stmt}
+import br.unb.cic.tip.utils.{AssignmentPointerStmt, AssignmentStmt, Expression, FunDecl, NopStmt, Program, ReturnStmt, Stmt}
 import br.unb.cic.tip.utils.Expression.{FunctionCallExp, LoadExp, PointerExp, VariableExp}
 
 import scala.collection.mutable
 
 type NodeSVF = (Stmt, Expression)
-//type EdgeSVF = (NodeSVF, NodeSVF)
-type EdgeSVF = (Expression, Expression)
+type EdgeSVF = (NodeSVF, NodeSVF)
+//type EdgeSVF = (Expression, Expression)
 type GraphSVF = Set[EdgeSVF]
 
 object SVF {
 
   private var graph: GraphSVF = Set()
+  private var RD: ResultRD = mutable.HashMap()
 
   def run(program: Program): GraphSVF = {
+    val bodyMain = getMethodBody(program)
     graph = Set()
-    run(getMethodBody(program))
+    RD = ReachingDefinition.run(bodyMain, program)
+    run(bodyMain)
   }
 
   private def run(body: Stmt): GraphSVF = {
+
     for (stmt <- blocks(body)) {
       analyzer(stmt)
     }
@@ -29,12 +34,12 @@ object SVF {
   }
 
   private def analyzer(stmt: Stmt): Unit = stmt match {
-    case AssignmentStmt(left, right) => rulePhi(VariableExp(left), right)
-    case AssignmentPointerStmt(left, right) => pointersOperations(left, right)
+    case AssignmentStmt(left, right) => rulePhi(stmt, VariableExp(left), right)
+    case AssignmentPointerStmt(left, right) => pointersOperations(stmt, left, right)
     case _ => Set()
   }
 
-  private def pointersOperations(left: Expression, right: Expression): Unit = {
+  private def pointersOperations(stmt: Stmt, left: Expression, right: Expression): Unit = {
     (left, right) match {
       case (l: PointerExp, r: PointerExp) => ruleCopy(l, r) // l: p = q
       case (l: PointerExp, r: LoadExp) =>  // l: p = *q
@@ -49,7 +54,7 @@ object SVF {
    * Case: L: p = q
    * Rule: q@L1 -> p@L
   */
-  private def ruleCopy(left: PointerExp, right: PointerExp): Unit = graph += (right, left)
+  private def ruleCopy(left: PointerExp, right: PointerExp): Unit = {} //graph += (right, left)
 
   /**
    * Case: L: v3 = phi(v1, v2)
@@ -57,8 +62,8 @@ object SVF {
    *  - v1@L1-> v3@L
    *  - v2@L2-> v3@L
    */
-  private def rulePhi(left: VariableExp, right: Expression): Unit = {
-      variables(right).foreach(v => graph += (v, left))
+  private def rulePhi(stmt: Stmt, left: VariableExp, right: Expression): Unit = {
+      variables(right).foreach(v => graph += ((findDefinition(stmt, v), v), (stmt, left)))
   }
 
 
@@ -112,5 +117,10 @@ object SVF {
    */
   private def ruleReturn(stmt: ReturnStmt, caller: FunctionCallExp): Unit = {}
 
+
+  /**
+   * find the statement were a variable was "defined"
+   */
+  private def findDefinition(stmt: Stmt, v: VariableExp): Stmt = RD((stmt, NopStmt))._2.find(_.name == v.name) getOrElse NopStmt
 
 }
