@@ -110,8 +110,8 @@ def nonTrivialExps(exp: Expression): Set[Expression] = exp match {
   case _              => Set(exp)
 }
 
-def expDependsOn(exp: Expression, id: String): Boolean = exp match {
-  case VariableExp(name) => name == id
+def expDependsOn(exp: Expression, id: VariableExp): Boolean = exp match {
+  case VariableExp(name) => name == id.name
   case AddExp(l, r)      => expDependsOn(l, id) || expDependsOn(r, id)
   case SubExp(l, r)      => expDependsOn(l, id) || expDependsOn(r, id)
   case MultiExp(l, r)    => expDependsOn(l, id) || expDependsOn(r, id)

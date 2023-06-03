@@ -17,8 +17,8 @@ class PathTest extends AnyFunSuite {
    * Path(1) = s1, s2, s3
    */
   test("path_from_stmt") {
-    val s1 = AssignmentStmt("x", ConstExp(1))
-    val s2 = AssignmentStmt("z", ConstExp(3))
+    val s1 = AssignmentStmt(VariableExp("x"), ConstExp(1))
+    val s2 = AssignmentStmt(VariableExp("z"), ConstExp(3))
     val s3 = OutputStmt(VariableExp("x"))
 
     val body = SequenceStmt(s1, SequenceStmt(s2, s3))
@@ -53,12 +53,12 @@ class PathTest extends AnyFunSuite {
     * Path(2) = s1, s2, s5, s6
    */
   test("path_from_if_else") {
-    val s1 = AssignmentStmt("a", ConstExp(1))
-    val s3 = AssignmentStmt("b", ConstExp(2))
-    val s4 = AssignmentStmt("c", ConstExp(3))
-    val s5 = AssignmentStmt("d", ConstExp(4))
+    val s1 = AssignmentStmt(VariableExp("a"), ConstExp(1))
+    val s3 = AssignmentStmt(VariableExp("b"), ConstExp(2))
+    val s4 = AssignmentStmt(VariableExp("c"), ConstExp(3))
+    val s5 = AssignmentStmt(VariableExp("d"), ConstExp(4))
     val s2 = IfElseStmt(EqExp(VariableExp("x"),ConstExp(2)), SequenceStmt(s3,s4), Some(s5))
-    val s6 = AssignmentStmt("e", ConstExp(5))
+    val s6 = AssignmentStmt(VariableExp("e"), ConstExp(5))
 
     val body = SequenceStmt(s1, SequenceStmt(s2, s6))
     val function = FunDecl("f_if_else", List(), List(), body, NullExp)
@@ -102,9 +102,9 @@ class PathTest extends AnyFunSuite {
      * Path(2): s1, s2, s3, s4, s2, s5
    */
   test("path_from_while") {
-    val s1 = AssignmentStmt("f", ConstExp(1))
-    val s3 = AssignmentStmt("f", MultiExp(VariableExp("f"), VariableExp("n")))
-    val s4 = AssignmentStmt("n", SubExp(VariableExp("n"), ConstExp(1)))
+    val s1 = AssignmentStmt(VariableExp("f"), ConstExp(1))
+    val s3 = AssignmentStmt(VariableExp("f"), MultiExp(VariableExp("f"), VariableExp("n")))
+    val s4 = AssignmentStmt(VariableExp("n"), SubExp(VariableExp("n"), ConstExp(1)))
     val s2 = WhileStmt(GTExp(VariableExp("n"), ConstExp(0)), SequenceStmt(s3,s4))
     val s5 = OutputStmt(VariableExp("f"))
 
