@@ -34,14 +34,14 @@ object SVF {
   }
 
   private def analyzer(stmt: Stmt): Unit = stmt match {
-    case AssignmentStmt(left, right) => ruleCopy(stmt, VariableExp(left), right)
+    case AssignmentStmt(left, right) => ruleCopyVar(stmt, VariableExp(left), right)
     case AssignmentPointerStmt(left, right) => pointersOperations(stmt, left, right)
     case _ => Set()
   }
 
   private def pointersOperations(stmt: Stmt, left: Expression, right: Expression): Unit = {
     (left, right) match {
-      case (l: PointerExp, r: PointerExp) => ruleCopy(l, r) // l: p = q
+      case (l: PointerExp, r: PointerExp) => ruleCopy(stmt, l, r) // l: p = q
       case (l: PointerExp, r: LoadExp) =>  // l: p = *q
       case (l: LoadExp, r: PointerExp) =>  // l: *p = q
 //      case call rule
@@ -55,19 +55,21 @@ object SVF {
    *  - s: v = v1
    *  - s: v = v1 op v2
    * Rule:
-   *  - v1@s1-> v@s
-   *  - v2@s2-> v@s
+   *  - v1@s1 -> v@s
+   *  - v2@s2 -> v@s
    */
-  private def ruleCopy(stmt: Stmt, left: VariableExp, right: Expression): Unit = {
+  private def ruleCopyVar(stmt: Stmt, left: VariableExp, right: Expression): Unit = {
     variables(right).foreach(v => graph += ((findDefinition(stmt, v), v), (stmt, left)))
   }
 
 
   /**
-   * Case: L: p = q
-   * Rule: q@L1 -> p@L
+   * Case: s: p = q
+   * Rule: q@s'-> p@s
   */
-  private def ruleCopy(left: PointerExp, right: PointerExp): Unit = {} //graph += (right, left)
+  private def ruleCopy(stmt: Stmt, left: PointerExp, right: PointerExp): Unit = {
+    graph += ((findDefinition(stmt, VariableExp(right.name)), right), (stmt, left))
+  }
 
   /**
    * This is a "use" operation so its represented by [u(o)]
