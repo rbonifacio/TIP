@@ -154,4 +154,38 @@ class RDTest extends AnyFunSuite {
       Set(s2, s3)
     ))
   }
+
+  /**
+   * p = alloc _ 1
+   * q = alloc _ 2
+   * p = q
+   */
+  test("test_rd_using_pointers") {
+    val s1 = AssignmentStmt("p", AllocExp(ConstExp(1)))
+    val s2 = AssignmentStmt("q", AllocExp(ConstExp(2)))
+    val s3 = AssignmentStmt("n", SubExp(VariableExp("n"), ConstExp(1)))
+    val seq = SequenceStmt(s1, SequenceStmt(s2, s3))
+
+    val RD = ReachingDefinition.run(seq)
+
+//    assert(RD((s1, NopStmt)) == (
+//      Set(),
+//      Set(s1)
+//    ))
+//
+//    assert(RD((s4, NopStmt)) == (
+//      Set(s1, s2, s3),
+//      Set(s1, s2, s3)
+//    ))
+//
+//    assert(RD((s2, NopStmt)) == (
+//      Set(s1, s2, s3),
+//      Set(s2, s3)
+//    ))
+//
+//    assert(RD((s3, NopStmt)) == (
+//      Set(s2, s3),
+//      Set(s2, s3)
+//    ))
+  }
 }
