@@ -59,14 +59,14 @@ class RDInterproceduralTest extends AnyFunSuite {
       Set(s1, s2)
     ))
 
+    assert(RD((m1, s3)) == (
+      Set(s1),
+      Set(m1),
+    ))
+
     assert(RD((s3, NopStmt)) == (
       Set(s1, s2),
       Set(s2, m1)
-    ))
-
-    assert( RD((m1, s3)) == (
-      Set(s1),
-      Set(m1),
     ))
 
     assert( RD((s4, NopStmt)) == (
