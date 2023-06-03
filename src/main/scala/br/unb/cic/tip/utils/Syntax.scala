@@ -29,29 +29,34 @@ case class FunDecl(
     retExp: Expression
 )
 
-/** Algebraic data type for expressions */
+/**
+ * Type for expressions
+ **/
 enum Expression:
+  // Basic
   case ConstExp(v: Integer) extends Expression // 0 | 1 | -1 | 2 | -2 | ...
   case VariableExp(name: Id) extends Expression // x | y | z | . . .
+  case BracketExp(exp: Expression) extends Expression // (Exp)
+  case NameExp(name: Id) extends Expression // (Exp)
+  case NullExp extends Expression // null
+
+  // Algebraic
   case AddExp(left: Expression, right: Expression) extends Expression // Exp + Exp
   case SubExp(left: Expression, right: Expression) extends Expression // Exp - Exp
   case MultiExp(left: Expression, right: Expression) extends Expression // Exp * Exp
   case DivExp(left: Expression, right: Expression) extends Expression // Exp / Exp
   case EqExp(left: Expression, right: Expression) extends Expression // Exp == Exp
   case GTExp(left: Expression, right: Expression) extends Expression // Exp > Exp
-  case BracketExp(exp: Expression) extends Expression // (Exp)
-  case NameExp(name: Id) extends Expression // (Exp)
 
-  // function-call expression
+  // function-call
   case FunctionCallExp(name: Expression, args: List[Any]) extends Expression
 
-  // pointer-based expressions
+  // Pointer
   case AllocExp(exp: Expression) extends Expression // alloc Exp
   case LocationExp(pointer: Id) extends Expression // & Id
   case LoadExp(exp: Expression) extends Expression // * Exp
-  case NullExp extends Expression // null
 
-  // record-based expressions
+  // Record
   case RecordExp(fields: List[Field]) extends Expression // { Id : Exp , . . . , Id : Exp }
   case FieldAccess(record: Expression, field: Id) // Exp . Id
   case InputExp extends Expression // input
@@ -59,20 +64,28 @@ enum Expression:
 /**
  * Algebraic data type for statements
  */
-
 enum Stmt:
+  // Basic
   case AssignmentStmt(name: Id, exp: Expression) extends Stmt // Id = Exp
+  case SequenceStmt(s1: Stmt, s2: Stmt) extends Stmt // Stmt Stmt
+  case OutputStmt(exp: Expression) extends Stmt // output Exp
+  case ReturnStmt(exp: Expression) extends Stmt // return Exp
+  case NopStmt extends Stmt // nop
+
+  // Conditional
   case IfElseStmt(condition: Expression, s1: Stmt, s2: Option[Stmt]) extends Stmt // if ( Exp ) { Stmt } [else { Stmt }]
   case WhileStmt(condition: Expression, stmt: Stmt) extends Stmt // while ( Exp ) { Stmt }
-  case SequenceStmt(s1: Stmt, s2: Stmt) extends Stmt // Stmt Stmt
-  case StoreStmt(exp1: Expression, exp2: Expression) extends Stmt // *Exp = Exp
-  case OutputStmt(exp: Expression) extends Stmt // output Exp
-  case RecordAssignmentStmt(name: Id, field: Id, exp: Expression) extends Stmt // Id.Id = Exp;
-  case RecordStoreStmt(exp1: Expression, id: Id, exp2: Expression) extends Stmt // (*Exp).Id = Exp;
+
+  // Function
   case CallStmt(stmt: Stmt) extends Stmt //
   case AfterCallStmt(stmt: Stmt) extends Stmt //
-  case ReturnStmt(exp: Expression) extends Stmt //
-  case NopStmt extends Stmt // nop
+
+  // Pointers
+  case StoreStmt(exp1: Expression, exp2: Expression) extends Stmt // *Exp = Exp
+
+  // Records
+  case RecordAssignmentStmt(name: Id, field: Id, exp: Expression) extends Stmt // Id.Id = Exp;
+  case RecordStoreStmt(exp1: Expression, id: Id, exp2: Expression) extends Stmt // (*Exp).Id = Exp;
 
 /** Node Types */
 enum Node:
