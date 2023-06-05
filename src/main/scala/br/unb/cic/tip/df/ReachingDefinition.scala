@@ -2,7 +2,7 @@ package br.unb.cic.tip.df
 
 import scala.collection.mutable
 import br.unb.cic.tip.*
-import br.unb.cic.tip.utils.Expression.*
+import br.unb.cic.tip.utils.{Expression}
 import br.unb.cic.tip.utils.Node.SimpleNode
 import br.unb.cic.tip.utils.*
 import br.unb.cic.tip.utils.Stmt.*

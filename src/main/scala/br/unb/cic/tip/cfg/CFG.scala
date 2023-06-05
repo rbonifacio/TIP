@@ -1,8 +1,7 @@
 package br.unb.cic.tip
 
-import br.unb.cic.tip.utils.{Expression, FunDecl, Id, Node, Program, Stmt}
+import br.unb.cic.tip.utils.{AddExp, BracketExp, ConstExp, DivExp, EqExp, Expression, FunDecl, FunctionCallExp, GTExp, Id, InputExp, MultiExp, NameExp, Node, Program, Stmt, SubExp, VariableExp}
 import br.unb.cic.tip.utils.Stmt.*
-import br.unb.cic.tip.utils.Expression.*
 import br.unb.cic.tip.utils.Node.*
 
 type Edge = (Node, Node)

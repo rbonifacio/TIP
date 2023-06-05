@@ -1,7 +1,7 @@
 package br.unb.cic.tip.intraprocedural.path
 
 import br.unb.cic.tip.{exportDot, flow, path}
-import br.unb.cic.tip.utils.Expression.*
+import br.unb.cic.tip.utils.*
 import br.unb.cic.tip.utils.FunDecl
 import br.unb.cic.tip.utils.Node.*
 import br.unb.cic.tip.utils.Stmt.*

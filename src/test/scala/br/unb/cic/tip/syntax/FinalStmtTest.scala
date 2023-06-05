@@ -1,7 +1,7 @@
 package br.unb.cic.tip.syntax
 
 import org.scalatest.funsuite.AnyFunSuite
-import br.unb.cic.tip.utils.Expression.*
+import br.unb.cic.tip.utils.*
 import br.unb.cic.tip.utils.Stmt.*
 import br.unb.cic.tip.finalStmt
 

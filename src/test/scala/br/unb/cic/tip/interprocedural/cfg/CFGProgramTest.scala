@@ -2,7 +2,7 @@ package br.unb.cic.tip.interprocedural.cfg
 
 import br.unb.cic.tip.{exportDot, flow}
 import br.unb.cic.tip.utils.*
-import br.unb.cic.tip.utils.Expression.*
+import br.unb.cic.tip.utils.{Expression}
 import br.unb.cic.tip.utils.Node.*
 import br.unb.cic.tip.utils.Stmt.*
 import org.scalatest.funsuite.AnyFunSuite

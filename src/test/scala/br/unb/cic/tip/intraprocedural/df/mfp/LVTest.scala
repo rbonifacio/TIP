@@ -1,7 +1,7 @@
 package br.unb.cic.tip.intraprocedural.df.mfp
 
 import br.unb.cic.tip.*
-import br.unb.cic.tip.utils.Expression.*
+import br.unb.cic.tip.utils.*
 import br.unb.cic.tip.utils.Node.*
 import br.unb.cic.tip.utils.Stmt.*
 import br.unb.cic.tip.df.mfp.LiveVariableMFP
