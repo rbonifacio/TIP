@@ -2,7 +2,7 @@ package br.unb.cic.tip.df.mfp
 
 import br.unb.cic.tip.utils._
 import br.unb.cic.tip.utils.Stmt._
-import br.unb.cic.tip.utils.Expression._
+import br.unb.cic.tip.utils.{Expression}
 import br.unb.cic.tip._
 
 object LiveVariableMFP extends MFP[VariableExp] {
@@ -14,7 +14,7 @@ object LiveVariableMFP extends MFP[VariableExp] {
   def extremeAnalysisInformation(program: Stmt) = Set()
 
   def kill(program: Stmt, stmt: Stmt): Set[VariableExp] = stmt match {
-    case AssignmentStmt(id, _) => Set(id)
+    case AssignmentStmt(id, _) => Set(id.asInstanceOf[VariableExp])
     case _                       => Set()
   }
 

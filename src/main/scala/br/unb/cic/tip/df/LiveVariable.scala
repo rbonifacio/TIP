@@ -1,9 +1,8 @@
 package br.unb.cic.tip.df
 
 import br.unb.cic.tip.*
-import br.unb.cic.tip.utils.Expression.*
+import br.unb.cic.tip.utils.{Expression, Stmt, VariableExp}
 import br.unb.cic.tip.utils.Node.SimpleNode
-import br.unb.cic.tip.utils.Stmt
 import br.unb.cic.tip.utils.Stmt.*
 
 import scala.collection.mutable
@@ -57,7 +56,7 @@ object LiveVariable {
   }
 
   def kill(stmt: Stmt): Set[VariableExp] = stmt match {
-    case AssignmentStmt(id, _) => Set(id)
+    case AssignmentStmt(id, _) => Set(id.asInstanceOf[VariableExp])
     case _ => Set()
   }
 

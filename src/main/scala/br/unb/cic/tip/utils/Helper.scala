@@ -1,7 +1,6 @@
 package br.unb.cic.tip
 
 import br.unb.cic.tip.utils.{Expression, Stmt}
-import br.unb.cic.tip.utils.Expression.*
 import br.unb.cic.tip.utils.*
 import br.unb.cic.tip.utils.Node.*
 import br.unb.cic.tip.utils.Stmt.*
@@ -29,8 +28,8 @@ def nonTrivialExpressions(exp: Expression): Set[Expression] = exp match
   case InputExp => Set()
   case _ => Set()
 
-def expHasVariable(exp: Expression, id: VariableExp): Boolean = exp match {
-  case VariableExp(name) => name == id.name
+def expHasVariable(exp: Expression, id: BasicExp): Boolean = exp match {
+  case VariableExp(name) => exp == id
   case AddExp(left, right) => expHasVariable(left, id) || expHasVariable(right, id)
   case SubExp(left, right) => expHasVariable(left, id) || expHasVariable(right, id)
   case MultiExp(left, right) => expHasVariable(left, id) || expHasVariable(right, id)

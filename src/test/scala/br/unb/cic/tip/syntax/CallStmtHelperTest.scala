@@ -2,7 +2,7 @@ package br.unb.cic.tip.syntax
 
 import br.unb.cic.tip.{callStatement, flow, functions}
 import br.unb.cic.tip.utils.{FunDecl}
-import br.unb.cic.tip.utils.Expression.{ConstExp, FunctionCallExp, NameExp, NullExp, VariableExp}
+import br.unb.cic.tip.utils.*
 import br.unb.cic.tip.utils.Node.*
 import br.unb.cic.tip.utils.Stmt.*
 import org.scalatest.funsuite.AnyFunSuite

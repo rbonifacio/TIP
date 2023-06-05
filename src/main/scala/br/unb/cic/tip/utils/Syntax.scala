@@ -32,41 +32,77 @@ case class FunDecl(
 /**
  * Type for expressions
  **/
-enum Expression:
-  // Basic
-  case ConstExp(v: Integer) extends Expression // 0 | 1 | -1 | 2 | -2 | ...
-  case VariableExp(name: Id) extends Expression // x | y | z | . . .
-  case BracketExp(exp: Expression) extends Expression // (Exp)
-  case NameExp(name: Id) extends Expression // (Exp)
-  case NullExp extends Expression // null
 
-  // Algebraic
-  case AddExp(left: Expression, right: Expression) extends Expression // Exp + Exp
-  case SubExp(left: Expression, right: Expression) extends Expression // Exp - Exp
-  case MultiExp(left: Expression, right: Expression) extends Expression // Exp * Exp
-  case DivExp(left: Expression, right: Expression) extends Expression // Exp / Exp
-  case EqExp(left: Expression, right: Expression) extends Expression // Exp == Exp
-  case GTExp(left: Expression, right: Expression) extends Expression // Exp > Exp
+abstract class Expression
+abstract class BasicExp extends Expression
+//abstract class Exp extends Expression
 
-  // function-call
-  case FunctionCallExp(name: Expression, args: List[Any]) extends Expression
 
-  // Pointer
-  case AllocExp(exp: Expression) extends Expression // alloc Exp
-  case LocationExp(pointer: Id) extends Expression // & Id
-  case LoadExp(exp: Expression) extends Expression // * Exp
+case class VariableExp(name: Id) extends BasicExp // x | y | z | . . .
+case class PointerExp(name: Id) extends BasicExp // p | q | . . .
 
-  // Record
-  case RecordExp(fields: List[Field]) extends Expression // { Id : Exp , . . . , Id : Exp }
-  case FieldAccess(record: Expression, field: Id) // Exp . Id
-  case InputExp extends Expression // input
+case class ConstExp(v: Integer) extends Expression
+case class BracketExp(exp: Expression) extends Expression // (Exp)
+case class NameExp(name: Id) extends Expression // (Exp)
+case object NullExp extends Expression // null
+
+//  // Algebraic
+case class AddExp(left: Expression, right: Expression) extends Expression // Exp + Exp
+case class SubExp(left: Expression, right: Expression) extends Expression // Exp - Exp
+case class MultiExp(left: Expression, right: Expression) extends Expression // Exp * Exp
+case class DivExp(left: Expression, right: Expression) extends Expression // Exp / Exp
+case class EqExp(left: Expression, right: Expression) extends Expression // Exp == Exp
+case class GTExp(left: Expression, right: Expression) extends Expression // Exp > Exp
+//
+//  // function-call
+case class FunctionCallExp(name: Expression, args: List[Any]) extends Expression
+//
+//  // Pointer
+case class AllocExp(exp: Expression) extends Expression // alloc Exp
+case class LocationExp(pointer: Id) extends Expression // & Id
+case class LoadExp(exp: Expression) extends Expression // * Exp
+//
+//  // Record
+case class RecordExp(fields: List[Field]) extends Expression // { Id : Exp , . . . , Id : Exp }
+case class FieldAccess(record: Expression, field: Id) // Exp . Id
+case object InputExp extends Expression // input
+
+//enum Expression:
+//  // Basic
+//  case ConstExp(v: Integer) extends Expression // 0 | 1 | -1 | 2 | -2 | ...
+//  case VariableExp(name: Id) extends Expression // x | y | z | . . .
+//  case PointerExp(name: Id) extends Expression // p | q | . . .
+//  case BracketExp(exp: Expression) extends Expression // (Exp)
+//  case NameExp(name: Id) extends Expression // (Exp)
+//  case NullExp extends Expression // null
+//
+//  // Algebraic
+//  case AddExp(left: Expression, right: Expression) extends Expression // Exp + Exp
+//  case SubExp(left: Expression, right: Expression) extends Expression // Exp - Exp
+//  case MultiExp(left: Expression, right: Expression) extends Expression // Exp * Exp
+//  case DivExp(left: Expression, right: Expression) extends Expression // Exp / Exp
+//  case EqExp(left: Expression, right: Expression) extends Expression // Exp == Exp
+//  case GTExp(left: Expression, right: Expression) extends Expression // Exp > Exp
+//
+//  // function-call
+//  case FunctionCallExp(name: Expression, args: List[Any]) extends Expression
+//
+//  // Pointer
+//  case AllocExp(exp: Expression) extends Expression // alloc Exp
+//  case LocationExp(pointer: Id) extends Expression // & Id
+//  case LoadExp(exp: Expression) extends Expression // * Exp
+//
+//  // Record
+//  case RecordExp(fields: List[Field]) extends Expression // { Id : Exp , . . . , Id : Exp }
+//  case FieldAccess(record: Expression, field: Id) // Exp . Id
+//  case InputExp extends Expression // input
 
 /** 
 * Algebraic data type for statements 
 */
 enum Stmt:
   //basic
-  case AssignmentStmt(name: Expression.VariableExp, exp: Expression) extends Stmt // Id = Exp
+  case AssignmentStmt(name: BasicExp, exp: Expression) extends Stmt // Id = Exp
   case SequenceStmt(s1: Stmt, s2: Stmt) extends Stmt // Stmt Stmt
   case NopStmt extends Stmt // nop
 
