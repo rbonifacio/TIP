@@ -1,6 +1,6 @@
 package br.unb.cic.tip
 
-import br.unb.cic.tip.utils.{AddExp, BracketExp, ConstExp, DivExp, EqExp, Expression, FunDecl, FunctionCallExp, GTExp, Id, InputExp, MultiExp, NameExp, Node, Program, Stmt, SubExp, VariableExp}
+import br.unb.cic.tip.utils.{AddExp, BasicExp, BracketExp, ConstExp, DivExp, EqExp, Expression, FunDecl, FunctionCallExp, GTExp, Id, InputExp, MultiExp, NameExp, Node, PointerExp, Program, Stmt, SubExp, VariableExp}
 import br.unb.cic.tip.utils.Stmt.*
 import br.unb.cic.tip.utils.Node.*
 
@@ -64,21 +64,18 @@ def assignments(stmt: Stmt): Set[AssignmentStmt] = stmt match {
   case _                            => Set()
 }
 
-def variables(stmt: Stmt): Set[VariableExp] = stmt match {
+def variables(stmt: Stmt): Set[BasicExp] = stmt match {
   case SequenceStmt(s1, s2)   => variables(s1) union variables(s2)
   case AssignmentStmt(s1, s2) => variables(s1) union variables(s2)
-  //  case AssignmentPointerStmt(name, exp) => name match {
-  //    case LoadExp(e) => variables(e) union variables(name)
-  //    case _ => variables(exp) union variables(name)
-  //  }
   case IfElseStmt(condition, _, _) => variables(condition)
   case WhileStmt(condition, _) => variables(condition)
   case OutputStmt(exp) => variables(exp)
   case _ => Set()
 }
 
-def variables(exp: Expression): Set[VariableExp] = exp match {
+def variables(exp: Expression): Set[BasicExp] = exp match {
   case VariableExp(name)      => Set(VariableExp(name))
+  case PointerExp(name)       => Set(PointerExp(name))
   case AddExp(left, right)    => variables(left) union variables(right)
   case SubExp(left, right)    => variables(left) union variables(right)
   case MultiExp(left, right)  => variables(left) union variables(right)
@@ -86,8 +83,6 @@ def variables(exp: Expression): Set[VariableExp] = exp match {
   case EqExp(left, right)     => variables(left) union variables(right)
   case GTExp(left, right)     => variables(left) union variables(right)
   case BracketExp(exp)        => variables(exp)
-//  case PointerExp(name)       => Set(VariableExp(name))
-//    case ConstExp(_) => Set()
   case _                      => Set()
 }
 
