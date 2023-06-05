@@ -2,8 +2,7 @@ package br.unb.cic.tip.intraprocedural.pointer
 
 import br.unb.cic.tip.blocks
 import br.unb.cic.tip.pointer.BasicAndersen
-import br.unb.cic.tip.utils.{FunDecl}
-import br.unb.cic.tip.utils.Expression.*
+import br.unb.cic.tip.utils.{AllocExp, ConstExp, FunDecl, LocationExp, NullExp, VariableExp}
 import br.unb.cic.tip.utils.Stmt.{AssignmentStmt, SequenceStmt}
 import org.scalatest.funsuite.AnyFunSuite
 

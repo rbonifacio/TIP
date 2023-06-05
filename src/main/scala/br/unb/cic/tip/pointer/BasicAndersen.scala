@@ -2,9 +2,8 @@ package br.unb.cic.tip.pointer
 
 import br.unb.cic.tip.df.ReachingDefinition.RD
 import br.unb.cic.tip.{blocks, nonTrivialExpressions, variables}
-import br.unb.cic.tip.utils.{Expression, Stmt}
-import br.unb.cic.tip.utils.Expression.{NullExp, VariableExp, LoadExp, AllocExp, LocationExp}
-import br.unb.cic.tip.utils.Stmt.{AssignmentStmt}
+import br.unb.cic.tip.utils.{AllocExp, Expression, LocationExp, Stmt, VariableExp}
+import br.unb.cic.tip.utils.Stmt.AssignmentStmt
 
 import scala.collection.mutable
 
