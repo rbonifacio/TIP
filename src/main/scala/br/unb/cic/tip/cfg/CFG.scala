@@ -65,6 +65,19 @@ def assignments(stmt: Stmt): Set[AssignmentStmt] = stmt match {
   case _                            => Set()
 }
 
+def variables(stmt: Stmt): Set[VariableExp] = stmt match {
+  case SequenceStmt(s1, s2)   => variables(s1) union variables(s2)
+  case AssignmentStmt(s1, s2) => variables(s1) union variables(s2)
+  //  case AssignmentPointerStmt(name, exp) => name match {
+  //    case LoadExp(e) => variables(e) union variables(name)
+  //    case _ => variables(exp) union variables(name)
+  //  }
+  case IfElseStmt(condition, _, _) => variables(condition)
+  case WhileStmt(condition, _) => variables(condition)
+  case OutputStmt(exp) => variables(exp)
+  case _ => Set()
+}
+
 def variables(exp: Expression): Set[VariableExp] = exp match {
   case VariableExp(name)      => Set(VariableExp(name))
   case AddExp(left, right)    => variables(left) union variables(right)
@@ -74,22 +87,9 @@ def variables(exp: Expression): Set[VariableExp] = exp match {
   case EqExp(left, right)     => variables(left) union variables(right)
   case GTExp(left, right)     => variables(left) union variables(right)
   case BracketExp(exp)        => variables(exp)
-  case PointerExp(name)       => Set(VariableExp(name))
+//  case PointerExp(name)       => Set(VariableExp(name))
 //    case ConstExp(_) => Set()
   case _                      => Set()
-}
-
-def variables(stmt: Stmt): Set[VariableExp] = stmt match {
-  case SequenceStmt(s1, s2)   => variables(s1) union variables(s2)
-  case AssignmentStmt(_, exp) => variables(exp)
-  case AssignmentPointerStmt(name, exp) => name match {
-    case LoadExp(e) => variables(e) union variables(name)
-    case _ => variables(exp) union variables(name)
-  }
-  case IfElseStmt(condition, _, _) => variables(condition)
-  case WhileStmt(condition, _) => variables(condition)
-  case OutputStmt(exp) => variables(exp)
-  case _ => Set()
 }
 
 def successors(stmt: Stmt, cfg: Graph): Set[Stmt] = {
