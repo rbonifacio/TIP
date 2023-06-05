@@ -161,9 +161,9 @@ class RDTest extends AnyFunSuite {
    * p = q              entry:{(p,s1), (q, s2)}     exit:{(p,s3), (q, s2)}
    */
   test("test_rd_using_pointers") {
-    val s1 = AssignmentStmt(VariableExp("p"), AllocExp(ConstExp(1)))
-    val s2 = AssignmentStmt(VariableExp("q"), AllocExp(ConstExp(2)))
-    val s3 = AssignmentStmt(VariableExp("p"), VariableExp("q"))
+    val s1 = AssignmentStmt(PointerExp("p"), AllocExp(ConstExp(1)))
+    val s2 = AssignmentStmt(PointerExp("q"), AllocExp(ConstExp(2)))
+    val s3 = AssignmentStmt(PointerExp("p"), PointerExp("q"))
     val seq = SequenceStmt(s1, SequenceStmt(s2, s3))
 
     val RD = ReachingDefinition.run(seq)
