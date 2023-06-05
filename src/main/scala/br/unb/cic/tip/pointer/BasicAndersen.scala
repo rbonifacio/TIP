@@ -2,13 +2,13 @@ package br.unb.cic.tip.pointer
 
 import br.unb.cic.tip.df.ReachingDefinition.RD
 import br.unb.cic.tip.{blocks, nonTrivialExpressions, variables}
-import br.unb.cic.tip.utils.{AllocExp, Expression, LocationExp, Stmt, VariableExp}
+import br.unb.cic.tip.utils.{AllocExp, BasicExp, Expression, LocationExp, PointerExp, Stmt, VariableExp}
 import br.unb.cic.tip.utils.Stmt.AssignmentStmt
 
 import scala.collection.mutable
 
 type Cell = Expression
-type Result = mutable.HashMap[VariableExp, Set[Cell]]
+type Result = mutable.HashMap[BasicExp, Set[Cell]]
 
 object BasicAndersen {
 
@@ -34,14 +34,15 @@ object BasicAndersen {
 
   def gen(stmt: Stmt): Unit = stmt match {
     case AssignmentStmt(left, right) => (left, right) match {
-      case (l: VariableExp, r: AllocExp) => ruleAllocation(l, r) // alloc: x = alloc i
-//      case (l: LoadExp, _) => ruleStore(l, right) // store: *x1 = x2
+      case (l: PointerExp, r: AllocExp) => ruleAllocation(l, r) // alloc: x = alloc i
 //      case (l: VariableExp, r: LocationExp) => ruleLocation (l, r) // location: x1 = &x2
+//      case (l: LoadExp, _) => ruleStore(l, right) // store: *x1 = x2
+
 //      case (l: VariableExp, r: PointerExp) => ruleCopy(l, r) // assign: x1 = x2
 //      case (l: VariableExp, r: LoadExp) => ruleLoad(l, r) // load: x1 = *x2
 //      case (l: VariableExp, r: NullExp) => ruleDeferred(l, r) // deferred: X = null
 //      case (l: VariableExp, _) => pt(l) = pt(l) + right // any other thing
-      case (l: VariableExp, _) => null // assign: x1 = x2
+      case (_: VariableExp, _: Expression) =>  // assign: x1 = x2
     }
   }
 
@@ -49,7 +50,7 @@ object BasicAndersen {
    * Case: x = alloc i
    * Rule: alloc-i ∈ pt(x)
    */
-  private def ruleAllocation(left: VariableExp, right: AllocExp): Unit = pt(left) = pt(left) + right
+  private def ruleAllocation(left: PointerExp, right: AllocExp): Unit = pt(left) = pt(left) + right
 
   /**
    * Case: x1 = &x2

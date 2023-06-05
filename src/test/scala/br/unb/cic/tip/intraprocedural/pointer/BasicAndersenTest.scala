@@ -2,7 +2,7 @@ package br.unb.cic.tip.intraprocedural.pointer
 
 import br.unb.cic.tip.blocks
 import br.unb.cic.tip.pointer.BasicAndersen
-import br.unb.cic.tip.utils.{AllocExp, ConstExp, FunDecl, LocationExp, NullExp, VariableExp}
+import br.unb.cic.tip.utils.{AllocExp, ConstExp, FunDecl, LocationExp, NullExp, PointerExp, VariableExp}
 import br.unb.cic.tip.utils.Stmt.{AssignmentStmt, SequenceStmt}
 import org.scalatest.funsuite.AnyFunSuite
 
@@ -21,15 +21,15 @@ class BasicAndersenTest extends AnyFunSuite {
   test("test_stmt_for_point") {
 
     val s1 = AssignmentStmt(VariableExp("a"), ConstExp(1))
-    val s2 = AssignmentStmt(VariableExp("b"), AllocExp(NullExp))
-    val s3 = AssignmentStmt(VariableExp("c"), LocationExp("b"))
+    val s2 = AssignmentStmt(PointerExp("b"), AllocExp(NullExp))
+//    val s3 = AssignmentStmt(PointerExp("c"), LocationExp("b"))
 //    val s4 = AssignmentStmt(VariableExp("d"), VariableExp("b"))
 //    val s5 = AssignmentPointerStmt(VariableExp("e"), LoadExp(PointerExp("c")))
 //    val s6 = AssignmentPointerStmt(LoadExp(PointerExp("f")), VariableExp("e"))
 //    val s7 = AssignmentPointerStmt(VariableExp("g"), NullExp)
 
 //    val mainBody = SequenceStmt(s1, SequenceStmt(s2, SequenceStmt(s3, SequenceStmt(s4, SequenceStmt(s5, SequenceStmt(s6, s7))))))
-    val mainBody = SequenceStmt(s1, SequenceStmt(s2, s3))
+    val mainBody = SequenceStmt(s1, s2)
 
     val RD = BasicAndersen.pointTo(mainBody)
 
@@ -40,7 +40,7 @@ class BasicAndersenTest extends AnyFunSuite {
       )
     )
 
-    assert(RD(VariableExp("b")) == (
+    assert(RD(PointerExp("b")) == (
       Set(AllocExp(NullExp))
       )
     )
