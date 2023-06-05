@@ -35,7 +35,7 @@ object BasicAndersen {
   def gen(stmt: Stmt): Unit = stmt match {
     case AssignmentStmt(left, right) => (left, right) match {
       case (l: PointerExp, r: AllocExp) => ruleAllocation(l, r) // alloc: x = alloc i
-//      case (l: VariableExp, r: LocationExp) => ruleLocation (l, r) // location: x1 = &x2
+      case (l: PointerExp, r: LocationExp) => ruleLocation (l, r) // location: x1 = &x2
 //      case (l: LoadExp, _) => ruleStore(l, right) // store: *x1 = x2
 
 //      case (l: VariableExp, r: PointerExp) => ruleCopy(l, r) // assign: x1 = x2
@@ -56,7 +56,7 @@ object BasicAndersen {
    * Case: x1 = &x2
    * Rule: x2 ∈ pt(x1)
    */
-  def ruleLocation(left: VariableExp, right: LocationExp): Unit = pt(left) = pt(left) + VariableExp(right.pointer)
+  def ruleLocation(left: PointerExp, right: LocationExp): Unit = pt(left) = pt(left) + PointerExp(right.pointer)
 
   /**
    * Case: x1 = x2
