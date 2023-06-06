@@ -2,7 +2,7 @@ package br.unb.cic.tip.pointer
 
 import br.unb.cic.tip.df.ReachingDefinition.RD
 import br.unb.cic.tip.{blocks, nonTrivialExpressions, variables}
-import br.unb.cic.tip.utils.{AllocExp, BasicExp, Expression, LocationExp, PointerExp, Stmt, VariableExp}
+import br.unb.cic.tip.utils.{AllocExp, BasicExp, Expression, LoadExp, LocationExp, PointerExp, Stmt, VariableExp}
 import br.unb.cic.tip.utils.Stmt.AssignmentStmt
 
 import scala.collection.mutable
@@ -37,9 +37,9 @@ object BasicAndersen {
       case (l: PointerExp, r: AllocExp) => ruleAllocation(l, r) // alloc: x = alloc i
       case (l: PointerExp, r: LocationExp) => ruleLocation (l, r) // location: x1 = &x2
       case (l: PointerExp, r: PointerExp) => ruleCopy(l, r) // assign: x1 = x2
-
+      case (l: PointerExp, r: LoadExp) => ruleLoad(l, r) // load: x1 = *x2
 //      case (l: LoadExp, _) => ruleStore(l, right) // store: *x1 = x2
-//      case (l: VariableExp, r: LoadExp) => ruleLoad(l, r) // load: x1 = *x2
+
 //      case (l: VariableExp, r: NullExp) => ruleDeferred(l, r) // deferred: X = null
 //      case (l: VariableExp, _) => pt(l) = pt(l) + right // any other thing
       case (_: VariableExp, _: Expression) =>  // assign: x1 = x2
@@ -71,12 +71,10 @@ object BasicAndersen {
      * Case: x1 = *x2
      * Rule: c ∈ pt(x2) =⇒ pt(c) ⊆ pt(x1) for each c ∈ Cells
      */
-//    def ruleLoad(left: VariableExp, right: LoadExp): Unit = right.exp match {
-//        case PointerExp (name) => {
-//          for (v <- pt(VariableExp (name) ) if v.isInstanceOf[VariableExp] )
-//            pt(left) = pt(left) union pt(v.asInstanceOf[VariableExp] )
-//          }
-//    }
+    def ruleLoad(left: PointerExp, right: LoadExp): Unit = {
+        for (v <- pt(right.pointer) if v.isInstanceOf[BasicExp] )
+          pt(left) = pt(left) union pt(v.asInstanceOf[BasicExp] )
+    }
 
     /**
      * Case: *x1 = x2
