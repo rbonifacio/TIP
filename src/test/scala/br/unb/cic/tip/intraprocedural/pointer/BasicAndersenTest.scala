@@ -81,44 +81,44 @@ class BasicAndersenTest extends AnyFunSuite {
    * s8: p = &z
    *
    */
-//  test("test_sample_for_point") {
-//
-//    val s1 = AssignmentPointerStmt(VariableExp("p"), AllocExp(NullExp))
-//    val s2 = AssignmentPointerStmt(VariableExp("x"), PointerExp("y"))
-//    val s3 = AssignmentPointerStmt(VariableExp("x"), PointerExp("z"))
-//    val s4 = AssignmentPointerStmt(LoadExp(PointerExp("p")), VariableExp("z"))
-//    val s5 = AssignmentPointerStmt(VariableExp("p"), PointerExp("q"))
-//    val s6 = AssignmentPointerStmt(VariableExp("q"), LocationExp("y"))
-//    val s7 = AssignmentPointerStmt(VariableExp("x"), LoadExp(PointerExp("p")))
-//    val s8 = AssignmentPointerStmt(VariableExp("p"), LocationExp("z"))
-//
-//    val mainBody = SequenceStmt(s1, SequenceStmt(s2, SequenceStmt(s3, SequenceStmt(s4, SequenceStmt(s5, SequenceStmt(s6, SequenceStmt(s7, s8)))))))
-//
-//    val RD = BasicAndersen.pointTo(mainBody)
-//
-//    assert(RD(VariableExp("p")) == (
-//      Set(AllocExp(NullExp), VariableExp("y"), VariableExp("z"))
-//      )
-//    )
-//
-//    assert(RD(VariableExp("q")) == (
-//      Set(VariableExp("y"))
-//      )
-//    )
-//
-//    assert(RD(VariableExp("x")) == (
-//      Set()
-//      )
-//    )
-//
-//    assert(RD(VariableExp("y")) == (
-//      Set()
-//      )
-//    )
-//
-//    assert(RD(VariableExp("z")) == (
-//      Set()
-//      )
-//    )
-//  }
+  test("test_pt_basic_sample_for_book") {
+
+    val s1 = AssignmentStmt(PointerExp("p"), AllocExp(NullExp))
+    val s2 = AssignmentStmt(PointerExp("x"), PointerExp("y"))
+    val s3 = AssignmentStmt(PointerExp("x"), PointerExp("z"))
+    val s4 = AssignmentStmt(LoadExp(PointerExp("p")), PointerExp("z"))
+    val s5 = AssignmentStmt(PointerExp("p"), PointerExp("q"))
+    val s6 = AssignmentStmt(PointerExp("q"), LocationExp("y"))
+    val s7 = AssignmentStmt(PointerExp("x"), LoadExp(PointerExp("p")))
+    val s8 = AssignmentStmt(PointerExp("p"), LocationExp("z"))
+
+    val mainBody = SequenceStmt(s1, SequenceStmt(s2, SequenceStmt(s3, SequenceStmt(s4, SequenceStmt(s5, SequenceStmt(s6, SequenceStmt(s7, s8)))))))
+
+    val RD = BasicAndersen.pointTo(mainBody)
+
+    assert(RD(PointerExp("p")) == (
+      Set(AllocExp(NullExp), PointerExp("y"), PointerExp("z"))
+      )
+    )
+
+    assert(RD(PointerExp("q")) == (
+      Set(PointerExp("y"))
+      )
+    )
+
+    assert(RD(PointerExp("x")) == (
+      Set()
+      )
+    )
+
+    assert(RD(PointerExp("y")) == (
+      Set()
+      )
+    )
+
+    assert(RD(PointerExp("z")) == (
+      Set()
+      )
+    )
+  }
 }
