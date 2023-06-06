@@ -69,6 +69,30 @@ class BasicAndersenTest extends AnyFunSuite {
   }
 
   /**
+   *  s1: p = alloc 1
+   *  s2: q = alloc 2
+   */
+  test("test_pt_allocation_rule") {
+
+    val s1 = AssignmentStmt(PointerExp("p"), AllocExp(ConstExp(1)))
+    val s2 = AssignmentStmt(PointerExp("q"), AllocExp(ConstExp(2)))
+
+    val mainBody = SequenceStmt(s1, s2);
+
+    val RD = BasicAndersen.pointTo(mainBody)
+
+    assert(RD(PointerExp("p")) == (
+      Set(AllocExp(ConstExp(1)))
+      )
+    )
+
+    assert(RD(PointerExp("q")) == (
+      Set(AllocExp(ConstExp(2)))
+      )
+    )
+  }
+
+  /**
    * s1: p = alloc null
    * s2: x = y
    * s3: x = z
