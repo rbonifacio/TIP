@@ -93,6 +93,43 @@ class BasicAndersenTest extends AnyFunSuite {
   }
 
   /**
+   * s1: p = alloc 1
+   * s2: q = alloc 2
+   * s3: r = alloc 3
+   * s4: p = &q
+   * s5: p = &r
+   * s6: r = &q
+   */
+  test("test_pt_location_rule") {
+
+    val s1 = AssignmentStmt(PointerExp("p"), AllocExp(ConstExp(1)))
+    val s2 = AssignmentStmt(PointerExp("q"), AllocExp(ConstExp(2)))
+    val s3 = AssignmentStmt(PointerExp("r"), AllocExp(ConstExp(3)))
+    val s4 = AssignmentStmt(PointerExp("p"), LocationExp("q"))
+    val s5 = AssignmentStmt(PointerExp("p"), LocationExp("r"))
+    val s6 = AssignmentStmt(PointerExp("r"), LocationExp("q"))
+
+    val mainBody = SequenceStmt(s1, SequenceStmt(s2, SequenceStmt(s3, SequenceStmt(s4, SequenceStmt(s5, s6)))));
+
+    val RD = BasicAndersen.pointTo(mainBody)
+
+    assert(RD(PointerExp("p")) == Set(
+          AllocExp(ConstExp(1)),
+          PointerExp("q"),
+          PointerExp("r")
+        )
+    )
+
+    assert(RD(PointerExp("q")) == Set(AllocExp(ConstExp(2))))
+
+    assert(RD(PointerExp("r")) == Set(
+          AllocExp(ConstExp(3)),
+          PointerExp("q")
+        )
+    )
+  }
+
+  /**
    * s1: p = alloc null
    * s2: x = y
    * s3: x = z
