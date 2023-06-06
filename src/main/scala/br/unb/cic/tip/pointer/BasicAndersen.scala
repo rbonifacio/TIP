@@ -50,44 +50,47 @@ object BasicAndersen {
    */
   private def ruleAllocation(left: PointerExp, right: AllocExp): Unit = pt(left) = pt(left) + right
 
+
   /**
    * Case: p1 = &q
    * Rule: q ∈ pt(p)
    */
-  def ruleLocation(left: PointerExp, right: LocationExp): Unit = pt(left) = pt(left) + PointerExp(right.pointer)
+  private def ruleLocation(left: PointerExp, right: LocationExp): Unit = pt(left) = pt(left) + PointerExp(right.pointer)
+
 
   /**
    * Case: p = q
    * Rule: pt(q) ⊆ pt(p)
    */
-  def ruleCopy(left: PointerExp, right: PointerExp): Unit =  {
+  private def ruleCopy(left: PointerExp, right: PointerExp): Unit =  {
     pt(left) = pt(left) union pt(right)
   }
 
 
-    /**
-     * Case: p = *q
-     * Rule: c ∈ pt(q) =⇒ pt(c) ⊆ pt(p) for each c ∈ Cells
-     */
-    def ruleLoad(left: PointerExp, right: LoadExp): Unit = {
-        for (v <- pt(right.pointer) if v.isInstanceOf[BasicExp] )
-          pt(left) = pt(left) union pt(v.asInstanceOf[BasicExp] )
-    }
+  /**
+   * Case: p = *q
+   * Rule: c ∈ pt(q) =⇒ pt(c) ⊆ pt(p) for each c ∈ Cells
+   */
+  private def ruleLoad(left: PointerExp, right: LoadExp): Unit = {
+      for (v <- pt(right.pointer) if v.isInstanceOf[BasicExp] )
+        pt(left) = pt(left) union pt(v.asInstanceOf[BasicExp] )
+  }
 
-    /**
-     * Case: *p = q
-     * Rule: c ∈ pt(p) =⇒ pt(q) ⊆ pt(c) for each c ∈ Cells
-     */
-    def ruleStore(left: LoadExp, right: PointerExp): Unit = {
-        for (v <- pt(left.pointer) if v.isInstanceOf[BasicExp])
-          pt(v.asInstanceOf[BasicExp]) = pt(v.asInstanceOf[BasicExp]) union pt(variables(right).head)
-    }
 
-    /**
-     * Case: p = null
-     * Rule: pt(p) = ()
-     */
-    def ruleDeferred(left: PointerExp, right: Expression): Unit = pt(left) = Set()
+  /**
+   * Case: *p = q
+   * Rule: c ∈ pt(p) =⇒ pt(q) ⊆ pt(c) for each c ∈ Cells
+   */
+  private def ruleStore(left: LoadExp, right: PointerExp): Unit = {
+      for (v <- pt(left.pointer) if v.isInstanceOf[BasicExp])
+        pt(v.asInstanceOf[BasicExp]) = pt(v.asInstanceOf[BasicExp]) union pt(variables(right).head)
+  }
+
+  /**
+   * Case: p = null
+   * Rule: pt(p) = ()
+   */
+  private def ruleDeferred(left: PointerExp, right: Expression): Unit = pt(left) = Set()
 }
 
 //template for rules
