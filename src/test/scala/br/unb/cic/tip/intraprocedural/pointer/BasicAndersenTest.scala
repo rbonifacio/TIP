@@ -165,6 +165,48 @@ class BasicAndersenTest extends AnyFunSuite {
   }
 
   /**
+   * s1: p = alloc 1
+   * s2: q = alloc 2
+   * s3: r = alloc 3
+   * s4: s = alloc 4
+   * s5: p = &q
+   * s6: p = &r
+   * s7: s = *p
+   */
+  test("test_pt_load_rule") {
+
+    val s1 = AssignmentStmt(PointerExp("p"), AllocExp(ConstExp(1)))
+    val s2 = AssignmentStmt(PointerExp("q"), AllocExp(ConstExp(2)))
+    val s3 = AssignmentStmt(PointerExp("r"), AllocExp(ConstExp(3)))
+    val s4 = AssignmentStmt(PointerExp("s"), AllocExp(ConstExp(4)))
+    val s5 = AssignmentStmt(PointerExp("p"), LocationExp("q"))
+    val s6 = AssignmentStmt(PointerExp("p"), LocationExp("r"))
+    val s7 = AssignmentStmt(PointerExp("s"), LoadExp(PointerExp("p")))
+
+    val mainBody = SequenceStmt(s1, SequenceStmt(s2, SequenceStmt(s3, SequenceStmt(s4, SequenceStmt(s5, SequenceStmt(s6, s7))))));
+
+    val RD = BasicAndersen.pointTo(mainBody)
+
+    assert(RD(PointerExp("p")) == Set(
+        AllocExp(ConstExp(1)),
+        PointerExp("q"),
+        PointerExp("r")
+      )
+    )
+
+    assert(RD(PointerExp("q")) == Set(AllocExp(ConstExp(2))))
+
+    assert(RD(PointerExp("r")) == Set(AllocExp(ConstExp(3))))
+
+    assert(RD(PointerExp("s")) == Set(
+        AllocExp(ConstExp(4)),
+        AllocExp(ConstExp(2)),
+        AllocExp(ConstExp(3))
+      )
+    )
+  }
+
+  /**
    * s1: p = alloc null
    * s2: x = y
    * s3: x = z
