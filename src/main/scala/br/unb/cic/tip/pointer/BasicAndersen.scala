@@ -38,9 +38,8 @@ object BasicAndersen {
       case (l: PointerExp, r: LocationExp) => ruleLocation (l, r) // location: x1 = &x2
       case (l: PointerExp, r: PointerExp) => ruleCopy(l, r) // assign: x1 = x2
       case (l: PointerExp, r: LoadExp) => ruleLoad(l, r) // load: x1 = *x2
-//      case (l: LoadExp, _) => ruleStore(l, right) // store: *x1 = x2
-
-      case (l: PointerExp, r: Expression) => ruleDeferred(l, r) // deferred: X = null
+      case (l: LoadExp, r: PointerExp) => ruleStore(l, r) // store: *x1 = x2
+//      case (l: PointerExp, r: Expression) => ruleDeferred(l, r) // deferred: X = null
 //      case (l: VariableExp, _) => pt(l) = pt(l) + right // any other thing
       case (_: VariableExp, _: Expression) =>  // assign: x1 = x2
     }
@@ -80,12 +79,10 @@ object BasicAndersen {
      * Case: *x1 = x2
      * Rule: c ∈ pt(x1) =⇒ pt(x2) ⊆ pt(c) for each c ∈ Cells
      */
-//    def ruleStore(left: LoadExp, right: Expression): Unit = left.exp match {
-//      case PointerExp(name) => {
-//        for (v <- pt(VariableExp(name)) if v.isInstanceOf[VariableExp])
-//          pt(v.asInstanceOf[VariableExp]) = pt(v.asInstanceOf[VariableExp]) union pt(variables(right).head)
-//      }
-//    }
+    def ruleStore(left: LoadExp, right: PointerExp): Unit = {
+        for (v <- pt(left.pointer) if v.isInstanceOf[BasicExp])
+          pt(v.asInstanceOf[BasicExp]) = pt(v.asInstanceOf[BasicExp]) union pt(variables(right).head)
+    }
 
     /**
      * Case: x1 = null
