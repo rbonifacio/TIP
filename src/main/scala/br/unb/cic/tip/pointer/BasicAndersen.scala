@@ -34,32 +34,31 @@ object BasicAndersen {
 
   def gen(stmt: Stmt): Unit = stmt match {
     case AssignmentStmt(left, right) => (left, right) match {
-      case (l: PointerExp, r: AllocExp) => ruleAllocation(l, r) // alloc: x = alloc i
-      case (l: PointerExp, r: LocationExp) => ruleLocation (l, r) // location: x1 = &x2
-      case (l: PointerExp, r: PointerExp) => ruleCopy(l, r) // assign: x1 = x2
-      case (l: PointerExp, r: LoadExp) => ruleLoad(l, r) // load: x1 = *x2
-      case (l: LoadExp, r: PointerExp) => ruleStore(l, r) // store: *x1 = x2
-      case (l: PointerExp, r: Expression) => ruleDeferred(l, r) // deferred: X = null
-//      case (l: VariableExp, _) => pt(l) = pt(l) + right // any other thing
-      case (_: VariableExp, _: Expression) =>  // assign: x1 = x2
+      case (l: PointerExp, r: AllocExp) => ruleAllocation(l, r) // alloc: p = alloc i
+      case (l: PointerExp, r: LocationExp) => ruleLocation (l, r) // location: p1 = &q
+      case (l: PointerExp, r: PointerExp) => ruleCopy(l, r) // assign: p = q
+      case (l: PointerExp, r: LoadExp) => ruleLoad(l, r) // load: p = *q
+      case (l: LoadExp, r: PointerExp) => ruleStore(l, r) // store: *p = q
+      case (l: PointerExp, r: Expression) => ruleDeferred(l, r) // deferred: p = null
+      case (_: VariableExp, _: Expression) =>  // any other thing
     }
   }
 
   /**
-   * Case: x = alloc i
-   * Rule: alloc-i ∈ pt(x)
+   * Case: p = alloc i
+   * Rule: alloc-i ∈ pt(p)
    */
   private def ruleAllocation(left: PointerExp, right: AllocExp): Unit = pt(left) = pt(left) + right
 
   /**
-   * Case: x1 = &x2
-   * Rule: x2 ∈ pt(x1)
+   * Case: p1 = &q
+   * Rule: q ∈ pt(p)
    */
   def ruleLocation(left: PointerExp, right: LocationExp): Unit = pt(left) = pt(left) + PointerExp(right.pointer)
 
   /**
-   * Case: x1 = x2
-   * Rule: pt(x2) ⊆ pt(x1)
+   * Case: p = q
+   * Rule: pt(q) ⊆ pt(p)
    */
   def ruleCopy(left: PointerExp, right: PointerExp): Unit =  {
     pt(left) = pt(left) union pt(right)
@@ -67,8 +66,8 @@ object BasicAndersen {
 
 
     /**
-     * Case: x1 = *x2
-     * Rule: c ∈ pt(x2) =⇒ pt(c) ⊆ pt(x1) for each c ∈ Cells
+     * Case: p = *q
+     * Rule: c ∈ pt(q) =⇒ pt(c) ⊆ pt(p) for each c ∈ Cells
      */
     def ruleLoad(left: PointerExp, right: LoadExp): Unit = {
         for (v <- pt(right.pointer) if v.isInstanceOf[BasicExp] )
@@ -76,8 +75,8 @@ object BasicAndersen {
     }
 
     /**
-     * Case: *x1 = x2
-     * Rule: c ∈ pt(x1) =⇒ pt(x2) ⊆ pt(c) for each c ∈ Cells
+     * Case: *p = q
+     * Rule: c ∈ pt(p) =⇒ pt(q) ⊆ pt(c) for each c ∈ Cells
      */
     def ruleStore(left: LoadExp, right: PointerExp): Unit = {
         for (v <- pt(left.pointer) if v.isInstanceOf[BasicExp])
@@ -85,11 +84,12 @@ object BasicAndersen {
     }
 
     /**
-     * Case: x1 = null
-     * Rule: pt(x1) = ()
+     * Case: p = null
+     * Rule: pt(p) = ()
      */
     def ruleDeferred(left: PointerExp, right: Expression): Unit = pt(left) = Set()
 }
+
 //template for rules
 //  /**
 //   * Case:
