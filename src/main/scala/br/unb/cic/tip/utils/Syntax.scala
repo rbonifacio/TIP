@@ -35,11 +35,11 @@ case class FunDecl(
 
 abstract class Expression
 abstract class BasicExp extends Expression
-//abstract class Exp extends Expression
+abstract class PointerLeftExp extends BasicExp
 
 
 case class VariableExp(name: Id) extends BasicExp // x | y | z | . . .
-case class PointerExp(name: Id) extends BasicExp // p | q | . . .
+case class PointerExp(name: Id) extends PointerLeftExp // p | q | . . .
 
 case class ConstExp(v: Integer) extends Expression
 case class BracketExp(exp: Expression) extends Expression // (Exp)
@@ -60,7 +60,7 @@ case class FunctionCallExp(name: Expression, args: List[Any]) extends Expression
 //  // Pointer
 case class AllocExp(exp: Expression) extends Expression // alloc Exp
 case class LocationExp(pointer: Id) extends Expression // & Id
-case class LoadExp(pointer: PointerExp) extends Expression // *p
+case class LoadExp(pointer: PointerExp) extends PointerLeftExp // *p
 //
 //  // Record
 case class RecordExp(fields: List[Field]) extends Expression // { Id : Exp , . . . , Id : Exp }
