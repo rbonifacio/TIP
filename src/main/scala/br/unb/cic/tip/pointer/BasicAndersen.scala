@@ -40,7 +40,7 @@ object BasicAndersen {
       case (l: PointerExp, r: LoadExp) => ruleLoad(l, r) // load: x1 = *x2
 //      case (l: LoadExp, _) => ruleStore(l, right) // store: *x1 = x2
 
-//      case (l: VariableExp, r: NullExp) => ruleDeferred(l, r) // deferred: X = null
+      case (l: PointerExp, r: Expression) => ruleDeferred(l, r) // deferred: X = null
 //      case (l: VariableExp, _) => pt(l) = pt(l) + right // any other thing
       case (_: VariableExp, _: Expression) =>  // assign: x1 = x2
     }
@@ -91,7 +91,7 @@ object BasicAndersen {
      * Case: x1 = null
      * Rule: pt(x1) = ()
      */
-//    def ruleDeferred(left: VariableExp, right: NullExp): Unit = pt(left) = Set()
+    def ruleDeferred(left: PointerExp, right: Expression): Unit = pt(left) = Set()
 }
 //template for rules
 //  /**
