@@ -39,7 +39,7 @@ object BasicAndersen {
       case (l: PointerExp, r: PointerExp) => ruleCopy(l, r) // assign: x1 = x2
       case (l: PointerExp, r: LoadExp) => ruleLoad(l, r) // load: x1 = *x2
       case (l: LoadExp, r: PointerExp) => ruleStore(l, r) // store: *x1 = x2
-//      case (l: PointerExp, r: Expression) => ruleDeferred(l, r) // deferred: X = null
+      case (l: PointerExp, r: Expression) => ruleDeferred(l, r) // deferred: X = null
 //      case (l: VariableExp, _) => pt(l) = pt(l) + right // any other thing
       case (_: VariableExp, _: Expression) =>  // assign: x1 = x2
     }
