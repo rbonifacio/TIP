@@ -36,9 +36,9 @@ object BasicAndersen {
     case AssignmentStmt(left, right) => (left, right) match {
       case (l: PointerExp, r: AllocExp) => ruleAllocation(l, r) // alloc: x = alloc i
       case (l: PointerExp, r: LocationExp) => ruleLocation (l, r) // location: x1 = &x2
-//      case (l: LoadExp, _) => ruleStore(l, right) // store: *x1 = x2
+      case (l: PointerExp, r: PointerExp) => ruleCopy(l, r) // assign: x1 = x2
 
-//      case (l: VariableExp, r: PointerExp) => ruleCopy(l, r) // assign: x1 = x2
+//      case (l: LoadExp, _) => ruleStore(l, right) // store: *x1 = x2
 //      case (l: VariableExp, r: LoadExp) => ruleLoad(l, r) // load: x1 = *x2
 //      case (l: VariableExp, r: NullExp) => ruleDeferred(l, r) // deferred: X = null
 //      case (l: VariableExp, _) => pt(l) = pt(l) + right // any other thing
@@ -62,7 +62,9 @@ object BasicAndersen {
    * Case: x1 = x2
    * Rule: pt(x2) ⊆ pt(x1)
    */
-  def ruleCopy(left: VariableExp, right: VariableExp): Unit =  {}//pt(left) = pt(left) union pt(VariableExp(right.name))
+  def ruleCopy(left: PointerExp, right: PointerExp): Unit =  {
+    pt(left) = pt(left) union pt(right)
+  }
 
 
     /**
