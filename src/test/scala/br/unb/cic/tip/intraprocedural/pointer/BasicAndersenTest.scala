@@ -18,7 +18,7 @@ class BasicAndersenTest extends AnyFunSuite {
    *  s7: f = null
    *
    */
-  test("test_stmt_for_point") {
+  test("test_pt_all_andersen_rules") {
 
     val s1 = AssignmentStmt(VariableExp("a"), ConstExp(1))
     val s2 = AssignmentStmt(PointerExp("b"), AllocExp(NullExp))
@@ -31,8 +31,6 @@ class BasicAndersenTest extends AnyFunSuite {
     val mainBody = SequenceStmt(s1, SequenceStmt(s2, SequenceStmt(s3, SequenceStmt(s4, SequenceStmt(s5, SequenceStmt(s6, s7))))))
 
     val RD = BasicAndersen.pointTo(mainBody)
-
-    println(RD)
 
     assert(RD(VariableExp("a")) == (
       Set()
