@@ -1,15 +1,13 @@
 package br.unb.cic.tip
 
-import br.unb.cic.tip.svf.GraphSVF
-import br.unb.cic.tip.utils.*
-import br.unb.cic.tip.utils.Expression.*
-import br.unb.cic.tip.utils.{Expression, FunDecl, Id, Node, Program, Stmt}
+import br.unb.cic.tip.utils.{AddExp, BasicExp, BracketExp, ConstExp, DivExp, EqExp, Expression, FunDecl, FunctionCallExp, GTExp, Id, InputExp, LoadExp, MultiExp, NameExp, Node, PointerExp, Program, Stmt, SubExp, VariableExp}
+import br.unb.cic.tip.utils.Stmt.*
 import br.unb.cic.tip.utils.Node.*
 
 type Edge = (Node, Node)
 type Graph = Set[Edge]
 
-def initStmt(stmt: Stmt): LabelSensitiveStmt = stmt match {
+def initStmt(stmt: Stmt): Stmt = stmt match {
   case SequenceStmt(s1, _)      => initStmt(s1)
   case AssignmentStmt(id, exp)  => exp match {
     case FunctionCallExp(NameExp(_), _)  => CallStmt(AssignmentStmt(id, exp))
@@ -18,7 +16,7 @@ def initStmt(stmt: Stmt): LabelSensitiveStmt = stmt match {
   case _                        => stmt
 }
 
-def finalStmt(stmt: Stmt): Set[LabelSensitiveStmt] = stmt match {
+def finalStmt(stmt: Stmt): Set[Stmt] = stmt match {
   case SequenceStmt(_, s2)      => finalStmt(s2)
   case IfElseStmt(_, s1, s2)    => finalStmt(s1) union (if (s2.isDefined) finalStmt(s2.get) else Set())
   case AssignmentStmt(id, exp)  => exp match {
@@ -28,7 +26,7 @@ def finalStmt(stmt: Stmt): Set[LabelSensitiveStmt] = stmt match {
   case _                        => Set(stmt)
 }
 
-def blocks(stmt: Stmt): Set[LabelSensitiveStmt] = stmt match {
+def blocks(stmt: Stmt): Set[Stmt] = stmt match {
   case SequenceStmt(s1, s2)         => blocks(s1) union blocks(s2)
   case IfElseStmt(_, s1, Some(s2))  => blocks(s1) union blocks(s2) union Set(stmt) 
   case IfElseStmt(_, s1, None)      => blocks(s1) union Set(stmt) 
@@ -66,8 +64,18 @@ def assignments(stmt: Stmt): Set[AssignmentStmt] = stmt match {
   case _                            => Set()
 }
 
-def variables(exp: Expression): Set[VariableExp] = exp match {
+def variables(stmt: Stmt): Set[BasicExp] = stmt match {
+  case SequenceStmt(s1, s2)   => variables(s1) union variables(s2)
+  case AssignmentStmt(s1, s2) => variables(s1) union variables(s2)
+  case IfElseStmt(condition, _, _) => variables(condition)
+  case WhileStmt(condition, _) => variables(condition)
+  case OutputStmt(exp) => variables(exp)
+  case _ => Set()
+}
+
+def variables(exp: Expression): Set[BasicExp] = exp match {
   case VariableExp(name)      => Set(VariableExp(name))
+  case PointerExp(name)       => Set(PointerExp(name))
   case AddExp(left, right)    => variables(left) union variables(right)
   case SubExp(left, right)    => variables(left) union variables(right)
   case MultiExp(left, right)  => variables(left) union variables(right)
@@ -75,26 +83,12 @@ def variables(exp: Expression): Set[VariableExp] = exp match {
   case EqExp(left, right)     => variables(left) union variables(right)
   case GTExp(left, right)     => variables(left) union variables(right)
   case BracketExp(exp)        => variables(exp)
-  case PointerExp(name)       => Set(VariableExp(name))
-//    case ConstExp(_) => Set()
+  case LoadExp(exp)           => variables(exp)
   case _                      => Set()
 }
 
-def variables(stmt: Stmt): Set[VariableExp] = stmt match {
-  case SequenceStmt(s1, s2)   => variables(s1) union variables(s2)
-  case AssignmentStmt(_, exp) => variables(exp)
-  case AssignmentPointerStmt(name, exp) => name match {
-    case LoadExp(e) => variables(e) union variables(name)
-    case _ => variables(exp) union variables(name)
-  }
-  case IfElseStmt(condition, _, _) => variables(condition)
-  case WhileStmt(condition, _) => variables(condition)
-  case OutputStmt(exp) => variables(exp)
-  case _ => Set()
-}
-
-def successors(stmt: Stmt, cfg: Graph): Set[LabelSensitiveStmt] = {
-  var res = Set[LabelSensitiveStmt]()
+def successors(stmt: Stmt, cfg: Graph): Set[Stmt] = {
+  var res = Set[Stmt]()
   for ((from, to) <- cfg if from == SimpleNode(stmt)) {
     to match {
       case SimpleNode(s) => res = res union Set(s)
@@ -125,8 +119,8 @@ def nonTrivialExps(exp: Expression): Set[Expression] = exp match {
   case _              => Set(exp)
 }
 
-def expDependsOn(exp: Expression, id: String): Boolean = exp match {
-  case VariableExp(name) => name == id
+def expDependsOn(exp: Expression, id: VariableExp): Boolean = exp match {
+  case VariableExp(name) => name == id.name
   case AddExp(l, r)      => expDependsOn(l, id) || expDependsOn(r, id)
   case SubExp(l, r)      => expDependsOn(l, id) || expDependsOn(r, id)
   case MultiExp(l, r)    => expDependsOn(l, id) || expDependsOn(r, id)

@@ -2,9 +2,10 @@ package br.unb.cic.tip.interprocedural.df
 
 import br.unb.cic.tip.*
 import br.unb.cic.tip.df.ReachingDefinition
-import br.unb.cic.tip.utils.Expression.*
+import br.unb.cic.tip.utils.{Expression}
 import br.unb.cic.tip.utils.FunDecl
 import br.unb.cic.tip.utils.Node.*
+import br.unb.cic.tip.utils.Stmt.*
 import br.unb.cic.tip.utils._
 import org.scalatest.funsuite.AnyFunSuite
 
@@ -30,14 +31,14 @@ class RDInterproceduralTest extends AnyFunSuite {
    */
   test("test_rd_calling_function_one_time") {
 
-    val m1 = AssignmentStmt("x", ConstExp(5))
+    val m1 = AssignmentStmt(VariableExp("x"), ConstExp(5))
     val myFunction = FunDecl("myFunction", List("x"), List(), m1, NullExp)
 
-    val s1 = AssignmentStmt("x", ConstExp(1))
-    val s2 = AssignmentStmt("y", ConstExp(2))
-    val s3 = AssignmentStmt("_m1", FunctionCallExp(NameExp(myFunction.name), List(VariableExp("x"))))
-    val s4 = AssignmentStmt("a", AddExp(VariableExp("y"), ConstExp(1)))
-    val s5 = AssignmentStmt("b", AddExp(VariableExp("x"), ConstExp(1)))
+    val s1 = AssignmentStmt(VariableExp("x"), ConstExp(1))
+    val s2 = AssignmentStmt(VariableExp("y"), ConstExp(2))
+    val s3 = AssignmentStmt(VariableExp("_m1"), FunctionCallExp(NameExp(myFunction.name), List(VariableExp("x"))))
+    val s4 = AssignmentStmt(VariableExp("a"), AddExp(VariableExp("y"), ConstExp(1)))
+    val s5 = AssignmentStmt(VariableExp("b"), AddExp(VariableExp("x"), ConstExp(1)))
 
     //main function
     val mainBody = SequenceStmt(s1, SequenceStmt(s2, SequenceStmt(s3, SequenceStmt(s4, s5))))
@@ -58,14 +59,14 @@ class RDInterproceduralTest extends AnyFunSuite {
       Set(s1, s2)
     ))
 
+    assert(RD((m1, s3)) == (
+      Set(s1),
+      Set(m1),
+    ))
+
     assert(RD((s3, NopStmt)) == (
       Set(s1, s2),
       Set(s2, m1)
-    ))
-
-    assert( RD((m1, s3)) == (
-      Set(s1),
-      Set(m1),
     ))
 
     assert( RD((s4, NopStmt)) == (
@@ -97,18 +98,18 @@ class RDInterproceduralTest extends AnyFunSuite {
    */
   test("test_rd_calling_function_two_times") {
 
-    val m1 = AssignmentStmt("x", ConstExp(5))
+    val m1 = AssignmentStmt(VariableExp("x"), ConstExp(5))
     val myFunction = FunDecl("myFunction", List("x"), List(), m1, NullExp)
 
-    val s1 = AssignmentStmt("x", ConstExp(1))
-    val s2 = AssignmentStmt("y", ConstExp(2))
-    val s3 = AssignmentStmt("_m1", FunctionCallExp(NameExp(myFunction.name), List(VariableExp("x"))))
-    val s4 = AssignmentStmt("a", AddExp(VariableExp("y"), ConstExp(1)))
-    val s5 = AssignmentStmt("b", AddExp(VariableExp("x"), ConstExp(1)))
-    val s6 = AssignmentStmt("x", ConstExp(100))
-    val s7 = AssignmentStmt("_m2", FunctionCallExp(NameExp(myFunction.name), List(VariableExp("x"))))
-    val s8 = AssignmentStmt("aa", AddExp(VariableExp("y"), ConstExp(11)))
-    val s9 = AssignmentStmt("bb", AddExp(VariableExp("x"), ConstExp(11)))
+    val s1 = AssignmentStmt(VariableExp("x"), ConstExp(1))
+    val s2 = AssignmentStmt(VariableExp("y"), ConstExp(2))
+    val s3 = AssignmentStmt(VariableExp("_m1"), FunctionCallExp(NameExp(myFunction.name), List(VariableExp("x"))))
+    val s4 = AssignmentStmt(VariableExp("a"), AddExp(VariableExp("y"), ConstExp(1)))
+    val s5 = AssignmentStmt(VariableExp("b"), AddExp(VariableExp("x"), ConstExp(1)))
+    val s6 = AssignmentStmt(VariableExp("x"), ConstExp(100))
+    val s7 = AssignmentStmt(VariableExp("_m2"), FunctionCallExp(NameExp(myFunction.name), List(VariableExp("x"))))
+    val s8 = AssignmentStmt(VariableExp("aa"), AddExp(VariableExp("y"), ConstExp(11)))
+    val s9 = AssignmentStmt(VariableExp("bb"), AddExp(VariableExp("x"), ConstExp(11)))
 
     //main function
     val mainBody =

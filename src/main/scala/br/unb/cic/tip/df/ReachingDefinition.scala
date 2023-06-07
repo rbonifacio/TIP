@@ -2,10 +2,10 @@ package br.unb.cic.tip.df
 
 import scala.collection.mutable
 import br.unb.cic.tip.*
-import br.unb.cic.tip.utils.Expression.*
+import br.unb.cic.tip.utils.{Expression}
 import br.unb.cic.tip.utils.Node.SimpleNode
 import br.unb.cic.tip.utils.*
-import br.unb.cic.tip.utils.LabelSensitiveStmt.labeledToStmt
+import br.unb.cic.tip.utils.Stmt.*
 
 type ReachingDefinition = (Set[AssignmentStmt], Set[AssignmentStmt])
 type ResultRD = mutable.HashMap[(Stmt, Stmt), ReachingDefinition]
@@ -15,6 +15,7 @@ object ReachingDefinition {
     var RD: ResultRD = mutable.HashMap()
 
     def run(program: Program): ResultRD = {
+      RD = mutable.HashMap()
       run(getMethodBody(program), program) 
     } 
 
@@ -35,12 +36,12 @@ object ReachingDefinition {
           en = Set() 
           ex = Set()
 
-          labeledToStmt(stmt) match
+          stmt match
             case AssignmentStmt(_, exp) => exp match 
               case FunctionCallExp(NameExp(name), args) => {
                 en = entry(fBody, stmt, predecessors, context)
                 // filter and get predecessor that are send as parameters to the function
-                val usedPredecessors = en.filter( e => args.exists(_ == VariableExp(e.name)))
+                val usedPredecessors = en.filter( e => args.exists(_ == e.name))
                 run(getMethodBody(program, name), program, usedPredecessors, stmt)
                 // a kind of Interprocedural Exit Function was created in the next lines
                 val in: Set[AssignmentStmt] = exit(stmt)

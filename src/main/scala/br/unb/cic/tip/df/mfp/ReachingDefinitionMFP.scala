@@ -1,9 +1,9 @@
 package br.unb.cic.tip.df.mfp
 
-import br.unb.cic.tip.utils._
-import br.unb.cic.tip.utils.Stmt._
-import br.unb.cic.tip.utils.Expression._
-import br.unb.cic.tip._
+import br.unb.cic.tip.assignments
+import br.unb.cic.tip.utils.Stmt
+import br.unb.cic.tip.utils.Stmt.AssignmentStmt
+import br.unb.cic.tip.utils.{Expression}
 
 object ReachingDefinitionMFP extends MFP[AssignmentStmt] {
 

@@ -14,12 +14,12 @@ object AvailableExpressionsMFP extends MFP[Expression] {
 
   def kill(program: Stmt, stmt: Stmt): Set[Expression] = stmt match {
     case AssignmentStmt(id, _) =>
-      getLatticeBottom(program).filter(expDependsOn(_, id))
+      getLatticeBottom(program).filter(expDependsOn(_, id.asInstanceOf[VariableExp]))
     case _ => Set()
   }
 
   def gen(stmt: Stmt): Set[Expression] = stmt match {
-    case AssignmentStmt(id, exp)  => nonTrivialExps(exp).filterNot(expDependsOn(_, id))
+    case AssignmentStmt(id, exp)  => nonTrivialExps(exp).filterNot(expDependsOn(_, id.asInstanceOf[VariableExp]))
     case WhileStmt(exp, _)        => nonTrivialExps(exp)
     case IfElseStmt(exp, _, _)    => nonTrivialExps(exp)
     case OutputStmt(exp)          => nonTrivialExps(exp)

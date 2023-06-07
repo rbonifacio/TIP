@@ -1,13 +1,13 @@
 package br.unb.cic.tip.df
 
 import br.unb.cic.tip.*
-import br.unb.cic.tip.utils.Expression.*
+import br.unb.cic.tip.utils.{BasicExp, Expression, Stmt, VariableExp}
 import br.unb.cic.tip.utils.Node.SimpleNode
-import br.unb.cic.tip.utils._
+import br.unb.cic.tip.utils.Stmt.*
 
 import scala.collection.mutable
 
-type LV = (Set[VariableExp], Set[VariableExp]) // IN - OUT for each stmt
+type LV = (Set[BasicExp], Set[BasicExp]) // IN - OUT for each stmt
 type ResultLV = mutable.HashMap[Stmt, LV]
 
 object LiveVariable {
@@ -16,8 +16,8 @@ object LiveVariable {
     var explore = true
 
     val LV: ResultLV = mutable.HashMap()
-    var en = Set[VariableExp]()
-    var ex = Set[VariableExp]()
+    var en = Set[BasicExp]()
+    var ex = Set[BasicExp]()
 
     for (stmt <- blocks(program)) {
       LV(stmt) = (en, ex)
@@ -38,14 +38,14 @@ object LiveVariable {
     LV
   }
 
-  def entry(stmt: Stmt, LV: ResultLV): Set[VariableExp] = stmt match {
+  def entry(stmt: Stmt, LV: ResultLV): Set[BasicExp] = stmt match {
     case AssignmentStmt(_, _) => (LV(stmt)._2 diff kill(stmt)) union gen(stmt)
     case _ => LV(stmt)._2 union gen(stmt)
     //to do; maybe there some stmt that does not create
   }
 
-  def exit(program: Stmt, stmt: Stmt, LV: ResultLV): Set[VariableExp] = {
-    var res = Set[VariableExp]()
+  def exit(program: Stmt, stmt: Stmt, LV: ResultLV): Set[BasicExp] = {
+    var res = Set[BasicExp]()
     for ((from, to) <- flowR(program) if to == SimpleNode(stmt)) {
       from match {
         case SimpleNode(s) => res = LV(s)._1 union res
@@ -55,12 +55,12 @@ object LiveVariable {
     res
   }
 
-  def kill(stmt: Stmt): Set[VariableExp] = stmt match {
-    case AssignmentStmt(id, _) => Set(VariableExp(id))
+  def kill(stmt: Stmt): Set[BasicExp] = stmt match {
+    case AssignmentStmt(id, _) => Set(id)
     case _ => Set()
   }
 
-  def gen(stmt: Stmt): Set[VariableExp] = stmt match {
+  def gen(stmt: Stmt): Set[BasicExp] = stmt match {
     case AssignmentStmt(_, exp) => variables(exp)
     case IfElseStmt(condition, _, _) => variables(condition)
     case WhileStmt(condition, _) => variables(condition)
