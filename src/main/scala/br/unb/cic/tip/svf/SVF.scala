@@ -123,7 +123,7 @@ object SVF {
     private def findDefinition(stmt: Stmt, v: BasicExp): Stmt = RD((stmt, NopStmt))._2.find(_.name == v) getOrElse NopStmt
 
     private def findDefinition(stmt: Stmt, v: Expression): Stmt = v.isInstanceOf[BasicExp] match {
-      case true => findDefinition(stmt, v)
+      case true => findDefinition(stmt, v.asInstanceOf[BasicExp])
       case _ => NopStmt
     }
 }
