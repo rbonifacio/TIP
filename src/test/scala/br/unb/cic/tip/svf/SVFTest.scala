@@ -1,15 +1,14 @@
 package br.unb.cic.tip.svf
 
+import br.unb.cic.tip.utils.{AddExp, ConstExp, FunDecl, NullExp, VariableExp}
 import br.unb.cic.tip.{convertSVFtoGraph, exportDot}
-import br.unb.cic.tip.utils.{AssignmentPointerStmt, AssignmentStmt, FunDecl, SequenceStmt}
-import br.unb.cic.tip.utils.Expression.{AddExp, AllocExp, ConstExp, NullExp, PointerExp, VariableExp}
 import br.unb.cic.tip.utils.Node.SimpleNode
+import br.unb.cic.tip.utils.Stmt.*
 import org.scalatest.funsuite.AnyFunSuite
 
 class SVFTest extends AnyFunSuite {
 
   /**
-   * will it be solved by reaching definition?
    * s1: a = 1
    * s2: b = 2
    * s3: c = a
@@ -17,11 +16,11 @@ class SVFTest extends AnyFunSuite {
    * s5: e = c
    */
   test("test_without_pointer") {
-    val s1 = AssignmentStmt("a", ConstExp(1))
-    val s2 = AssignmentStmt("b", ConstExp(2))
-    val s3 = AssignmentStmt("c", VariableExp("a"))
-    val s4 = AssignmentStmt("d", AddExp(VariableExp("b"), VariableExp("c")))
-    val s5 = AssignmentStmt("e", VariableExp("c"))
+    val s1 = AssignmentStmt(VariableExp("a"), ConstExp(1))
+    val s2 = AssignmentStmt(VariableExp("b"), ConstExp(2))
+    val s3 = AssignmentStmt(VariableExp("c"), VariableExp("a"))
+    val s4 = AssignmentStmt(VariableExp("d"), AddExp(VariableExp("b"), VariableExp("c")))
+    val s5 = AssignmentStmt(VariableExp("e"), VariableExp("c"))
 
     val mainBody = SequenceStmt(s1, SequenceStmt(s2, SequenceStmt(s3, SequenceStmt(s4, s5))))
     val mainFunction = FunDecl("main", List(), List(), mainBody, NullExp)
