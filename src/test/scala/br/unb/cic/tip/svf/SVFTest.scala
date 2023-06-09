@@ -1,6 +1,6 @@
 package br.unb.cic.tip.svf
 
-import br.unb.cic.tip.utils.{AddExp, ConstExp, FunDecl, NullExp, VariableExp}
+import br.unb.cic.tip.utils.{AddExp, AllocExp, ConstExp, FunDecl, NullExp, PointerExp, VariableExp}
 import br.unb.cic.tip.{convertSVFtoGraph, exportDot}
 import br.unb.cic.tip.utils.Node.SimpleNode
 import br.unb.cic.tip.utils.Stmt.*
@@ -15,7 +15,7 @@ class SVFTest extends AnyFunSuite {
    * s4: d = b + c
    * s5: e = c
    */
-  test("test_without_pointer") {
+  test("test_svf_rule_copy_variables") {
     val s1 = AssignmentStmt(VariableExp("a"), ConstExp(1))
     val s2 = AssignmentStmt(VariableExp("b"), ConstExp(2))
     val s3 = AssignmentStmt(VariableExp("c"), VariableExp("a"))
@@ -35,8 +35,7 @@ class SVFTest extends AnyFunSuite {
       ((s3, VariableExp("c")), (s4, VariableExp("d"))),
       ((s3, VariableExp("c")), (s5, VariableExp("e")))
     )
-    assert(expected == svf)
-
+    assert(svf == expected)
 //    println(exportDot(convertSVFtoGraph(svf)))
   }
 
@@ -45,24 +44,21 @@ class SVFTest extends AnyFunSuite {
    * q = alloc i2
    * p = q
    */
-//  test("test_simple_rule_copy") {
-//    val s1 = AssignmentPointerStmt(PointerExp("p"), AllocExp(NullExp))
-//    val s2 = AssignmentPointerStmt(PointerExp("q"), AllocExp(ConstExp(1)))
-//    val s3 = AssignmentPointerStmt(PointerExp("p"), PointerExp("q"))
-//
-//    val mainBody = SequenceStmt(s1, SequenceStmt(s2, s3))
-//    val mainFunction = FunDecl("main", List(), List(), mainBody, NullExp)
-//
-//    val program = List(mainFunction)
-//
-//    val svf = SVF.run(program)
-//
-//    val expected = Set(
-//      ((s1, PointerExp("q")), (s3, PointerExp("p")))
-//    )
-////    assert(expected == svf)
-//
-////    println(exportDot(convertSVFtoGraph(svf)))
-//  }
+  test("test_svf_rule_copy_pointers") {
+    val s1 = AssignmentStmt(PointerExp("p"), AllocExp(NullExp))
+    val s2 = AssignmentStmt(PointerExp("q"), AllocExp(ConstExp(1)))
+    val s3 = AssignmentStmt(PointerExp("p"), PointerExp("q"))
 
+    val mainBody = SequenceStmt(s1, SequenceStmt(s2, s3))
+    val mainFunction = FunDecl("main", List(), List(), mainBody, NullExp)
+
+    val program = List(mainFunction)
+
+    val svf = SVF.run(program)
+
+    val expected = Set(
+      ((s2, PointerExp("q")), (s3, PointerExp("p")))
+    )
+    assert(svf == expected)
+  }
 }
