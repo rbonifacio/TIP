@@ -61,4 +61,43 @@ class SVFTest extends AnyFunSuite {
     )
     assert(svf == expected)
   }
+
+  /**
+   * s1: a = 1
+   * s2: b = 2
+   * s3: p = alloc i1
+   * s4: q = alloc i2
+   * s5: c = a
+   * s6: q = p
+   * s7: d = b + c
+   * s8: e = c
+   *
+   */
+  test("test_svf_rule_copy") {
+    val s1 = AssignmentStmt(VariableExp("a"), ConstExp(1))
+    val s2 = AssignmentStmt(VariableExp("b"), ConstExp(2))
+    val s3 = AssignmentStmt(PointerExp("p"), AllocExp(ConstExp(1)))
+    val s4 = AssignmentStmt(PointerExp("q"), AllocExp(ConstExp(2)))
+    val s5 = AssignmentStmt(VariableExp("c"), VariableExp("a"))
+    val s6 = AssignmentStmt(PointerExp("q"), PointerExp("p"))
+    val s7 = AssignmentStmt(VariableExp("d"), AddExp(VariableExp("b"), VariableExp("c")))
+    val s8 = AssignmentStmt(VariableExp("e"), VariableExp("c"))
+
+    val mainBody = SequenceStmt(s1, SequenceStmt(s2, SequenceStmt(s3, SequenceStmt(s4, SequenceStmt(s5, SequenceStmt(s6, SequenceStmt(s7, s8)))))))
+    val mainFunction = FunDecl("main", List(), List(), mainBody, NullExp)
+
+    val program = List(mainFunction)
+
+    val svf = SVF.run(program)
+
+    val expected = Set(
+      ((s1, VariableExp("a")), (s5, VariableExp("c"))),
+      ((s3, PointerExp("p")), (s6, PointerExp("q"))),
+      ((s2, VariableExp("b")), (s7, VariableExp("d"))),
+      ((s5, VariableExp("c")), (s7, VariableExp("d"))),
+      ((s5, VariableExp("c")), (s8, VariableExp("e")))
+    )
+    assert(svf == expected)
+    //    println(exportDot(convertSVFtoGraph(svf)))
+  }
 }
