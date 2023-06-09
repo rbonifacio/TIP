@@ -1,6 +1,7 @@
 package br.unb.cic.tip.svf
 
 import br.unb.cic.tip.df.{ReachingDefinition, ResultRD}
+import br.unb.cic.tip.pointer.{BasicAndersen, ResultPT}
 import br.unb.cic.tip.{blocks, getMethodBody, variables}
 import br.unb.cic.tip.utils.{BasicExp, Expression, FunDecl, FunctionCallExp, Id, LoadExp, PointerExp, Program, Stmt, VariableExp}
 import br.unb.cic.tip.utils.Stmt.*
@@ -16,11 +17,13 @@ object SVF {
 
   private var graph: GraphSVF = Set()
   private var RD: ResultRD = mutable.HashMap()
+  private var PT: ResultPT = mutable.HashMap()
 
   def run(program: Program): GraphSVF = {
     val bodyMain = getMethodBody(program)
     graph = Set()
     RD = ReachingDefinition.run(bodyMain, program)
+    PT = BasicAndersen.pointTo(bodyMain)
     run(bodyMain)
   }
 
@@ -39,25 +42,11 @@ object SVF {
 
   private def analyzer(stmt: Stmt, left: BasicExp, right: Expression): Unit = {
     (left, right) match {
-      case (l: BasicExp, r: Expression) => ruleCopy(stmt, l, r)
-//      case (l: PointerExp, r: LoadExp) =>  // l: p = *q
-//      case (l: LoadExp, r: PointerExp) =>  // l: *p = q
-//      case call rule
-//      case return rule
+      case (l: PointerExp, r: LoadExp) =>  ruleLoad(stmt, l, r) // l: p = *q
+      case (l: BasicExp, r: Expression) => ruleCopy(stmt, l, r) // a = b; p = q
       case _ =>
     }
   }
-
-//  private def pointersOperations(stmt: Stmt, left: Expression, right: Expression): Unit = {
-//    (left, right) match {
-//      case (l: PointerExp, r: PointerExp) => ruleCopy(stmt, l, r) // l: p = q
-////      case (l: PointerExp, r: LoadExp) =>  // l: p = *q
-////      case (l: LoadExp, r: PointerExp) =>  // l: *p = q
-////      case call rule
-////      case return rule
-//      case _ =>
-//    }
-//  }
 
   /**
    * This is a copy operation for variables and pointers.
@@ -82,7 +71,9 @@ object SVF {
    * Rule: ∀ o pt(q)
    *  - ∀ o@Ln -> p@L
    */
-  private def ruleLoad(left: PointerExp, right: LoadExp): Unit = {}
+  private def ruleLoad(stmt: Stmt, left: PointerExp, right: LoadExp): Unit = {
+    PT(right.pointer).foreach(v => graph += ((findDefinition(stmt, v), v), (stmt, left)))
+  }
 
 
   /**
@@ -131,11 +122,8 @@ object SVF {
    */
     private def findDefinition(stmt: Stmt, v: BasicExp): Stmt = RD((stmt, NopStmt))._2.find(_.name == v) getOrElse NopStmt
 
-//    private def findDefinition(stmt: Stmt, v: BasicExp): Stmt = v match {
-//      case VariableExp(name) => findDefinition(stmt, name)
-//      case PointerExp(name) => findDefinition(stmt, name)
-//      case - => NopStmt
-//    }
-//
-//    private def findDefinition(stmt: Stmt, variable: Id): Stmt = RD((stmt, NopStmt))._2.find(_.name == variable) getOrElse NopStmt
+    private def findDefinition(stmt: Stmt, v: Expression): Stmt = v.isInstanceOf[BasicExp] match {
+      case true => findDefinition(stmt, v)
+      case _ => NopStmt
+    }
 }
