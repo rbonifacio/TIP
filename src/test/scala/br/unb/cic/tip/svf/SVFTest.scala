@@ -135,12 +135,45 @@ class SVFTest extends AnyFunSuite {
    * s2: q = alloc i2
    * s3: r = alloc i3
    * s4: s = alloc i4
-   * s5: p = &r
-   * s6: q = *p
-   * s7: q = &p
-   * s8: q = &r
-   * s9: s = *q
+   * s5: p = &q
+   * s6: p = &s
+   * s7: r = *p
    */
+  test("test_svf_load_rule_many_allocations") {
+    val s1 = AssignmentStmt(PointerExp("p"), AllocExp(ConstExp(1)))
+    val s2 = AssignmentStmt(PointerExp("q"), AllocExp(ConstExp(2)))
+    val s3 = AssignmentStmt(PointerExp("r"), AllocExp(ConstExp(3)))
+    val s4 = AssignmentStmt(PointerExp("s"), AllocExp(ConstExp(4)))
+    val s5 = AssignmentStmt(PointerExp("p"), LocationExp("q"))
+    val s6 = AssignmentStmt(PointerExp("p"), LocationExp("s"))
+    val s7 = AssignmentStmt(PointerExp("r"), LoadExp(PointerExp("p")))
+
+    val mainBody = SequenceStmt(s1, SequenceStmt(s2, SequenceStmt(s3, SequenceStmt(s4, SequenceStmt(s5, SequenceStmt(s6, s7))))))
+    val mainFunction = FunDecl("main", List(), List(), mainBody, NullExp)
+
+    val program = List(mainFunction)
+
+    val svf = SVF.run(program)
+
+    val expected = Set(
+      ((NopStmt, AllocExp(ConstExp(1))), (s7, PointerExp("r"))),
+      ((s2, PointerExp("q")), (s7, PointerExp("r"))),
+      ((s4, PointerExp("s")), (s7, PointerExp("r")))
+    )
+    assert(svf == expected)
+  }
+
+//  /**
+//   * s1: p = alloc i1
+//   * s2: q = alloc i2
+//   * s3: r = alloc i3
+//   * s4: s = alloc i4
+//   * s5: p = &r
+//   * s6: q = *p
+//   * s7: q = &p
+//   * s8: q = &r
+//   * s9: s = *q
+//   */
 //  test("test_svf_load_rule") {
 //    val s1 = AssignmentStmt(PointerExp("p"), AllocExp(ConstExp(1)))
 //    val s2 = AssignmentStmt(PointerExp("q"), AllocExp(ConstExp(2)))
@@ -160,8 +193,11 @@ class SVFTest extends AnyFunSuite {
 //    val svf = SVF.run(program)
 //
 //    val expected = Set(
+//      ((NopStmt, AllocExp(ConstExp(1))), (s5, PointerExp("q"))),
 //      ((s3, PointerExp("r")), (s5, PointerExp("q"))),
+//      ((NopStmt, AllocExp(ConstExp(1))), (s5, PointerExp("s"))),
 //      ((s5, PointerExp("p")), (s9, PointerExp("s"))),
+//      //      ((NopStmt, AllocExp(ConstExp(3))), (s5, PointerExp("s"))),
 //      ((s3, PointerExp("r")), (s9, PointerExp("s")))
 //    )
 //    assert(svf == expected)
