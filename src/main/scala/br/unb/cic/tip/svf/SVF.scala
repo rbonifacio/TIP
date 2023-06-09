@@ -3,7 +3,7 @@ package br.unb.cic.tip.svf
 import br.unb.cic.tip.df.{ReachingDefinition, ResultRD}
 import br.unb.cic.tip.pointer.{BasicAndersen, ResultPT}
 import br.unb.cic.tip.{blocks, getMethodBody, variables}
-import br.unb.cic.tip.utils.{BasicExp, Expression, FunDecl, FunctionCallExp, Id, LoadExp, PointerExp, Program, Stmt, VariableExp}
+import br.unb.cic.tip.utils.{AllocExp, BasicExp, Expression, FunDecl, FunctionCallExp, Id, LoadExp, PointerExp, Program, Stmt, VariableExp}
 import br.unb.cic.tip.utils.Stmt.*
 
 import scala.collection.mutable
@@ -23,7 +23,7 @@ object SVF {
     val bodyMain = getMethodBody(program)
     graph = Set()
     RD = ReachingDefinition.run(bodyMain, program)
-    PT = BasicAndersen.pointTo(bodyMain)
+    PT = BasicAndersen.pointTo(bodyMain, true)
     run(bodyMain)
   }
 
@@ -43,6 +43,7 @@ object SVF {
   private def analyzer(stmt: Stmt, left: BasicExp, right: Expression): Unit = {
     (left, right) match {
       case (l: PointerExp, r: LoadExp) =>  ruleLoad(stmt, l, r) // l: p = *q
+      case (l: LoadExp, r: PointerExp) =>  ruleStore(stmt, l, r) // l: *p = q
       case (l: BasicExp, r: Expression) => ruleCopy(stmt, l, r) // a = b; p = q
       case _ =>
     }
@@ -83,7 +84,9 @@ object SVF {
    *  - q@L1 -> ∀ o@L (strong)
    *  - o1@L1 --> ∀ o@L (weak)
    */
-  private def ruleStore(left: LoadExp, right: PointerExp): Unit = {}
+  private def ruleStore(stmt: Stmt, left: LoadExp, right: PointerExp): Unit = {
+    PT(left.pointer).foreach(v => createGraph((findDefinition(stmt, right), right), (stmt, v)))
+  }
 
 
   /**
@@ -117,12 +120,9 @@ object SVF {
 //  private def ruleReturn(stmt: ReturnStmt, caller: FunctionCallExp): Unit = {}
 
   /**
-   * generate graph only for basic expressions
+   * generate SVF graph
    */
-    private def createGraph(source: NodeSVF, target: NodeSVF): Unit = source._2.isInstanceOf[BasicExp] match {
-      case true => graph += (source, target)
-      case _ =>
-    }
+    private def createGraph(source: NodeSVF, target: NodeSVF): Unit = graph += (source, target)
 
     /**
    * find the statement were a variable was "defined"

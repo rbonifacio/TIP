@@ -198,4 +198,32 @@ class SVFTest extends AnyFunSuite {
     )
     assert(svf == expected)
   }
+
+  /**
+   * s1: p = alloc i1
+   * s2: q = alloc i2
+   * s3: r = alloc i3
+   * s4: p = &r
+   * s5: *p = q
+   *
+   */
+  test("test_svf_store_rule_simple") {
+    val s1 = AssignmentStmt(PointerExp("p"), AllocExp(ConstExp(1)))
+    val s2 = AssignmentStmt(PointerExp("q"), AllocExp(ConstExp(2)))
+    val s3 = AssignmentStmt(PointerExp("r"), AllocExp(ConstExp(3)))
+    val s4 = AssignmentStmt(PointerExp("p"), LocationExp("r"))
+    val s5 = AssignmentStmt(LoadExp(PointerExp("p")), PointerExp("q"))
+
+    val mainBody = SequenceStmt(s1, SequenceStmt(s2, SequenceStmt(s3, SequenceStmt(s4, s5))))
+    val mainFunction = FunDecl("main", List(), List(), mainBody, NullExp)
+
+    val program = List(mainFunction)
+
+    val svf = SVF.run(program)
+
+    val expected = Set(
+      ((s2, PointerExp("q")), (s5, PointerExp("r")))
+    )
+    assert(svf == expected)
+  }
 }
