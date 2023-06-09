@@ -8,13 +8,13 @@ import br.unb.cic.tip.utils.Stmt.AssignmentStmt
 import scala.collection.mutable
 
 type Cell = Expression
-type Result = mutable.HashMap[BasicExp, Set[Cell]]
+type ResultPT = mutable.HashMap[BasicExp, Set[Cell]]
 
 object BasicAndersen {
 
-  private var pt: Result = mutable.HashMap()
+  private val pt: ResultPT = mutable.HashMap()
 
-  def pointTo(body: Stmt): Result = {
+  def pointTo(body: Stmt): ResultPT = {
 
     var explore = true
     for (variable <- variables(body)) {
