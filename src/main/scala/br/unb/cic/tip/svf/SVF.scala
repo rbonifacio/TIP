@@ -33,14 +33,13 @@ object SVF {
   }
 
   private def analyzer(stmt: Stmt): Unit = stmt match {
-    case AssignmentStmt(left, right) => ruleCopy(stmt, left, right)
-//    case AssignmentStmt(left, right) => pointersOperations(stmt, left, right)
-    case _ => Set()
+    case AssignmentStmt(left, right) => analyzer(stmt, left, right)
+    case _ =>
   }
 
-  private def pointersOperations(stmt: Stmt, left: Expression, right: Expression): Unit = {
+  private def analyzer(stmt: Stmt, left: BasicExp, right: Expression): Unit = {
     (left, right) match {
-      case (l: PointerExp, r: PointerExp) => ruleCopy(stmt, l, r) // l: p = q
+      case (l: BasicExp, r: Expression) => ruleCopy(stmt, l, r)
 //      case (l: PointerExp, r: LoadExp) =>  // l: p = *q
 //      case (l: LoadExp, r: PointerExp) =>  // l: *p = q
 //      case call rule
@@ -48,6 +47,17 @@ object SVF {
       case _ =>
     }
   }
+
+//  private def pointersOperations(stmt: Stmt, left: Expression, right: Expression): Unit = {
+//    (left, right) match {
+//      case (l: PointerExp, r: PointerExp) => ruleCopy(stmt, l, r) // l: p = q
+////      case (l: PointerExp, r: LoadExp) =>  // l: p = *q
+////      case (l: LoadExp, r: PointerExp) =>  // l: *p = q
+////      case call rule
+////      case return rule
+//      case _ =>
+//    }
+//  }
 
   /**
    * This is a copy operation for variables and pointers.
