@@ -61,7 +61,7 @@ object SVF {
    *  - q@s'-> p@s
    */
   private def ruleCopy(stmt: Stmt, left: BasicExp, right: Expression): Unit = {
-    variables(right).foreach(v => graph += ((findDefinition(stmt, v), v), (stmt, left)))
+    variables(right).foreach(v => createGraph((findDefinition(stmt, v), v), (stmt, left)))
   }
 
   /**
@@ -72,7 +72,7 @@ object SVF {
    *  - ∀ o@Ln -> p@L
    */
   private def ruleLoad(stmt: Stmt, left: PointerExp, right: LoadExp): Unit = {
-    PT(right.pointer).foreach(v => graph += ((findDefinition(stmt, v), v), (stmt, left)))
+    PT(right.pointer).foreach(v => createGraph((findDefinition(stmt, v), v), (stmt, left)))
   }
 
 
@@ -116,6 +116,13 @@ object SVF {
    */
 //  private def ruleReturn(stmt: ReturnStmt, caller: FunctionCallExp): Unit = {}
 
+  /**
+   * generate graph only for basic expressions
+   */
+    private def createGraph(source: NodeSVF, target: NodeSVF): Unit = source._2.isInstanceOf[BasicExp] match {
+      case true => graph += (source, target)
+      case _ =>
+    }
 
     /**
    * find the statement were a variable was "defined"
