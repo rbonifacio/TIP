@@ -44,6 +44,7 @@ object SVF {
     (left, right) match {
       case (l: PointerExp, r: LoadExp) =>  ruleLoad(stmt, l, r) // l: p = *q
       case (l: LoadExp, r: PointerExp) =>  ruleStore(stmt, l, r) // l: *p = q
+      case (l: VariableExp, r: FunctionCallExp) =>  ruleCall(stmt, r) // l: *p = q
       case (l: BasicExp, r: Expression) => ruleCopy(stmt, l, r) // a = b; p = q
       case _ =>
     }
@@ -100,7 +101,9 @@ object SVF {
    *  - p@L1 -> q@Lf                | - o@L1 --> o1@Lf
    *
    */
-  private def ruleCall(caller: FunctionCallExp, callee: FunDecl): Unit = {}
+  private def ruleCall(stmt: Stmt, caller: FunctionCallExp): Unit = {
+//    caller.args.map(p => println(findDefinition(stmt, p)))
+  }
 
 
   /**
