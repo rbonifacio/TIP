@@ -40,6 +40,28 @@ class SVFRuleCopyTest extends AnyFunSuite {
   }
 
   /**
+   * s1: a = 1
+   * s2: b = a + 1
+   */
+  test("test_svf_rule_copy_with_constants") {
+    val s1 = AssignmentStmt(VariableExp("a"), ConstExp(1))
+    val s2 = AssignmentStmt(VariableExp("b"), AddExp(VariableExp("a"), ConstExp(1)))
+
+    val mainBody = SequenceStmt(s1, s2)
+    val mainFunction = FunDecl("main", List(), List(), mainBody, NullExp)
+
+    val program = List(mainFunction)
+
+    val svf = SVF.run(program)
+
+    val expected = Set(
+      ((s1, VariableExp("a")), (s2, VariableExp("b")))
+    )
+    assert(svf == expected)
+    //    println(exportDot(convertSVFtoGraph(svf)))
+  }
+
+  /**
    * p = alloc i1
    * q = alloc i2
    * p = q
