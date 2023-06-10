@@ -326,8 +326,9 @@ class SVFTest extends AnyFunSuite {
     val svf = SVF.run(program)
 
     val expected = Set(
-      ((s1, VariableExp("s")), (f1, VariableExp("y"))),
+//      ((s1, VariableExp("s")), (f1, VariableExp("y"))),
 //      ((f1, VariableExp("y")), (s2, VariableExp("b")))
+      ((f2, VariableExp("y")), (s2, VariableExp("b")))
     )
 
     assert(svf == expected)

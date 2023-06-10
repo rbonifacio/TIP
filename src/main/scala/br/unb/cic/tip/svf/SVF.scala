@@ -3,7 +3,7 @@ package br.unb.cic.tip.svf
 import br.unb.cic.tip.df.{ReachingDefinition, ResultRD}
 import br.unb.cic.tip.pointer.{BasicAndersen, ResultPT}
 import br.unb.cic.tip.{blocks, getMethodBody, variables}
-import br.unb.cic.tip.utils.{AllocExp, BasicExp, Expression, FunDecl, FunctionCallExp, Id, LoadExp, PointerExp, Program, Stmt, VariableExp}
+import br.unb.cic.tip.utils.{AllocExp, BasicExp, Expression, FunDecl, FunctionCallExp, Id, LoadExp, NameExp, PointerExp, Program, Stmt, VariableExp}
 import br.unb.cic.tip.utils.Stmt.*
 
 import scala.collection.mutable
@@ -18,25 +18,28 @@ object SVF {
   private var graph: GraphSVF = Set()
   private var RD: ResultRD = mutable.HashMap()
   private var PT: ResultPT = mutable.HashMap()
+  private var program: Program = List()
 
-  def run(program: Program): GraphSVF = {
+  def run(p: Program): GraphSVF = {
+    program = p
     val bodyMain = getMethodBody(program)
     graph = Set()
     RD = ReachingDefinition.run(bodyMain, program)
     PT = BasicAndersen.pointTo(bodyMain, true)
-    run(bodyMain)
+    run(bodyMain, NopStmt)
   }
 
-  private def run(body: Stmt): GraphSVF = {
+  private def run(body: Stmt, caller: Stmt): GraphSVF = {
 
     for (stmt <- blocks(body)) {
-      analyzer(stmt)
+      analyzer(stmt, caller)
     }
     graph
   }
 
-  private def analyzer(stmt: Stmt): Unit = stmt match {
+  private def analyzer(stmt: Stmt, caller: Stmt): Unit = stmt match {
     case AssignmentStmt(left, right) => analyzer(stmt, left, right)
+    case ReturnStmt(_) => ruleReturn(stmt.asInstanceOf[ReturnStmt], caller) // return x
     case _ =>
   }
 
@@ -44,7 +47,10 @@ object SVF {
     (left, right) match {
       case (l: PointerExp, r: LoadExp) =>  ruleLoad(stmt, l, r) // l: p = *q
       case (l: LoadExp, r: PointerExp) =>  ruleStore(stmt, l, r) // l: *p = q
-      case (l: VariableExp, r: FunctionCallExp) =>  ruleCall(stmt, r) // l: *p = q
+//      case (l: VariableExp, r: FunctionCallExp) =>  ruleCall(stmt, r) // a = call fName(b)
+      case (l: VariableExp, r: FunctionCallExp) => {
+//        run(getMethodBody(program, "fSign"), stmt)
+      }
       case (l: BasicExp, r: Expression) => ruleCopy(stmt, l, r) // a = b; p = q
       case _ =>
     }
@@ -101,7 +107,7 @@ object SVF {
    *  - p@L1 -> q@Lf                | - o@L1 --> o1@Lf
    *
    */
-  private def ruleCall(stmt: Stmt, caller: FunctionCallExp): Unit = {
+  private def ruleCall(stmt: Stmt, caller: Stmt): Unit = {
 //    caller.args.map(p => println(findDefinition(stmt, p)))
   }
 
@@ -120,7 +126,11 @@ object SVF {
    *  - x@Lf -> r@Lcs               | - o@Lf --> o1@Lcs
    *                                |
    */
-//  private def ruleReturn(stmt: ReturnStmt, caller: FunctionCallExp): Unit = {}
+  private def ruleReturn(stmt: ReturnStmt, caller: Stmt): Unit = caller match {
+    case AssignmentStmt(name, _) =>  createGraph((stmt, stmt.exp), (caller, name))
+    case _ =>
+  }
+
 
   /**
    * generate SVF graph
