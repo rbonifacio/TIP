@@ -3,7 +3,7 @@ package br.unb.cic.tip.intraprocedural.pointer
 import br.unb.cic.tip.blocks
 import br.unb.cic.tip.pointer.BasicAndersen
 import br.unb.cic.tip.utils.{AllocExp, ConstExp, FunDecl, LoadExp, LocationExp, NullExp, PointerExp, VariableExp}
-import br.unb.cic.tip.utils.Stmt.{AssignmentStmt, SequenceStmt}
+import br.unb.cic.tip.utils.Stmt.{AssignmentStmt, OutputStmt, SequenceStmt}
 import org.scalatest.funsuite.AnyFunSuite
 
 class BasicAndersenTest extends AnyFunSuite {
@@ -305,5 +305,45 @@ class BasicAndersenTest extends AnyFunSuite {
       Set()
       )
     )
+  }
+
+  /**
+   * s1: a = 1
+   * s2: output a
+   */
+  test("test_pt_output_var") {
+    val s1 = AssignmentStmt(VariableExp("a"), ConstExp(1))
+    val s2 = OutputStmt(VariableExp("a"))
+
+    val mainBody = SequenceStmt(s1, s2)
+
+    val PT = BasicAndersen.pointTo(mainBody)
+
+    assert(PT(VariableExp("a")) == Set())
+  }
+
+  /**
+   * s1: a = 1
+   * s2: b = alloc null
+   * s3: c = &b
+   * s4: output c
+   *
+   */
+  test("test_pt_output_pointer") {
+
+    val s1 = AssignmentStmt(VariableExp("a"), ConstExp(1))
+    val s2 = AssignmentStmt(PointerExp("b"), AllocExp(NullExp))
+    val s3 = AssignmentStmt(PointerExp("c"), LocationExp("b"))
+    val s4 = OutputStmt(PointerExp("c"))
+
+    val mainBody = SequenceStmt(s1, SequenceStmt(s2, SequenceStmt(s3, s4)))
+
+    val PT = BasicAndersen.pointTo(mainBody)
+
+    assert(PT(VariableExp("a")) == Set())
+
+    assert(PT(PointerExp("b")) == Set(AllocExp(NullExp)))
+
+    assert(PT(PointerExp("c")) == Set(PointerExp("b")))
   }
 }

@@ -12,11 +12,12 @@ type ResultPT = mutable.HashMap[BasicExp, Set[Cell]]
 
 object BasicAndersen {
 
-  private val pt: ResultPT = mutable.HashMap()
+  private var pt: ResultPT = mutable.HashMap()
 
   private var disableAllocationRule: Boolean = false
 
   def pointTo(body: Stmt): ResultPT = {
+    pt = mutable.HashMap()
     pointTo(body: Stmt, false)
   }
   def pointTo(body: Stmt, disableAllocation: Boolean): ResultPT = {
@@ -51,6 +52,7 @@ object BasicAndersen {
       case (l: PointerExp, r: Expression) => ruleDeferred(l, r) // deferred: p = null
       case (_: VariableExp, _: Expression) =>  // any other thing
     }
+    case _ =>
   }
 
   /**
