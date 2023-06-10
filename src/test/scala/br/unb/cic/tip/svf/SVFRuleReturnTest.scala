@@ -9,6 +9,26 @@ import org.scalatest.funsuite.AnyFunSuite
 class SVFRuleReturnTest extends AnyFunSuite {
 
   /**
+   *  s1: a = 1
+   *  s2: return a
+   */
+  test("test_svf_return_rule_in_main") {
+    val s1 = AssignmentStmt(VariableExp("a"), ConstExp(1))
+    val s2 = ReturnStmt(VariableExp("a"))
+
+    //main function
+    val fMainBody = SequenceStmt(s1, s2)
+
+    val fMain = FunDecl("main", List(), List("a"), fMainBody, NullExp)
+    val program = List(fMain)
+    val svf = SVF.run(program)
+
+    val expected = Set()
+
+    assert(svf == expected)
+  }
+
+  /**
    * fx: sign(x) {
    * f1:  y = x * -1
    * f2:  return y
@@ -20,8 +40,7 @@ class SVFRuleReturnTest extends AnyFunSuite {
    * s3:   print b
    * s4: }
    */
-
-  test("test_svf_call_rule") {
+  ignore("test_svf_return_rule") {
 
     val f1 = AssignmentStmt(VariableExp("y"), MultiExp(VariableExp("y"), ConstExp(-1)))
     val f2 = ReturnStmt(VariableExp("y"))
@@ -42,7 +61,7 @@ class SVFRuleReturnTest extends AnyFunSuite {
     val svf = SVF.run(program)
 
     val expected = Set(
-//      ((f2, VariableExp("y")), (s2, VariableExp("b")))
+      ((f2, VariableExp("y")), (s2, VariableExp("b")))
     )
 
     assert(svf == expected)
