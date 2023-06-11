@@ -31,10 +31,10 @@ class RDInterproceduralTest extends AnyFunSuite {
 
     val f1 = OutputStmt(VariableExp("x"))
     val fShowBody = f1
-    val fSign = FunDecl("fSign", List("x"), List("y"), fShowBody, VariableExp("y"))
+    val fShow = FunDecl("fShow", List("x"), List("y"), fShowBody, VariableExp("y"))
 
     val s1 = AssignmentStmt(VariableExp("a"), ConstExp(1))
-    val s2 = AssignmentStmt(VariableExp("b"), FunctionCallExp(NameExp(fSign.name), List(VariableExp("a"))))
+    val s2 = AssignmentStmt(VariableExp("b"), FunctionCallExp(NameExp(fShow.name), List(VariableExp("a"))))
     val s3 = OutputStmt(VariableExp("b"))
 
     //main function
@@ -42,7 +42,7 @@ class RDInterproceduralTest extends AnyFunSuite {
 
     val fMain = FunDecl("main", List(), List("a", "b"), fMainBody, NullExp)
 
-    val program = List(fSign, fMain)
+    val program = List(fShow, fMain)
 
     val RD = ReachingDefinition.run(fMainBody, program)
 
@@ -56,10 +56,10 @@ class RDInterproceduralTest extends AnyFunSuite {
       Set(s1, s2)
     ))
 
-//    assert(RD((f1, NopStmt)) == (
-//      Set(s1, s2),
-//      Set(s1, s2)
-//    ))
+    assert(RD((f1, s2)) == (
+      Set(s1),
+      Set(s1)
+    ))
 
     assert(RD((s3, NopStmt)) == (
       Set(s1, s2),
