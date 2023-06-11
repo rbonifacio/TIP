@@ -48,4 +48,46 @@ class SVF4RuleCallTest extends AnyFunSuite {
 
     assert(svf == expected)
   }
+
+  /**
+   * fx: sign(a) {
+   * f1:  a = a * -1
+   * f2:  return a
+   * fx: }
+   *
+   * sx: main() {
+   * s1:   a = 1
+   * s2:   b = sign(a)
+   * s3:   print b
+   * s4: }
+   */
+
+  ignore("test_svf_call_rule_with_return") {
+
+    val f1 = AssignmentStmt(VariableExp("a"), MultiExp(VariableExp("a"), ConstExp(-1)))
+    val f2 = ReturnStmt(VariableExp("a"))
+    val fSignBody = SequenceStmt(f1, f2)
+    val fSign = FunDecl("fSign", List("x"), List("y"), fSignBody, VariableExp("y"))
+
+    val s1 = AssignmentStmt(VariableExp("a"), ConstExp(1))
+    val s2 = AssignmentStmt(VariableExp("b"), FunctionCallExp(NameExp(fSign.name), List(VariableExp("a"))))
+    val s3 = OutputStmt(VariableExp("b"))
+
+    //main function
+    val fMainBody = SequenceStmt(s1, SequenceStmt(s2, s3))
+
+    val fMain = FunDecl("main", List(), List("a", "b"), fMainBody, NullExp)
+
+    val program = List(fSign, fMain)
+
+    val svf = SVF.run(program)
+
+    val expected = Set(
+      ((f1, VariableExp("a")), (f1, VariableExp("a"))),
+//      ((f1, VariableExp("a")), (f2, VariableExp("a"))),
+      ((f2, VariableExp("a")), (s2, VariableExp("b")))
+    )
+
+    assert(svf == expected)
+  }
 }
