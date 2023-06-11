@@ -6,7 +6,7 @@ import br.unb.cic.tip.utils.*
 import br.unb.cic.tip.{convertSVFtoGraph, exportDot}
 import org.scalatest.funsuite.AnyFunSuite
 
-class SVFRuleCopyTest extends AnyFunSuite {
+class SVF1RuleCopyTest extends AnyFunSuite {
 
   /**
    * s1: a = 1
