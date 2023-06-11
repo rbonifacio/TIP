@@ -2,10 +2,12 @@ package br.unb.cic.tip.df
 
 import scala.collection.mutable
 import br.unb.cic.tip.*
-import br.unb.cic.tip.utils.{Expression}
+import br.unb.cic.tip.utils.Expression
 import br.unb.cic.tip.utils.Node.SimpleNode
 import br.unb.cic.tip.utils.*
 import br.unb.cic.tip.utils.Stmt.*
+
+import scala.collection.immutable.Set
 
 type ReachingDefinition = (Set[AssignmentStmt], Set[AssignmentStmt])
 type ResultRD = mutable.HashMap[(Stmt, Stmt), ReachingDefinition]
@@ -37,26 +39,24 @@ object ReachingDefinition {
           ex = Set()
 
           stmt match
-            case AssignmentStmt(_, exp) => exp match 
-              case FunctionCallExp(NameExp(name), args) => {
+            case AssignmentStmt(_, exp) => exp match {
+              case FunctionCallExp(NameExp(name), args) =>
                 en = entry(fBody, stmt, predecessors, context)
                 // filter and get predecessor that are send as parameters to the function
-                val usedPredecessors = en.filter( e => args.exists(_ == e.name))
+                val usedPredecessors = en.filter(e => args.exists(_ == e.name))
                 run(getMethodBody(program, name), program, usedPredecessors, stmt)
                 // a kind of Interprocedural Exit Function was created in the next lines
                 val in: Set[AssignmentStmt] = exit(stmt)
                 val gen: Set[AssignmentStmt] = finalStmt(getMethodBody(program, name)).map(s => RD((s, stmt))._2).foldLeft(Set())(_ union _)
-                val kill = in.filter( i => gen.exists( g => g.name == i.name))
-                ex = (in diff kill) union gen
-              }
-              case _ => { 
+                val kill = in.filter(i => gen.exists(g => g.name == i.name))
+                ex = (in diff kill) union gen union exit(stmt, context)
+              case _ =>
                 en = entry(fBody, stmt, predecessors, context)
                 ex = exit(stmt, context)
-              } 
-            case _ => { 
+            }
+            case _ =>
               en = entry(fBody, stmt, predecessors, context)
               ex = exit(stmt, context)
-            } 
           RD((stmt, context)) = (en, ex)
         }
         explore = lastRD != RD
@@ -89,7 +89,7 @@ object ReachingDefinition {
     def exit(stmt: Stmt, context: Stmt = NopStmt): Set[AssignmentStmt] = stmt match {
       case AssignmentStmt(v, exp) => exp match
         case FunctionCallExp(_, _) => {
-            RD((stmt, context))._1
+            RD((stmt, context))._1 union gen(stmt)
         }
         case _ => (RD((stmt, context))._1 diff kill(RD((stmt, context))._1, stmt)) union gen(stmt)
       case _ => RD((stmt, context))._1
