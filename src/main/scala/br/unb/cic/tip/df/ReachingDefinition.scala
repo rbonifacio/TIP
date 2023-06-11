@@ -47,7 +47,8 @@ object ReachingDefinition {
                 run(getMethodBody(program, name), program, usedPredecessors, stmt)
                 // a kind of Interprocedural Exit Function was created in the next lines
                 val in: Set[AssignmentStmt] = exit(stmt)
-                val gen: Set[AssignmentStmt] = finalStmt(getMethodBody(program, name)).map(s => RD((s, stmt))._2).foldLeft(Set())(_ union _)
+                val RDCallee: Set[AssignmentStmt] = finalStmt(getMethodBody(program, name)).map(s => RD((s, stmt))._2).foldLeft(Set())(_ union _)
+                val gen = RDCallee.filter(e => args.exists(_ == e.name)) // filter and keep just parameters that were sent
                 val kill = in.filter(i => gen.exists(g => g.name == i.name))
                 ex = (in diff kill) union gen union exit(stmt, context)
               case _ =>
