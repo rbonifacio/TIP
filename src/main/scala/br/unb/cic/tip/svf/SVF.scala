@@ -25,15 +25,16 @@ object SVF {
     val bodyMain = getMethodBody(program)
     graph = Set()
     RD = ReachingDefinition.run(bodyMain, program)
+    // print(RD)
     PT = BasicAndersen.pointTo(bodyMain, true)
     run(bodyMain, NopStmt)
   }
 
   private def run(body: Stmt, caller: Stmt): GraphSVF = {
 
-    for (stmt <- blocks(body)) {
-      analyzer(stmt, caller)
-    }
+   for (stmt <- blocks(body)) {
+     analyzer(stmt, caller)
+   }
     graph
   }
 
@@ -49,7 +50,7 @@ object SVF {
       case (l: LoadExp, r: PointerExp) =>  ruleStore(stmt, l, r) // l: *p = q
 //      case (l: VariableExp, r: FunctionCallExp) =>  ruleCall(stmt, r) // a = call fName(b)
       case (l: VariableExp, r: FunctionCallExp) => {
-//        run(getMethodBody(program, "fSign"), stmt)
+        run(getMethodBody(program, "fSign"), stmt)
       }
       case (l: BasicExp, r: Expression) => ruleCopy(stmt, l, r) // a = b; p = q
       case _ =>

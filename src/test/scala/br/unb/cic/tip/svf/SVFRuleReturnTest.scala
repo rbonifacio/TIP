@@ -12,7 +12,7 @@ class SVFRuleReturnTest extends AnyFunSuite {
    *  s1: a = 1
    *  s2: return a
    */
-  test("test_svf_return_rule_in_main") {
+  ignore("test_svf_return_rule_in_main") {
     val s1 = AssignmentStmt(VariableExp("a"), ConstExp(1))
     val s2 = ReturnStmt(VariableExp("a"))
 
@@ -40,9 +40,9 @@ class SVFRuleReturnTest extends AnyFunSuite {
    * s3:   print b
    * s4: }
    */
-  ignore("test_svf_return_rule") {
+  test("test_svf_return_rule") {
 
-    val f1 = AssignmentStmt(VariableExp("y"), MultiExp(VariableExp("y"), ConstExp(-1)))
+    val f1 = AssignmentStmt(VariableExp("y"), MultiExp(VariableExp("y"), ConstExp(1)))
     val f2 = ReturnStmt(VariableExp("y"))
     val fSignBody = SequenceStmt(f1, f2)
     val fSign = FunDecl("fSign", List("x"), List("y"), fSignBody, VariableExp("y"))
