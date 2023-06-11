@@ -6,7 +6,7 @@ import br.unb.cic.tip.utils.*
 import br.unb.cic.tip.{convertSVFtoGraph, exportDot}
 import org.scalatest.funsuite.AnyFunSuite
 
-class SVF4RuleCallTest extends AnyFunSuite {
+class SVF4RuleCallReturnTest extends AnyFunSuite {
   
   /**
    * fx: sign(a) {
@@ -43,7 +43,7 @@ class SVF4RuleCallTest extends AnyFunSuite {
 
     val expected = Set(
       ((s1, VariableExp("a")), (f1, VariableExp("y"))),
-//      ((f1, VariableExp("y")), (f2, VariableExp("y"))),
+      ((f1, VariableExp("y")), (f2, VariableExp("y"))),
       ((f2, VariableExp("y")), (s2, VariableExp("b")))
     )
 
@@ -63,7 +63,7 @@ class SVF4RuleCallTest extends AnyFunSuite {
    * s4: }
    */
 
-  ignore("test_svf_call_rule_with_return") {
+  test("test_svf_call_rule_with_return") {
 
     val f1 = AssignmentStmt(VariableExp("a"), MultiExp(VariableExp("a"), ConstExp(-1)))
     val f2 = ReturnStmt(VariableExp("a"))
@@ -85,7 +85,7 @@ class SVF4RuleCallTest extends AnyFunSuite {
 
     val expected = Set(
       ((f1, VariableExp("a")), (f1, VariableExp("a"))),
-//      ((f1, VariableExp("a")), (f2, VariableExp("a"))),
+      ((f1, VariableExp("a")), (f2, VariableExp("a"))),
       ((f2, VariableExp("a")), (s2, VariableExp("b")))
     )
 

@@ -129,7 +129,7 @@ object SVF {
    */
   private def ruleReturn(stmt: ReturnStmt, caller: Stmt): Unit = caller match {
     case AssignmentStmt(name, _) => {
-//      createGraph((findDefinition(stmt, stmt.exp), stmt.exp), (stmt, stmt.exp))
+      createGraph((findDefinition(stmt, stmt.exp, caller), stmt.exp), (stmt, stmt.exp))
       createGraph((stmt, stmt.exp), (caller, name))
     }
     case _ =>
@@ -148,7 +148,9 @@ object SVF {
 
     private def findDefinition(stmt: Stmt, v: Expression, context: Stmt): Stmt = v.isInstanceOf[BasicExp] match {
       case true => findDefinition(stmt, v.asInstanceOf[BasicExp], context)
-      case _ => NopStmt
+      case _ => stmt match
+        case ReturnStmt(exp) => findDefinition(stmt, exp, context)
+        case _ => NopStmt
     }
 
     private def findDefinition(stmt: Stmt, v: Expression): Stmt = findDefinition(stmt, v.asInstanceOf[BasicExp], NopStmt)
