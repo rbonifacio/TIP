@@ -128,7 +128,10 @@ object SVF {
    *                                |
    */
   private def ruleReturn(stmt: ReturnStmt, caller: Stmt): Unit = caller match {
-    case AssignmentStmt(name, _) =>  createGraph((stmt, stmt.exp), (caller, name))
+    case AssignmentStmt(name, _) => {
+//      createGraph((findDefinition(stmt, stmt.exp), stmt.exp), (stmt, stmt.exp))
+      createGraph((stmt, stmt.exp), (caller, name))
+    }
     case _ =>
   }
 

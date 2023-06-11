@@ -43,6 +43,7 @@ class SVF4RuleCallTest extends AnyFunSuite {
 
     val expected = Set(
       ((s1, VariableExp("a")), (f1, VariableExp("y"))),
+//      ((f1, VariableExp("y")), (f2, VariableExp("y"))),
       ((f2, VariableExp("y")), (s2, VariableExp("b")))
     )
 
