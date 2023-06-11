@@ -78,7 +78,7 @@ class RDInterproceduralTest extends AnyFunSuite {
    * s3:   print b            entry: {(a, s1), (b, s2)}    exit: {(a, s1), (b, s2)}
    * s4: }
    */
-  test("test_rd_call_identity_function") {
+  test("test_rd_call_identity_function_same_parameter") {
 
     val f1 = ReturnStmt(VariableExp("a"))
     val fIdentityBody = f1
@@ -115,6 +115,115 @@ class RDInterproceduralTest extends AnyFunSuite {
     assert(RD((s3, NopStmt)) == (
       Set(s1, s2),
       Set(s1, s2)
+    ))
+  }
+
+  /**
+   * fx: identity(x) {
+   * f1:   return x           entry: {(a, s1)} U {}      exit: {(a, s1)}
+   * fx: }
+   *
+   * sx: main() {
+   * s1:   a = 1              entry: {}                    exit: {(a, s1)}
+   * s2:   b = identity(a)    entry: {(a, s1)}             exit: {(a, s1), (b, s2)} U {(a, s1)}
+   * s3:   print b            entry: {(a, s1), (b, s2)}    exit: {(a, s1), (b, s2)}
+   * s4: }
+   */
+  test("test_rd_call_identity_function") {
+
+    val f1 = ReturnStmt(VariableExp("x"))
+    val fIdentityBody = f1
+    val fIdentity = FunDecl("fIdentity", List("x"), List(), fIdentityBody, NullExp)
+
+    val s1 = AssignmentStmt(VariableExp("a"), ConstExp(1))
+    val s2 = AssignmentStmt(VariableExp("b"), FunctionCallExp(NameExp(fIdentity.name), List(VariableExp("a"))))
+    val s3 = OutputStmt(VariableExp("b"))
+
+    //main function
+    val fMainBody = SequenceStmt(s1, SequenceStmt(s2, s3))
+
+    val fMain = FunDecl("main", List(), List("a", "b"), fMainBody, NullExp)
+
+    val program = List(fIdentity, fMain)
+
+    val RD = ReachingDefinition.run(fMainBody, program)
+
+    assert(RD((s1, NopStmt)) == (
+      Set(),
+      Set(s1)
+    ))
+
+    assert(RD((s2, NopStmt)) == (
+      Set(s1),
+      Set(s1, s2)
+    ))
+
+    assert(RD((f1, s2)) == (
+      Set(s1),
+      Set(s1)
+    ))
+
+    assert(RD((s3, NopStmt)) == (
+      Set(s1, s2),
+      Set(s1, s2)
+    ))
+  }
+
+  /**
+   * fx: returnY(x) {
+   * f1:  y = 99              entry: {(a, s1)} U {}       exit: {(a, s1), (y, f1)}
+   * f1:  return y            entry: {(a, s1), (y, f1)}   exit: {(a, s1), (y, f1)}
+   * fx: }
+   *
+   * sx: main() {
+   * s1:   a = 1              entry: {}                    exit: {(a, s1)}
+   * s2:   b = returnY(a)     entry: {(a, s1)}             exit: {(a, s1), (b, s2)} U {(a, s1)}
+   * s3:   print b            entry: {(a, s1), (b, s2)}    exit: {(a, s1), (b, s2)}
+   * s4: }
+   */
+  test("test_rd_call_return_function_another_parameter") {
+
+    val f1 = AssignmentStmt(VariableExp("y"), ConstExp(1))
+    val f2 = ReturnStmt(VariableExp("y"))
+    val fReturnYBody = SequenceStmt(f1, f2)
+    val fReturnY = FunDecl("fIdentity", List("x"), List(), fReturnYBody, NullExp)
+
+    val s1 = AssignmentStmt(VariableExp("a"), ConstExp(1))
+    val s2 = AssignmentStmt(VariableExp("b"), FunctionCallExp(NameExp(fReturnY.name), List(VariableExp("a"))))
+    val s3 = OutputStmt(VariableExp("b"))
+
+    //main function
+    val fMainBody = SequenceStmt(s1, SequenceStmt(s2, s3))
+
+    val fMain = FunDecl("main", List(), List("a", "b"), fMainBody, NullExp)
+
+    val program = List(fReturnY, fMain)
+
+    val RD = ReachingDefinition.run(fMainBody, program)
+
+    assert(RD((s1, NopStmt)) == (
+      Set(),
+      Set(s1)
+    ))
+
+    assert(RD((s2, NopStmt)) == (
+      Set(s1),
+      Set(s1, s2)
+    ))
+
+    assert(RD((s3, NopStmt)) == (
+      Set(s1, s2),
+      Set(s1, s2)
+    ))
+
+    assert(RD((f1, s2)) == (
+      Set(s1),
+      Set(s1, f1)
+    ))
+
+    assert(RD((f2, s2)) == (
+      Set(s1, f1),
+      Set(s1, f1)
     ))
   }
 
