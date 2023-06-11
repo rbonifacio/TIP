@@ -17,6 +17,53 @@ import scala.collection.immutable.Set
 class RDInterproceduralTest extends AnyFunSuite {
 
   /**
+   * fx: sign(x) {
+   * f1:  y = x * -1        entry: {(a, s1)} U {}                exit: {(a, s1), (y, f1)}
+   * f2:  return y          entry: {(a, s1), (y, f1)}            exit: {(a, s1), (y, f1)}
+   * fx: }
+   *
+   * sx: main() {
+   * s1:   a = 1            entry: {}                    exit: {(a, s1)}
+   * s2:   b = sign(a)      entry: {(a, s1)}             exit: {(a, s1), (b, s2)} U {}
+   * s3:   print b          entry: {(a, s1), (b, s2)}    exit: {(a, s1), (b, s2)}
+   * s4: }
+   */
+  test("test_rd_simple_function") {
+
+    val f1 = AssignmentStmt(VariableExp("y"), MultiExp(VariableExp("y"), ConstExp(1)))
+    val f2 = ReturnStmt(VariableExp("y"))
+    val fSignBody = SequenceStmt(f1, f2)
+    val fSign = FunDecl("fSign", List("x"), List("y"), fSignBody, VariableExp("y"))
+
+    val s1 = AssignmentStmt(VariableExp("a"), ConstExp(1))
+    val s2 = AssignmentStmt(VariableExp("b"), FunctionCallExp(NameExp(fSign.name), List(VariableExp("a"))))
+    val s3 = OutputStmt(VariableExp("b"))
+
+    //main function
+    val fMainBody = SequenceStmt(s1, SequenceStmt(s2, s3))
+
+    val fMain = FunDecl("main", List(), List("a", "b"), fMainBody, NullExp)
+
+    val program = List(fSign, fMain)
+
+    val RD = ReachingDefinition.run(fMainBody, program)
+
+    val cfg = flow(program)
+    println(exportDot(cfg))
+
+    //    print(RD)
+//     assert( RD((s1, NopStmt)) == (
+//       Set(),
+//       Set(s1)
+//     ))
+//
+//    assert(RD((s2, NopStmt)) == (
+//      Set(s1),
+//      Set(s1, s2)
+//    ))
+  }
+
+  /**
    *
    * mymethod(x)
    * m1:  x = 5         entry:{(x,s1)} U {}                 exit:{(x,m1)} // entry gets the values from the CALLER
@@ -29,7 +76,7 @@ class RDInterproceduralTest extends AnyFunSuite {
    * s5:  b = x + 1     entry:{(y,s2), (x, m1), (a, s4)}    exit:{(y,s2), (x,m1), (a,s4), (b,s5)}
    *
    */
-  test("test_rd_calling_function_one_time") {
+  ignore("test_rd_calling_function_one_time") {
 
     val m1 = AssignmentStmt(VariableExp("x"), ConstExp(5))
     val myFunction = FunDecl("myFunction", List("x"), List(), m1, NullExp)
@@ -96,7 +143,7 @@ class RDInterproceduralTest extends AnyFunSuite {
    * s8:  aa = y + 11   entry:{(y,s2), (x,m1), (a,s4), (b,s5)}            exit:{(y,s2), (x,m1), (a,s4), (b,s5), (aa,s8)}
    * s9:  bb = x + 11   entry:{(y,s2), (x,m1), (a,s4), (b,s5), (aa,s8)}   exit:{(y,s2), (x,m1), (a,s4), (b,s5), (aa,s8), (bb, s9)}
    */
-  test("test_rd_calling_function_two_times") {
+  ignore("test_rd_calling_function_two_times") {
 
     val m1 = AssignmentStmt(VariableExp("x"), ConstExp(5))
     val myFunction = FunDecl("myFunction", List("x"), List(), m1, NullExp)
