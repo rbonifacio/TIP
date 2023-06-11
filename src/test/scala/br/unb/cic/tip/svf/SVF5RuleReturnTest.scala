@@ -12,7 +12,7 @@ class SVF5RuleReturnTest extends AnyFunSuite {
    *  s1: a = 1
    *  s2: return a
    */
-  ignore("test_svf_return_rule_in_main") {
+  test("test_svf_return_rule_in_main") {
     val s1 = AssignmentStmt(VariableExp("a"), ConstExp(1))
     val s2 = ReturnStmt(VariableExp("a"))
 
@@ -29,8 +29,8 @@ class SVF5RuleReturnTest extends AnyFunSuite {
   }
 
   /**
-   * fx: sign(x) {
-   * f1:  y = x * -1
+   * fx: sign(a) {
+   * f1:  y = a * -1
    * f2:  return y
    * fx: }
    *
@@ -42,10 +42,10 @@ class SVF5RuleReturnTest extends AnyFunSuite {
    */
   test("test_svf_return_rule") {
 
-    val f1 = AssignmentStmt(VariableExp("y"), MultiExp(VariableExp("y"), ConstExp(1)))
+    val f1 = AssignmentStmt(VariableExp("y"), MultiExp(VariableExp("a"), ConstExp(1)))
     val f2 = ReturnStmt(VariableExp("y"))
     val fSignBody = SequenceStmt(f1, f2)
-    val fSign = FunDecl("fSign", List("x"), List("y"), fSignBody, VariableExp("y"))
+    val fSign = FunDecl("fSign", List("x"), List("a"), fSignBody, VariableExp("y"))
 
     val s1 = AssignmentStmt(VariableExp("a"), ConstExp(1))
     val s2 = AssignmentStmt(VariableExp("b"), FunctionCallExp(NameExp(fSign.name), List(VariableExp("a"))))
@@ -61,7 +61,8 @@ class SVF5RuleReturnTest extends AnyFunSuite {
     val svf = SVF.run(program)
 
     val expected = Set(
-//      ((f2, VariableExp("y")), (s2, VariableExp("b")))
+      ((s1, VariableExp("a")), (f1, VariableExp("y"))),
+      ((f2, VariableExp("y")), (s2, VariableExp("b")))
     )
 
     assert(svf == expected)
