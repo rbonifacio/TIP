@@ -286,6 +286,64 @@ class RDInterproceduralTest extends AnyFunSuite {
   }
 
   /**
+   * fx: sign(a) {
+   * f1:  a = a * -1        entry: {(a, s1)} U {}       exit: {(a, f1)}
+   * f2:  return a          entry: {(a, f1)}            exit: {(a, f1)}
+   * fx: }
+   *
+   * sx: main() {
+   * s1:   a = 1            entry: {}                    exit: {(a, s1)}
+   * s2:   b = sign(a)      entry: {(a, s1)}             exit: {(a, s1), (b, s2)} U {(a, f1)}
+   * s3:   print b          entry: {(a, f1), (b, s2)}    exit: {(a, f1), (b, s2)}
+   * s4: }
+   */
+  test("test_rd_function_var_reassigned") {
+
+    val f1 = AssignmentStmt(VariableExp("a"), MultiExp(VariableExp("a"), ConstExp(1)))
+    val f2 = ReturnStmt(VariableExp("a"))
+    val fSignBody = SequenceStmt(f1, f2)
+    val fSign = FunDecl("fSign", List("a"), List(), fSignBody, VariableExp("a"))
+
+    val s1 = AssignmentStmt(VariableExp("a"), ConstExp(1))
+    val s2 = AssignmentStmt(VariableExp("b"), FunctionCallExp(NameExp(fSign.name), List(VariableExp("a"))))
+    val s3 = OutputStmt(VariableExp("b"))
+
+    //main function
+    val fMainBody = SequenceStmt(s1, SequenceStmt(s2, s3))
+
+    val fMain = FunDecl("main", List(), List("a", "b"), fMainBody, NullExp)
+
+    val program = List(fSign, fMain)
+
+    val RD = ReachingDefinition.run(fMainBody, program)
+
+    assert(RD((s1, NopStmt)) == (
+      Set(),
+      Set(s1)
+    ))
+
+    assert(RD((s2, NopStmt)) == (
+      Set(s1),
+      Set(s2, f1)
+    ))
+
+    assert(RD((s3, NopStmt)) == (
+      Set(s2, f1),
+      Set(s2, f1)
+    ))
+
+    assert(RD((f1, s2)) == (
+      Set(s1),
+      Set(f1)
+    ))
+
+    assert(RD((f2, s2)) == (
+      Set(f1),
+      Set(f1)
+    ))
+  }
+
+  /**
    *
    * mymethod(x)
    * m1:  x = 5         entry:{(x,s1)} U {}                 exit:{(x,m1)} // entry gets the values from the CALLER
