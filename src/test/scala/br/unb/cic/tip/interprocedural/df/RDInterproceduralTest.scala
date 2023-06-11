@@ -228,18 +228,18 @@ class RDInterproceduralTest extends AnyFunSuite {
   }
 
   /**
-   * fx: sign(x) {
-   * f1:  y = x * -1        entry: {(a, s1)} U {}                exit: {(a, s1), (y, f1)}
+   * fx: sign(a) {
+   * f1:  y = a * -1        entry: {(a, s1)} U {}                exit: {(a, s1), (y, f1)}
    * f2:  return y          entry: {(a, s1), (y, f1)}            exit: {(a, s1), (y, f1)}
    * fx: }
    *
    * sx: main() {
    * s1:   a = 1            entry: {}                    exit: {(a, s1)}
-   * s2:   b = sign(a)      entry: {(a, s1)}             exit: {(a, s1), (b, s2)} U {}
+   * s2:   b = sign(a)      entry: {(a, s1)}             exit: {(a, s1), (b, s2)} U {(a, s1)}
    * s3:   print b          entry: {(a, s1), (b, s2)}    exit: {(a, s1), (b, s2)}
    * s4: }
    */
-  ignore("test_rd_simple_function") {
+  test("test_rd_function_var_not_assigned") {
 
     val f1 = AssignmentStmt(VariableExp("y"), MultiExp(VariableExp("y"), ConstExp(1)))
     val f2 = ReturnStmt(VariableExp("y"))
@@ -259,10 +259,6 @@ class RDInterproceduralTest extends AnyFunSuite {
 
     val RD = ReachingDefinition.run(fMainBody, program)
 
-    val cfg = flow(program)
-//    println(exportDot(cfg))
-
-    //    print(RD)
      assert( RD((s1, NopStmt)) == (
        Set(),
        Set(s1)
@@ -270,7 +266,22 @@ class RDInterproceduralTest extends AnyFunSuite {
 
     assert(RD((s2, NopStmt)) == (
       Set(s1),
-      Set(s1, s2, f1)
+      Set(s1, s2)
+    ))
+
+    assert(RD((s3, NopStmt)) == (
+      Set(s1, s2),
+      Set(s1, s2)
+    ))
+
+    assert(RD((f1, s2)) == (
+      Set(s1),
+      Set(s1, f1)
+    ))
+
+    assert(RD((f2, s2)) == (
+      Set(s1, f1),
+      Set(s1, f1)
     ))
   }
 
