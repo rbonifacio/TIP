@@ -48,9 +48,9 @@ object ReachingDefinition {
                 // a kind of Interprocedural Exit Function was created in the next lines
                 val in: Set[AssignmentStmt] = exit(stmt)
                 val RDCallee: Set[AssignmentStmt] = finalStmt(getMethodBody(program, name)).map(s => RD((s, stmt))._2).foldLeft(Set())(_ union _)
-                val gen = RDCallee.filter(e => args.exists(_ == e.name)) // filter and keep just parameters that were sent
-                val kill = in.filter(i => gen.exists(g => g.name == i.name))
-                ex = (in diff kill) union gen union exit(stmt, context)
+                val g = RDCallee.filter(e => args.exists(_ == e.name)) // filter and keep just parameters that were sent
+                val kill = in.filter(i => g.exists(g => g.name == i.name))
+                ex = ((in diff kill) union g) union gen(stmt)
               case _ =>
                 en = entry(fBody, stmt, predecessors, context)
                 ex = exit(stmt, context)
@@ -66,7 +66,7 @@ object ReachingDefinition {
     }
 
     def entry(program: Stmt, stmt: Stmt, predecessors: Set[AssignmentStmt], context: Stmt = NopStmt): Set[AssignmentStmt] = {
-      var res = predecessors
+      var res = Set[AssignmentStmt]()
       //validate if it is a call =
       var _stmt: Stmt = NopStmt
       stmt match
@@ -84,13 +84,13 @@ object ReachingDefinition {
             case _ => res = RD((s, context))._2 union res
         }
       }
-      res
+      (predecessors diff predecessors.filter(i => res.exists(g => g.name == i.name))) union res
     }
 
     def exit(stmt: Stmt, context: Stmt = NopStmt): Set[AssignmentStmt] = stmt match {
       case AssignmentStmt(v, exp) => exp match
         case FunctionCallExp(_, _) => {
-            RD((stmt, context))._1 union gen(stmt)
+            RD((stmt, context))._1
         }
         case _ => (RD((stmt, context))._1 diff kill(RD((stmt, context))._1, stmt)) union gen(stmt)
       case _ => RD((stmt, context))._1
