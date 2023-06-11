@@ -9,8 +9,8 @@ import org.scalatest.funsuite.AnyFunSuite
 class SVF4RuleCallTest extends AnyFunSuite {
   
   /**
-   * fx: sign(x) {
-   * f1:  y = x * -1
+   * fx: sign(a) {
+   * f1:  y = a * -1
    * f2:  return y
    * fx: }
    *
@@ -23,7 +23,7 @@ class SVF4RuleCallTest extends AnyFunSuite {
 
   test("test_svf_call_rule") {
 
-    val f1 = AssignmentStmt(VariableExp("y"), MultiExp(VariableExp("y"), ConstExp(-1)))
+    val f1 = AssignmentStmt(VariableExp("y"), MultiExp(VariableExp("a"), ConstExp(-1)))
     val f2 = ReturnStmt(VariableExp("y"))
     val fSignBody = SequenceStmt(f1, f2)
     val fSign = FunDecl("fSign", List("x"), List("y"), fSignBody, VariableExp("y"))
@@ -42,8 +42,8 @@ class SVF4RuleCallTest extends AnyFunSuite {
     val svf = SVF.run(program)
 
     val expected = Set(
-//      ((s1, VariableExp("s")), (f1, VariableExp("y"))),
-//      ((f1, VariableExp("y")), (s2, VariableExp("b")))
+      ((s1, VariableExp("a")), (f1, VariableExp("y"))),
+      ((f2, VariableExp("y")), (s2, VariableExp("b")))
     )
 
     assert(svf == expected)
