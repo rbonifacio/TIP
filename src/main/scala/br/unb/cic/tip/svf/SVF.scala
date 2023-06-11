@@ -39,12 +39,12 @@ object SVF {
   }
 
   private def analyzer(stmt: Stmt, caller: Stmt): Unit = stmt match {
-    case AssignmentStmt(left, right) => analyzer(stmt, left, right)
+    case AssignmentStmt(left, right) => analyzer(stmt, left, right, caller: Stmt)
     case ReturnStmt(_) => ruleReturn(stmt.asInstanceOf[ReturnStmt], caller) // return x
     case _ =>
   }
 
-  private def analyzer(stmt: Stmt, left: BasicExp, right: Expression): Unit = {
+  private def analyzer(stmt: Stmt, left: BasicExp, right: Expression, caller: Stmt): Unit = {
     (left, right) match {
       case (l: PointerExp, r: LoadExp) =>  ruleLoad(stmt, l, r) // l: p = *q
       case (l: LoadExp, r: PointerExp) =>  ruleStore(stmt, l, r) // l: *p = q
@@ -52,7 +52,7 @@ object SVF {
       case (l: VariableExp, r: FunctionCallExp) => {
         run(getMethodBody(program, "fSign"), stmt)
       }
-      case (l: BasicExp, r: Expression) => ruleCopy(stmt, l, r) // a = b; p = q
+      case (l: BasicExp, r: Expression) => ruleCopy(stmt, l, r, caller) // a = b; p = q
       case _ =>
     }
   }
@@ -69,8 +69,8 @@ object SVF {
    *  - v2@s2 -> v@s
    *  - q@s'-> p@s
    */
-  private def ruleCopy(stmt: Stmt, left: BasicExp, right: Expression): Unit = {
-    variables(right).foreach(v => createGraph((findDefinition(stmt, v), v), (stmt, left)))
+  private def ruleCopy(stmt: Stmt, left: BasicExp, right: Expression, caller: Stmt): Unit = {
+    variables(right).foreach(v => createGraph((findDefinition(stmt, v, caller), v), (stmt, left)))
   }
 
   /**
@@ -141,10 +141,12 @@ object SVF {
     /**
    * find the statement were a variable was "defined"
    */
-    private def findDefinition(stmt: Stmt, v: BasicExp): Stmt = RD((stmt, NopStmt))._2.find(_.name == v) getOrElse NopStmt
+    private def findDefinition(stmt: Stmt, v: BasicExp, context: Stmt = NopStmt): Stmt = RD((stmt, context))._2.find(_.name == v) getOrElse NopStmt
 
-    private def findDefinition(stmt: Stmt, v: Expression): Stmt = v.isInstanceOf[BasicExp] match {
-      case true => findDefinition(stmt, v.asInstanceOf[BasicExp])
+    private def findDefinition(stmt: Stmt, v: Expression, context: Stmt): Stmt = v.isInstanceOf[BasicExp] match {
+      case true => findDefinition(stmt, v.asInstanceOf[BasicExp], context)
       case _ => NopStmt
     }
+
+    private def findDefinition(stmt: Stmt, v: Expression): Stmt = findDefinition(stmt, v.asInstanceOf[BasicExp], NopStmt)
 }
