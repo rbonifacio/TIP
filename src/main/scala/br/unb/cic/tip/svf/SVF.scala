@@ -46,7 +46,7 @@ object SVF {
 
   private def analyzer(stmt: Stmt, left: BasicExp, right: Expression, caller: Stmt): Unit = {
     (left, right) match {
-      case (l: PointerExp, r: LoadExp) =>  ruleLoad(stmt, l, r) // l: p = *q
+      case (l: PointerExp, r: LoadExp) =>  ruleLoad(stmt, l, r, caller) // l: p = *q
       case (l: LoadExp, r: PointerExp) =>  ruleStore(stmt, l, r) // l: *p = q
 //      case (l: VariableExp, r: FunctionCallExp) =>  ruleCall(stmt, r) // a = call fName(b)
       case (l: BasicExp, r: FunctionCallExp) => {
@@ -80,8 +80,8 @@ object SVF {
    * Rule: ∀ o pt(q)
    *  - ∀ o@Ln -> p@L
    */
-  private def ruleLoad(stmt: Stmt, left: PointerExp, right: LoadExp): Unit = {
-    PT(right.pointer).foreach(v => createGraph((findDefinition(stmt, v), v), (stmt, left)))
+  private def ruleLoad(stmt: Stmt, left: PointerExp, right: LoadExp, caller: Stmt): Unit = {
+    PT(right.pointer).foreach(v => createGraph((findDefinition(stmt, v, caller), v), (stmt, left)))
   }
 
 
@@ -128,12 +128,9 @@ object SVF {
    *                                |
    */
   private def ruleReturn(stmt: ReturnStmt, caller: Stmt): Unit = caller match {
-    case AssignmentStmt(name, _) => stmt.exp match
-      case VariableExp(_) => {
-          createGraph((findDefinition(stmt, stmt.exp, caller), stmt.exp), (stmt, stmt.exp))
-          createGraph((stmt, stmt.exp), (caller, name))
-      }
-      case _ =>
+    case AssignmentStmt(name, _) =>
+        createGraph((findDefinition(stmt, stmt.exp, caller), stmt.exp), (stmt, stmt.exp))
+        createGraph((stmt, stmt.exp), (caller, name))
     case _ =>
   }
 
