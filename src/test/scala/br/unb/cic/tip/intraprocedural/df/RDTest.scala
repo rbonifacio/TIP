@@ -185,4 +185,27 @@ class RDTest extends AnyFunSuite {
       Set(s2, s3)
     ))
   }
+
+  /**
+   * s1: x = 1        entry: {}           exit: {(x, s1)}
+   * s2: return x     entry: {(x, s1)}    exit: {(x, s1)}
+   */
+  test("test_rd_using_return") {
+    val s1 = AssignmentStmt(VariableExp("x"), ConstExp(1))
+    val s2 = ReturnStmt(VariableExp("x"))
+
+    val seq = SequenceStmt(s1, s2)
+    val RD = ReachingDefinition.run(seq)
+
+    assert(RD((s1, NopStmt)) == (
+      Set(),
+      Set(s1)
+    ))
+
+    assert(RD((s2, NopStmt)) == (
+      Set(s1),
+      Set(s1)
+    ))
+
+  }
 }
