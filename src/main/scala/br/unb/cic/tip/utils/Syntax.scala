@@ -43,7 +43,6 @@ case class PointerExp(name: Id) extends PointerLeftExp // p | q | . . .
 // Basic
 case class ConstExp(v: Integer) extends Expression
 case class BracketExp(exp: Expression) extends Expression // (Exp)
-//case class NameExp(name: Id) extends Expression // (Exp)
 case object NullExp extends Expression // null
 case object InputExp extends Expression // input
 
