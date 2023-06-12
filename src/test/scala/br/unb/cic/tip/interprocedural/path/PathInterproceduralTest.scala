@@ -26,7 +26,7 @@ class PathInterproceduralTest extends AnyFunSuite {
     val sumS1 = AssignmentStmt(VariableExp("z"), AddExp(VariableExp("x"), VariableExp("y")))
     val sumS2 = ReturnStmt(VariableExp("z"))
     val sumBody = SequenceStmt(sumS1, sumS2)
-    val sumFunction = FunDecl("sum", List(VariableExp("x"), VariableExp("y")), List("z"), sumBody, VariableExp("z"))
+    val sumFunction = FunDecl("sum", List(VariableExp("x"), VariableExp("y")), List(VariableExp("z")), sumBody, VariableExp("z"))
 
     //main function
     val mainS1 = AssignmentStmt(VariableExp("a"), ConstExp(1))
@@ -40,7 +40,7 @@ class PathInterproceduralTest extends AnyFunSuite {
         )
       )
 
-    val mainFunction = FunDecl("main", List(), List("a", "b", "c"), mainBody, NullExp)
+    val mainFunction = FunDecl("main", List(), List(VariableExp("a"), VariableExp("b"), VariableExp("c")), mainBody, NullExp)
 
     val program = List(sumFunction, mainFunction)
 
@@ -80,7 +80,7 @@ class PathInterproceduralTest extends AnyFunSuite {
     val sumS1 = AssignmentStmt(VariableExp("z"), AddExp(VariableExp("x"), VariableExp("y")))
     val sumS2 = ReturnStmt(VariableExp("z"))
     val sumBody = SequenceStmt(sumS1, sumS2)
-    val sumFunction = FunDecl("sum", List(VariableExp("x"), VariableExp("y")), List("z"), sumBody, VariableExp("z"))
+    val sumFunction = FunDecl("sum", List(VariableExp("x"), VariableExp("y")), List(VariableExp("z")), sumBody, VariableExp("z"))
 
     //main function
     val mainS1 = AssignmentStmt(VariableExp("a"), ConstExp(1))
@@ -101,7 +101,13 @@ class PathInterproceduralTest extends AnyFunSuite {
                   SequenceStmt(mainS7, mainS8
                     )))))))
 
-    val mainFunction = FunDecl("main", List(), List("a", "b", "c","d", "e", "f"), mainBody, NullExp)
+    val mainFunction = FunDecl(
+      "main",
+      List(),
+      List(VariableExp("a"), VariableExp("b"), VariableExp("c"), VariableExp("d"), VariableExp("e"), VariableExp("f")),
+      mainBody,
+      NullExp
+    )
 
     val program = List(sumFunction, mainFunction)
 
@@ -131,7 +137,13 @@ class PathInterproceduralTest extends AnyFunSuite {
     //main function
     val mainBody = AssignmentStmt(VariableExp("_m1"), FunctionCallExp(NameExp(fibonacciFunction.name), List(VariableExp("x"), ConstExp(0), VariableExp("y"))))
 
-    val mainFunction = FunDecl("main", List(), List("a", "b", "c","d", "e", "f"), mainBody, NullExp)
+    val mainFunction = FunDecl(
+      "main",
+      List(),
+      List(VariableExp("a"), VariableExp("b"), VariableExp("c"), VariableExp("d"), VariableExp("e"), VariableExp("f")),
+      mainBody,
+      NullExp
+    )
 
     val program = List(fibonacciFunction, mainFunction)
 

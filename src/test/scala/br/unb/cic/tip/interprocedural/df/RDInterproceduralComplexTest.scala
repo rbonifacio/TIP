@@ -57,7 +57,7 @@ class RDInterproceduralComplexTest extends AnyFunSuite {
                     SequenceStmt(s8, s9
                     ))))))))
 
-    val mainFunction = FunDecl("main", List(), List("x", "y", "z"), mainBody, NullExp)
+    val mainFunction = FunDecl("main", List(), List(VariableExp("x"), VariableExp("y"), VariableExp("z")), mainBody, NullExp)
 
     val program = List(myFunction, mainFunction)
 

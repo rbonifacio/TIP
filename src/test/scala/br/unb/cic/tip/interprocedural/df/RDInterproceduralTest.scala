@@ -40,7 +40,7 @@ class RDInterproceduralTest extends AnyFunSuite {
     //main function
     val fMainBody = SequenceStmt(s1, SequenceStmt(s2, s3))
 
-    val fMain = FunDecl("main", List(), List("a", "b"), fMainBody, NullExp)
+    val fMain = FunDecl("main", List(), List(VariableExp("a"), VariableExp("b")), fMainBody, NullExp)
 
     val program = List(fShow, fMain)
 
@@ -91,7 +91,7 @@ class RDInterproceduralTest extends AnyFunSuite {
     //main function
     val fMainBody = SequenceStmt(s1, SequenceStmt(s2, s3))
 
-    val fMain = FunDecl("main", List(), List("a", "b"), fMainBody, NullExp)
+    val fMain = FunDecl("main", List(), List(VariableExp("a"), VariableExp("b")), fMainBody, NullExp)
 
     val program = List(fIdentity, fMain)
 
@@ -142,7 +142,7 @@ class RDInterproceduralTest extends AnyFunSuite {
     //main function
     val fMainBody = SequenceStmt(s1, SequenceStmt(s2, s3))
 
-    val fMain = FunDecl("main", List(), List("a", "b"), fMainBody, NullExp)
+    val fMain = FunDecl("main", List(), List(VariableExp("a"), VariableExp("b")), fMainBody, NullExp)
 
     val program = List(fIdentity, fMain)
 
@@ -195,7 +195,7 @@ class RDInterproceduralTest extends AnyFunSuite {
     //main function
     val fMainBody = SequenceStmt(s1, SequenceStmt(s2, s3))
 
-    val fMain = FunDecl("main", List(), List("a", "b"), fMainBody, NullExp)
+    val fMain = FunDecl("main", List(), List(VariableExp("a"), VariableExp("b")), fMainBody, NullExp)
 
     val program = List(fReturnY, fMain)
 
@@ -244,7 +244,7 @@ class RDInterproceduralTest extends AnyFunSuite {
     val f1 = AssignmentStmt(VariableExp("y"), MultiExp(VariableExp("y"), ConstExp(1)))
     val f2 = ReturnStmt(VariableExp("y"))
     val fSignBody = SequenceStmt(f1, f2)
-    val fSign = FunDecl("fSign", List(VariableExp("x")), List("y"), fSignBody, VariableExp("y"))
+    val fSign = FunDecl("fSign", List(VariableExp("x")), List(VariableExp("y")), fSignBody, VariableExp("y"))
 
     val s1 = AssignmentStmt(VariableExp("a"), ConstExp(1))
     val s2 = AssignmentStmt(VariableExp("b"), FunctionCallExp(NameExp(fSign.name), List(VariableExp("a"))))
@@ -253,7 +253,7 @@ class RDInterproceduralTest extends AnyFunSuite {
     //main function
     val fMainBody = SequenceStmt(s1, SequenceStmt(s2, s3))
 
-    val fMain = FunDecl("main", List(), List("a", "b"), fMainBody, NullExp)
+    val fMain = FunDecl("main", List(), List(VariableExp("a"), VariableExp("b")), fMainBody, NullExp)
 
     val program = List(fSign, fMain)
 
@@ -311,7 +311,7 @@ class RDInterproceduralTest extends AnyFunSuite {
     //main function
     val fMainBody = SequenceStmt(s1, SequenceStmt(s2, s3))
 
-    val fMain = FunDecl("main", List(), List("a", "b"), fMainBody, NullExp)
+    val fMain = FunDecl("main", List(), List(VariableExp("a"), VariableExp("b")), fMainBody, NullExp)
 
     val program = List(fSign, fMain)
 
@@ -370,7 +370,7 @@ class RDInterproceduralTest extends AnyFunSuite {
     //main function
     val mainBody = SequenceStmt(s1, SequenceStmt(s2, SequenceStmt(s3, SequenceStmt(s4, s5))))
 
-    val mainFunction = FunDecl("main", List(), List("x", "y", "z"), mainBody, NullExp)
+    val mainFunction = FunDecl("main", List(), List(VariableExp("x"), VariableExp("y"), VariableExp("z")), mainBody, NullExp)
 
     val program = List(myFunction, mainFunction)
 

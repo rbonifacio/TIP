@@ -24,7 +24,7 @@ type Field = (Id, Expression)
 case class FunDecl(
     name: Id,
     args: List[BasicExp],
-    vars: List[Id],
+    vars: List[BasicExp],
     body: Stmt,
     retExp: Expression
 )
