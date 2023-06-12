@@ -46,9 +46,8 @@ object SVF {
     (left, right) match {
       case (l: PointerExp, r: LoadExp) =>  ruleLoad(stmt, l, r, caller) // l: p = *q
       case (l: LoadExp, r: PointerExp) =>  ruleStore(stmt, l, r, caller) // l: *p = q
-      case (l: BasicExp, r: FunctionCallExp) => { // a = call fName(b)
-        //TO-DO: get the method name, instead of using this hardcode that is for testing purposes
-        run(getMethodBody(program, "fSign"), stmt)
+      case (_: BasicExp, r: FunctionCallExp) => { // a = call fName(b)
+        run(getMethodBody(program, r.name.asInstanceOf[NameExp].name), stmt)
       }
       case (l: BasicExp, r: Expression) => ruleCopy(stmt, l, r, caller) // a = b; p = q
       case _ =>
