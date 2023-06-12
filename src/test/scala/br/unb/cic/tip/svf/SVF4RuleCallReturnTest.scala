@@ -91,4 +91,55 @@ class SVF4RuleCallReturnTest extends AnyFunSuite {
 
     assert(svf == expected)
   }
+
+  /**
+   * fx: sign(p) {
+   * f1:  t = p
+   * f2:  return t
+   * fx: }
+   *
+   * sx: main() {
+   * s1:  p = alloc 1
+   * s1:  q = alloc 2
+   * s3:  p = &q
+   * s:   s = sign(p)
+   * s:   print s
+   * s: }
+   */
+
+  test("test_svf_call_return_rule_pointers") {
+
+    val f1 = AssignmentStmt(PointerExp("t"), PointerExp("p"))
+    val f2 = ReturnStmt(PointerExp("t"))
+    val fSignBody = SequenceStmt(f1, f2)
+    val fSign = FunDecl("fSign", List("p"), List("t"), fSignBody, VariableExp("y"))
+
+    val s1 = AssignmentStmt(PointerExp("p"), AllocExp(ConstExp(1)))
+    val s2 = AssignmentStmt(PointerExp("q"), AllocExp(ConstExp(2)))
+    val s3 = AssignmentStmt(PointerExp("p"), LocationExp("q"))
+    val s4 = AssignmentStmt(PointerExp("s"), FunctionCallExp(NameExp(fSign.name), List(PointerExp("p"))))
+    val s5 = OutputStmt(PointerExp("s"))
+
+    //main function
+    val fMainBody = SequenceStmt(s1, SequenceStmt(s2, SequenceStmt(s3, SequenceStmt(s4, s5))))
+
+    val fMain = FunDecl("main", List(), List("p", "q", "r", "s"), fMainBody, NullExp)
+
+    val program = List(fSign, fMain)
+
+    val svf = SVF.run(program)
+
+//    print(svf)
+
+    val expected = Set(
+      ((s3, PointerExp("p")), (f1, PointerExp("t"))),
+      ((f1, PointerExp("t")), (f2, PointerExp("t"))),
+      ((f2, PointerExp("t")), (s4, PointerExp("s")))
+//      ((s2, PointerExp("q")), (f1, PointerExp("t"))),
+//      ((f1, PointerExp("t")), (f2, PointerExp("t"))),
+//      ((f2, PointerExp("t")), (s2, PointerExp("s")))
+    )
+
+    assert(svf == expected)
+  }
 }
