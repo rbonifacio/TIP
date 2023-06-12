@@ -51,6 +51,8 @@ case class AddExp(left: Expression, right: Expression) extends Expression // Exp
 case class SubExp(left: Expression, right: Expression) extends Expression // Exp - Exp
 case class MultiExp(left: Expression, right: Expression) extends Expression // Exp * Exp
 case class DivExp(left: Expression, right: Expression) extends Expression // Exp / Exp
+
+// Comparison
 case class EqExp(left: Expression, right: Expression) extends Expression // Exp == Exp
 case class GTExp(left: Expression, right: Expression) extends Expression // Exp > Exp
 
@@ -70,23 +72,23 @@ case class LoadExp(pointer: PointerExp) extends PointerLeftExp // *p
 * Algebraic data type for statements 
 */
 enum Stmt:
-  //basic
+  // Basic
   case AssignmentStmt(name: BasicExp, exp: Expression) extends Stmt // Id = Exp
   case SequenceStmt(s1: Stmt, s2: Stmt) extends Stmt // Stmt Stmt
+  case OutputStmt(exp: Expression) extends Stmt // output Exp
   case NopStmt extends Stmt // nop
 
-  //algebraic
+  //  Conditional
   case IfElseStmt(condition: Expression, s1: Stmt, s2: Option[Stmt]) extends Stmt // if ( Exp ) { Stmt } [else { Stmt }]
   case WhileStmt(condition: Expression, stmt: Stmt) extends Stmt // while ( Exp ) { Stmt }
 
-  //function
-  case CallStmt(stmt: Stmt) extends Stmt //
-  case AfterCallStmt(stmt: Stmt) extends Stmt //
-  case ReturnStmt(exp: Expression) extends Stmt //
+  // Function
+  case CallStmt(stmt: Stmt) extends Stmt // x = call fName(exp1, exp2, ....., expN)
+  case AfterCallStmt(stmt: Stmt) extends Stmt // x = call fName(exp1, exp2, ....., expN)
+  case ReturnStmt(exp: Expression) extends Stmt // return Exp
 
-  //pointers
-  case StoreStmt(exp1: Expression, exp2: Expression) extends Stmt // *Exp = Exp
-  case OutputStmt(exp: Expression) extends Stmt // output Exp
+  //  Pointers
+//  case StoreStmt(exp1: Expression, exp2: Expression) extends Stmt // *Exp = Exp
 
   //records
 //  case RecordAssignmentStmt(name: Id, field: Id, exp: Expression) extends Stmt // Id.Id = Exp;
