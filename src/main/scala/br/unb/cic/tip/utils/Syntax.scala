@@ -6,7 +6,6 @@ package br.unb.cic.tip.utils
  */
 type Program = List[FunDecl]
 type Id = String
-//type Int = Integer
 type Field = (Id, Expression)
 
 /** Algebraic definition of function declaration.
@@ -37,7 +36,6 @@ abstract class Expression
 abstract class BasicExp extends Expression
 abstract class PointerLeftExp extends BasicExp
 
-
 case class VariableExp(name: Id) extends BasicExp // x | y | z | . . .
 case class PointerExp(name: Id) extends PointerLeftExp // p | q | . . .
 
@@ -55,7 +53,7 @@ case class EqExp(left: Expression, right: Expression) extends Expression // Exp 
 case class GTExp(left: Expression, right: Expression) extends Expression // Exp > Exp
 //
 //  // function-call
-case class FunctionCallExp(name: Id, args: List[Any]) extends Expression
+case class FunctionCallExp(name: Id, args: List[Expression]) extends Expression
 //
 //  // Pointer
 case class AllocExp(exp: Expression) extends Expression // alloc Exp
