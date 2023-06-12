@@ -25,7 +25,6 @@ object SVF {
     val bodyMain = getMethodBody(program)
     graph = Set()
     RD = ReachingDefinition.run(bodyMain, program)
-    // print(RD)
     PT = BasicAndersen.pointTo(bodyMain, true)
     run(bodyMain, NopStmt)
   }
@@ -47,9 +46,9 @@ object SVF {
   private def analyzer(stmt: Stmt, left: BasicExp, right: Expression, caller: Stmt): Unit = {
     (left, right) match {
       case (l: PointerExp, r: LoadExp) =>  ruleLoad(stmt, l, r, caller) // l: p = *q
-      case (l: LoadExp, r: PointerExp) =>  ruleStore(stmt, l, r) // l: *p = q
-//      case (l: VariableExp, r: FunctionCallExp) =>  ruleCall(stmt, r) // a = call fName(b)
-      case (l: BasicExp, r: FunctionCallExp) => {
+      case (l: LoadExp, r: PointerExp) =>  ruleStore(stmt, l, r, caller) // l: *p = q
+//      case (l: VariableExp, r: FunctionCallExp) =>  ruleCall(stmt, r)
+      case (l: BasicExp, r: FunctionCallExp) => { // a = call fName(b)
         run(getMethodBody(program, "fSign"), stmt)
       }
       case (l: BasicExp, r: Expression) => ruleCopy(stmt, l, r, caller) // a = b; p = q
@@ -92,8 +91,8 @@ object SVF {
    *  - q@L1 -> ∀ o@L (strong)
    *  - o1@L1 --> ∀ o@L (weak)
    */
-  private def ruleStore(stmt: Stmt, left: LoadExp, right: PointerExp): Unit = {
-    PT(left.pointer).foreach(v => createGraph((findDefinition(stmt, right), right), (stmt, v)))
+  private def ruleStore(stmt: Stmt, left: LoadExp, right: PointerExp, caller: Stmt): Unit = {
+    PT(left.pointer).foreach(v => createGraph((findDefinition(stmt, right, caller), right), (stmt, v)))
   }
 
 
