@@ -48,6 +48,7 @@ object SVF {
       case (l: PointerExp, r: LoadExp) =>  ruleLoad(stmt, l, r, caller) // l: p = *q
       case (l: LoadExp, r: PointerExp) =>  ruleStore(stmt, l, r, caller) // l: *p = q
       case (l: BasicExp, r: FunctionCallExp) => { // a = call fName(b)
+        //TO-DO: get the method name, instead of using this hardcode that is for testing purposes
         run(getMethodBody(program, "fSign"), stmt)
       }
       case (l: BasicExp, r: Expression) => ruleCopy(stmt, l, r, caller) // a = b; p = q
@@ -68,6 +69,7 @@ object SVF {
    *  - q@s'-> p@s
    */
   private def ruleCopy(stmt: Stmt, left: BasicExp, right: Expression, caller: Stmt): Unit = {
+    //TO-DO: check if right: Expression is a load, so get what it is point-to
     variables(right).foreach(v => createGraph((findDefinition(stmt, v, caller), v), (stmt, left)))
   }
 
