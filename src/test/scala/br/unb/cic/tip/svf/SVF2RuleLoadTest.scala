@@ -20,7 +20,7 @@ class SVF2RuleLoadTest extends AnyFunSuite {
     val s1 = AssignmentStmt(PointerExp("p"), AllocExp(ConstExp(1)))
     val s2 = AssignmentStmt(PointerExp("q"), AllocExp(ConstExp(2)))
     val s3 = AssignmentStmt(PointerExp("r"), AllocExp(ConstExp(3)))
-    val s4 = AssignmentStmt(PointerExp("p"), LocationExp("r"))
+    val s4 = AssignmentStmt(PointerExp("p"), LocationExp(PointerExp("r")))
     val s5 = AssignmentStmt(PointerExp("q"), LoadExp(PointerExp("p")))
 
     val mainBody = SequenceStmt(s1, SequenceStmt(s2, SequenceStmt(s3, SequenceStmt(s4, s5))))
@@ -51,8 +51,8 @@ class SVF2RuleLoadTest extends AnyFunSuite {
     val s2 = AssignmentStmt(PointerExp("q"), AllocExp(ConstExp(2)))
     val s3 = AssignmentStmt(PointerExp("r"), AllocExp(ConstExp(3)))
     val s4 = AssignmentStmt(PointerExp("s"), AllocExp(ConstExp(4)))
-    val s5 = AssignmentStmt(PointerExp("p"), LocationExp("q"))
-    val s6 = AssignmentStmt(PointerExp("p"), LocationExp("s"))
+    val s5 = AssignmentStmt(PointerExp("p"), LocationExp(PointerExp("q")))
+    val s6 = AssignmentStmt(PointerExp("p"), LocationExp(PointerExp("s")))
     val s7 = AssignmentStmt(PointerExp("r"), LoadExp(PointerExp("p")))
 
     val mainBody = SequenceStmt(s1, SequenceStmt(s2, SequenceStmt(s3, SequenceStmt(s4, SequenceStmt(s5, SequenceStmt(s6, s7))))))
@@ -85,10 +85,10 @@ class SVF2RuleLoadTest extends AnyFunSuite {
     val s2 = AssignmentStmt(PointerExp("q"), AllocExp(ConstExp(2)))
     val s3 = AssignmentStmt(PointerExp("r"), AllocExp(ConstExp(3)))
     val s4 = AssignmentStmt(PointerExp("s"), AllocExp(ConstExp(4)))
-    val s5 = AssignmentStmt(PointerExp("p"), LocationExp("r"))
+    val s5 = AssignmentStmt(PointerExp("p"), LocationExp(PointerExp("r")))
     val s6 = AssignmentStmt(PointerExp("q"), LoadExp(PointerExp("p")))
-    val s7 = AssignmentStmt(PointerExp("q"), LocationExp("p"))
-    val s8 = AssignmentStmt(PointerExp("q"), LocationExp("r"))
+    val s7 = AssignmentStmt(PointerExp("q"), LocationExp(PointerExp("p")))
+    val s8 = AssignmentStmt(PointerExp("q"), LocationExp(PointerExp("r")))
     val s9 = AssignmentStmt(PointerExp("s"), LoadExp(PointerExp("q")))
 
     val mainBody = SequenceStmt(s1, SequenceStmt(s2, SequenceStmt(s3, SequenceStmt(s4, SequenceStmt(s5, SequenceStmt(s6, SequenceStmt(s7, SequenceStmt(s8, s9))))))))

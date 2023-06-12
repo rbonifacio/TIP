@@ -26,16 +26,16 @@ class SVF4RuleCallReturnTest extends AnyFunSuite {
     val f1 = AssignmentStmt(VariableExp("y"), MultiExp(VariableExp("a"), ConstExp(-1)))
     val f2 = ReturnStmt(VariableExp("y"))
     val fSignBody = SequenceStmt(f1, f2)
-    val fSign = FunDecl("fSign", List("x"), List("y"), fSignBody, VariableExp("y"))
+    val fSign = FunDecl("fSign", List(VariableExp("x")), List(VariableExp("y")), fSignBody, VariableExp("y"))
 
     val s1 = AssignmentStmt(VariableExp("a"), ConstExp(1))
-    val s2 = AssignmentStmt(VariableExp("b"), FunctionCallExp(NameExp(fSign.name), List(VariableExp("a"))))
+    val s2 = AssignmentStmt(VariableExp("b"), FunctionCallExp(fSign.name, List(VariableExp("a"))))
     val s3 = OutputStmt(VariableExp("b"))
 
     //main function
     val fMainBody = SequenceStmt(s1, SequenceStmt(s2, s3))
 
-    val fMain = FunDecl("main", List(), List("a", "b"), fMainBody, NullExp)
+    val fMain = FunDecl("main", List(), List(VariableExp("a"), VariableExp("b")), fMainBody, NullExp)
 
     val program = List(fSign, fMain)
 
@@ -68,16 +68,16 @@ class SVF4RuleCallReturnTest extends AnyFunSuite {
     val f1 = AssignmentStmt(VariableExp("a"), MultiExp(VariableExp("a"), ConstExp(-1)))
     val f2 = ReturnStmt(VariableExp("a"))
     val fSignBody = SequenceStmt(f1, f2)
-    val fSign = FunDecl("fSign", List("x"), List("y"), fSignBody, VariableExp("y"))
+    val fSign = FunDecl("fSign", List(VariableExp("x")), List(VariableExp("y")), fSignBody, VariableExp("y"))
 
     val s1 = AssignmentStmt(VariableExp("a"), ConstExp(1))
-    val s2 = AssignmentStmt(VariableExp("b"), FunctionCallExp(NameExp(fSign.name), List(VariableExp("a"))))
+    val s2 = AssignmentStmt(VariableExp("b"), FunctionCallExp(fSign.name, List(VariableExp("a"))))
     val s3 = OutputStmt(VariableExp("b"))
 
     //main function
     val fMainBody = SequenceStmt(s1, SequenceStmt(s2, s3))
 
-    val fMain = FunDecl("main", List(), List("a", "b"), fMainBody, NullExp)
+    val fMain = FunDecl("main", List(), List(VariableExp("a"), VariableExp("b")), fMainBody, NullExp)
 
     val program = List(fSign, fMain)
 
@@ -112,18 +112,24 @@ class SVF4RuleCallReturnTest extends AnyFunSuite {
     val f1 = AssignmentStmt(PointerExp("t"), PointerExp("p"))
     val f2 = ReturnStmt(PointerExp("t"))
     val fSignBody = SequenceStmt(f1, f2)
-    val fSign = FunDecl("fSign", List("p"), List("t"), fSignBody, VariableExp("y"))
+    val fSign = FunDecl("fSign", List(PointerExp("p")), List(PointerExp("t")), fSignBody, VariableExp("y"))
 
     val s1 = AssignmentStmt(PointerExp("p"), AllocExp(ConstExp(1)))
     val s2 = AssignmentStmt(PointerExp("q"), AllocExp(ConstExp(2)))
-    val s3 = AssignmentStmt(PointerExp("p"), LocationExp("q"))
-    val s4 = AssignmentStmt(PointerExp("s"), FunctionCallExp(NameExp(fSign.name), List(PointerExp("p"))))
+    val s3 = AssignmentStmt(PointerExp("p"), LocationExp(PointerExp("q")))
+    val s4 = AssignmentStmt(PointerExp("s"), FunctionCallExp(fSign.name, List(PointerExp("p"))))
     val s5 = OutputStmt(PointerExp("s"))
 
     //main function
     val fMainBody = SequenceStmt(s1, SequenceStmt(s2, SequenceStmt(s3, SequenceStmt(s4, s5))))
 
-    val fMain = FunDecl("main", List(), List("p", "q", "r", "s"), fMainBody, NullExp)
+    val fMain = FunDecl(
+      "main",
+      List(),
+      List(PointerExp("p"), PointerExp("q"), PointerExp("r"), PointerExp("s")),
+      fMainBody,
+      NullExp
+    )
 
     val program = List(fSign, fMain)
 
@@ -158,18 +164,24 @@ class SVF4RuleCallReturnTest extends AnyFunSuite {
     val f1 = AssignmentStmt(PointerExp("t"), LoadExp(PointerExp("p")))
     val f2 = ReturnStmt(PointerExp("t"))
     val fSignBody = SequenceStmt(f1, f2)
-    val fSign = FunDecl("fSign", List("p"), List("t"), fSignBody, VariableExp("y"))
+    val fSign = FunDecl("fSign", List(PointerExp("p")), List(PointerExp("t")), fSignBody, VariableExp("y"))
 
     val s1 = AssignmentStmt(PointerExp("p"), AllocExp(ConstExp(1)))
     val s2 = AssignmentStmt(PointerExp("q"), AllocExp(ConstExp(2)))
-    val s3 = AssignmentStmt(PointerExp("p"), LocationExp("q"))
-    val s4 = AssignmentStmt(PointerExp("s"), FunctionCallExp(NameExp(fSign.name), List(PointerExp("p"))))
+    val s3 = AssignmentStmt(PointerExp("p"), LocationExp(PointerExp("q")))
+    val s4 = AssignmentStmt(PointerExp("s"), FunctionCallExp(fSign.name, List(PointerExp("p"))))
     val s5 = OutputStmt(PointerExp("s"))
 
     //main function
     val fMainBody = SequenceStmt(s1, SequenceStmt(s2, SequenceStmt(s3, SequenceStmt(s4, s5))))
 
-    val fMain = FunDecl("main", List(), List("p", "q", "r", "s"), fMainBody, NullExp)
+    val fMain = FunDecl(
+      "main",
+      List(),
+      List(PointerExp("p"), PointerExp("q"), PointerExp("r"), PointerExp("s")),
+      fMainBody,
+      NullExp
+    )
 
     val program = List(fSign, fMain)
 

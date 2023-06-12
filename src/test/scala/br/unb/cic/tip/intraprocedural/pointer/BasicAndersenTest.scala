@@ -333,7 +333,7 @@ class BasicAndersenTest extends AnyFunSuite {
 
     val s1 = AssignmentStmt(VariableExp("a"), ConstExp(1))
     val s2 = AssignmentStmt(PointerExp("b"), AllocExp(NullExp))
-    val s3 = AssignmentStmt(PointerExp("c"), LocationExp("b"))
+    val s3 = AssignmentStmt(PointerExp("c"), LocationExp(PointerExp("b")))
     val s4 = OutputStmt(PointerExp("c"))
 
     val mainBody = SequenceStmt(s1, SequenceStmt(s2, SequenceStmt(s3, s4)))

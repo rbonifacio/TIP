@@ -20,7 +20,7 @@ class SVF3RuleStoreTest extends AnyFunSuite {
     val s1 = AssignmentStmt(PointerExp("p"), AllocExp(ConstExp(1)))
     val s2 = AssignmentStmt(PointerExp("q"), AllocExp(ConstExp(2)))
     val s3 = AssignmentStmt(PointerExp("r"), AllocExp(ConstExp(3)))
-    val s4 = AssignmentStmt(PointerExp("p"), LocationExp("r"))
+    val s4 = AssignmentStmt(PointerExp("p"), LocationExp(PointerExp("r")))
     val s5 = AssignmentStmt(LoadExp(PointerExp("p")), PointerExp("q"))
 
     val mainBody = SequenceStmt(s1, SequenceStmt(s2, SequenceStmt(s3, SequenceStmt(s4, s5))))
@@ -50,8 +50,8 @@ class SVF3RuleStoreTest extends AnyFunSuite {
     val s2 = AssignmentStmt(PointerExp("q"), AllocExp(ConstExp(2)))
     val s3 = AssignmentStmt(PointerExp("r"), AllocExp(ConstExp(3)))
     val s4 = AssignmentStmt(PointerExp("s"), AllocExp(ConstExp(4)))
-    val s5 = AssignmentStmt(PointerExp("p"), LocationExp("q"))
-    val s6 = AssignmentStmt(PointerExp("p"), LocationExp("s"))
+    val s5 = AssignmentStmt(PointerExp("p"), LocationExp(PointerExp("q")))
+    val s6 = AssignmentStmt(PointerExp("p"), LocationExp(PointerExp("s")))
     val s7 = AssignmentStmt(LoadExp(PointerExp("p")), PointerExp("r"))
 
     val mainBody = SequenceStmt(s1, SequenceStmt(s2, SequenceStmt(s3, SequenceStmt(s4, SequenceStmt(s5, SequenceStmt(s6, s7))))))
@@ -84,7 +84,7 @@ class SVF3RuleStoreTest extends AnyFunSuite {
     val s3 = AssignmentStmt(PointerExp("r"), AllocExp(ConstExp(3)))
     val s4 = AssignmentStmt(PointerExp("s"), AllocExp(ConstExp(4)))
     val s5 = AssignmentStmt(PointerExp("r"), PointerExp("s"))
-    val s6 = AssignmentStmt(PointerExp("p"), LocationExp("r"))
+    val s6 = AssignmentStmt(PointerExp("p"), LocationExp(PointerExp("r")))
     val s7 = AssignmentStmt(LoadExp(PointerExp("p")), PointerExp("q"))
 
     val mainBody = SequenceStmt(s1, SequenceStmt(s2, SequenceStmt(s3, SequenceStmt(s4, SequenceStmt(s5, SequenceStmt(s6, s7))))))
