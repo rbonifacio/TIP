@@ -47,7 +47,6 @@ object SVF {
     (left, right) match {
       case (l: PointerExp, r: LoadExp) =>  ruleLoad(stmt, l, r, caller) // l: p = *q
       case (l: LoadExp, r: PointerExp) =>  ruleStore(stmt, l, r, caller) // l: *p = q
-//      case (l: VariableExp, r: FunctionCallExp) =>  ruleCall(stmt, r)
       case (l: BasicExp, r: FunctionCallExp) => { // a = call fName(b)
         run(getMethodBody(program, "fSign"), stmt)
       }
@@ -107,9 +106,7 @@ object SVF {
    *  - p@L1 -> q@Lf                | - o@L1 --> o1@Lf
    *
    */
-  private def ruleCall(stmt: Stmt, caller: Stmt): Unit = {
-//    caller.args.map(p => println(findDefinition(stmt, p)))
-  }
+  private def ruleCall(stmt: Stmt, caller: Stmt): Unit = {}
 
 
   /**
