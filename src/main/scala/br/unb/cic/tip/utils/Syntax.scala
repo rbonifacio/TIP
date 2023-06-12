@@ -57,7 +57,7 @@ case class FunctionCallExp(name: Id, args: List[Expression]) extends Expression
 //
 //  // Pointer
 case class AllocExp(exp: Expression) extends Expression // alloc Exp
-case class LocationExp(pointer: Id) extends Expression // & Id
+case class LocationExp(pointer: PointerExp) extends Expression // & Id
 case class LoadExp(pointer: PointerExp) extends PointerLeftExp // *p
 //
 //  // Record
