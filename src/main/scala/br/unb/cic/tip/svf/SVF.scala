@@ -47,7 +47,7 @@ object SVF {
       case (l: PointerExp, r: LoadExp) =>  ruleLoad(stmt, l, r, caller) // l: p = *q
       case (l: LoadExp, r: PointerExp) =>  ruleStore(stmt, l, r, caller) // l: *p = q
       case (_: BasicExp, r: FunctionCallExp) => { // a = call fName(b)
-        run(getMethodBody(program, r.name.asInstanceOf[NameExp].name), stmt)
+        run(getMethodBody(program, r.name), stmt)
       }
       case (l: BasicExp, r: Expression) => ruleCopy(stmt, l, r, caller) // a = b; p = q
       case _ =>
