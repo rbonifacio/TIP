@@ -175,11 +175,8 @@ class SVF4RuleCallReturnTest extends AnyFunSuite {
 
     val svf = SVF.run(program)
 
-    //    print(svf)
-
     val expected = Set(
-//        ((s2, PointerExp("q")), (f1, PointerExp("t"))),
-        ((NopStmt, PointerExp("q")), (f1, PointerExp("t"))),
+        ((s2, PointerExp("q")), (f1, PointerExp("t"))),
         ((f1, PointerExp("t")), (f2, PointerExp("t"))),
         ((f2, PointerExp("t")), (s4, PointerExp("s")))
     )
