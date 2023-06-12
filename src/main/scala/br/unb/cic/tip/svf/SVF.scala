@@ -10,7 +10,6 @@ import scala.collection.mutable
 
 type NodeSVF = (Stmt, Expression)
 type EdgeSVF = (NodeSVF, NodeSVF)
-//type EdgeSVF = (Expression, Expression)
 type GraphSVF = Set[EdgeSVF]
 
 object SVF {
@@ -79,9 +78,8 @@ object SVF {
    * Rule: ∀ o pt(q)
    *  - ∀ o@Ln -> p@L
    */
-  private def ruleLoad(stmt: Stmt, left: PointerExp, right: LoadExp, caller: Stmt): Unit = {
+  private def ruleLoad(stmt: Stmt, left: PointerExp, right: LoadExp, caller: Stmt): Unit =
     PT(right.pointer).foreach(v => createGraph((findDefinition(stmt, v, caller), v), (stmt, left)))
-  }
 
 
   /**
@@ -91,9 +89,8 @@ object SVF {
    *  - q@L1 -> ∀ o@L (strong)
    *  - o1@L1 --> ∀ o@L (weak)
    */
-  private def ruleStore(stmt: Stmt, left: LoadExp, right: PointerExp, caller: Stmt): Unit = {
+  private def ruleStore(stmt: Stmt, left: LoadExp, right: PointerExp, caller: Stmt): Unit =
     PT(left.pointer).foreach(v => createGraph((findDefinition(stmt, right, caller), right), (stmt, v)))
-  }
 
 
   /**
