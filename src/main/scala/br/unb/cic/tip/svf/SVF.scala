@@ -68,9 +68,9 @@ object SVF {
    *  - v2@s2 -> v@s
    *  - q@s'-> p@s
    */
-  private def ruleCopy(stmt: Stmt, left: BasicExp, right: Expression, caller: Stmt): Unit = {
-    //TO-DO: check if right: Expression is a load, so get what it is point-to
-    variables(right).foreach(v => createGraph((findDefinition(stmt, v, caller), v), (stmt, left)))
+  private def ruleCopy(stmt: Stmt, left: BasicExp, right: Expression, caller: Stmt): Unit = right match {
+    case LoadExp(pointer) => PT(pointer).foreach(v => createGraph((findDefinition(stmt, v, caller), v), (stmt, left)))
+    case _ => variables(right).foreach(v => createGraph((findDefinition(stmt, v, caller), v), (stmt, left)))
   }
 
   /**
@@ -141,7 +141,12 @@ object SVF {
     /**
    * find the statement were a variable was "defined"
    */
-    private def findDefinition(stmt: Stmt, v: BasicExp, context: Stmt = NopStmt): Stmt = RD((stmt, context))._2.find(_.name == v) getOrElse NopStmt
+    private def findDefinition(stmt: Stmt, v: BasicExp, context: Stmt = NopStmt): Stmt = {
+      val result = RD((stmt, context))._2.find(_.name == v) getOrElse NopStmt
+      result match
+        case NopStmt => RD((context, NopStmt))._2.find(_.name == v) getOrElse NopStmt
+        case _ => result
+    }
 
     private def findDefinition(stmt: Stmt, v: Expression, context: Stmt): Stmt = v.isInstanceOf[BasicExp] match {
       case true => findDefinition(stmt, v.asInstanceOf[BasicExp], context)
