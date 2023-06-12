@@ -1,6 +1,6 @@
 package br.unb.cic.tip
 
-import br.unb.cic.tip.utils.{AddExp, BasicExp, BracketExp, ConstExp, DivExp, EqExp, Expression, FunDecl, FunctionCallExp, GTExp, Id, InputExp, LoadExp, MultiExp, NameExp, Node, PointerExp, Program, Stmt, SubExp, VariableExp}
+import br.unb.cic.tip.utils.{AddExp, BasicExp, BracketExp, ConstExp, DivExp, EqExp, Expression, FunDecl, FunctionCallExp, GTExp, Id, InputExp, LoadExp, MultiExp, Node, PointerExp, Program, Stmt, SubExp, VariableExp}
 import br.unb.cic.tip.utils.Stmt.*
 import br.unb.cic.tip.utils.Node.*
 
