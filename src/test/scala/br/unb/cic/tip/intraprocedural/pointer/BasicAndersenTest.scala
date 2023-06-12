@@ -22,7 +22,7 @@ class BasicAndersenTest extends AnyFunSuite {
 
     val s1 = AssignmentStmt(VariableExp("a"), ConstExp(1))
     val s2 = AssignmentStmt(PointerExp("b"), AllocExp(NullExp))
-    val s3 = AssignmentStmt(PointerExp("c"), LocationExp("b"))
+    val s3 = AssignmentStmt(PointerExp("c"), LocationExp(PointerExp("b")))
     val s4 = AssignmentStmt(PointerExp("d"), PointerExp("b"))
     val s5 = AssignmentStmt(PointerExp("e"), LoadExp(PointerExp("c")))
     val s6 = AssignmentStmt(LoadExp(PointerExp("f")), PointerExp("e"))
@@ -105,9 +105,9 @@ class BasicAndersenTest extends AnyFunSuite {
     val s1 = AssignmentStmt(PointerExp("p"), AllocExp(ConstExp(1)))
     val s2 = AssignmentStmt(PointerExp("q"), AllocExp(ConstExp(2)))
     val s3 = AssignmentStmt(PointerExp("r"), AllocExp(ConstExp(3)))
-    val s4 = AssignmentStmt(PointerExp("p"), LocationExp("q"))
-    val s5 = AssignmentStmt(PointerExp("p"), LocationExp("r"))
-    val s6 = AssignmentStmt(PointerExp("r"), LocationExp("q"))
+    val s4 = AssignmentStmt(PointerExp("p"), LocationExp(PointerExp("q")))
+    val s5 = AssignmentStmt(PointerExp("p"), LocationExp(PointerExp("r")))
+    val s6 = AssignmentStmt(PointerExp("r"), LocationExp(PointerExp("q")))
 
     val mainBody = SequenceStmt(s1, SequenceStmt(s2, SequenceStmt(s3, SequenceStmt(s4, SequenceStmt(s5, s6)))));
 
@@ -179,8 +179,8 @@ class BasicAndersenTest extends AnyFunSuite {
     val s2 = AssignmentStmt(PointerExp("q"), AllocExp(ConstExp(2)))
     val s3 = AssignmentStmt(PointerExp("r"), AllocExp(ConstExp(3)))
     val s4 = AssignmentStmt(PointerExp("s"), AllocExp(ConstExp(4)))
-    val s5 = AssignmentStmt(PointerExp("p"), LocationExp("q"))
-    val s6 = AssignmentStmt(PointerExp("p"), LocationExp("r"))
+    val s5 = AssignmentStmt(PointerExp("p"), LocationExp(PointerExp("q")))
+    val s6 = AssignmentStmt(PointerExp("p"), LocationExp(PointerExp("r")))
     val s7 = AssignmentStmt(PointerExp("s"), LoadExp(PointerExp("p")))
 
     val mainBody = SequenceStmt(s1, SequenceStmt(s2, SequenceStmt(s3, SequenceStmt(s4, SequenceStmt(s5, SequenceStmt(s6, s7))))));
@@ -223,8 +223,8 @@ class BasicAndersenTest extends AnyFunSuite {
     val s3 = AssignmentStmt(PointerExp("r"), AllocExp(ConstExp(3)))
     val s4 = AssignmentStmt(PointerExp("s"), AllocExp(ConstExp(4)))
     val s  = AssignmentStmt(PointerExp("s"), AllocExp(ConstExp(5)))
-    val s5 = AssignmentStmt(PointerExp("p"), LocationExp("q"))
-    val s6 = AssignmentStmt(PointerExp("p"), LocationExp("r"))
+    val s5 = AssignmentStmt(PointerExp("p"), LocationExp(PointerExp("q")))
+    val s6 = AssignmentStmt(PointerExp("p"), LocationExp(PointerExp("r")))
     val s7 = AssignmentStmt(LoadExp(PointerExp("p")), PointerExp("s"))
 
     val mainBody = SequenceStmt(s1, SequenceStmt(s2, SequenceStmt(s3, SequenceStmt(s4, SequenceStmt(s5, SequenceStmt(s6, SequenceStmt(s7, s)))))));
@@ -273,9 +273,9 @@ class BasicAndersenTest extends AnyFunSuite {
     val s3 = AssignmentStmt(PointerExp("x"), PointerExp("z"))
     val s4 = AssignmentStmt(LoadExp(PointerExp("p")), PointerExp("z"))
     val s5 = AssignmentStmt(PointerExp("p"), PointerExp("q"))
-    val s6 = AssignmentStmt(PointerExp("q"), LocationExp("y"))
+    val s6 = AssignmentStmt(PointerExp("q"), LocationExp(PointerExp("y")))
     val s7 = AssignmentStmt(PointerExp("x"), LoadExp(PointerExp("p")))
-    val s8 = AssignmentStmt(PointerExp("p"), LocationExp("z"))
+    val s8 = AssignmentStmt(PointerExp("p"), LocationExp(PointerExp("z")))
 
     val mainBody = SequenceStmt(s1, SequenceStmt(s2, SequenceStmt(s3, SequenceStmt(s4, SequenceStmt(s5, SequenceStmt(s6, SequenceStmt(s7, s8)))))))
 

@@ -66,7 +66,7 @@ object BasicAndersen {
    * Case: p1 = &q
    * Rule: q ∈ pt(p)
    */
-  private def ruleLocation(left: PointerExp, right: LocationExp): Unit = pt(left) = pt(left) + PointerExp(right.pointer)
+  private def ruleLocation(left: PointerExp, right: LocationExp): Unit = pt(left) = pt(left) + right.pointer
 
 
   /**

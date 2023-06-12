@@ -31,16 +31,16 @@ class RDInterproceduralTest extends AnyFunSuite {
 
     val f1 = OutputStmt(VariableExp("x"))
     val fShowBody = f1
-    val fShow = FunDecl("fShow", List("x"), List(), fShowBody, NullExp)
+    val fShow = FunDecl("fShow", List(VariableExp("x")), List(), fShowBody, NullExp)
 
     val s1 = AssignmentStmt(VariableExp("a"), ConstExp(1))
-    val s2 = AssignmentStmt(VariableExp("b"), FunctionCallExp(NameExp(fShow.name), List(VariableExp("a"))))
+    val s2 = AssignmentStmt(VariableExp("b"), FunctionCallExp(fShow.name, List(VariableExp("a"))))
     val s3 = OutputStmt(VariableExp("b"))
 
     //main function
     val fMainBody = SequenceStmt(s1, SequenceStmt(s2, s3))
 
-    val fMain = FunDecl("main", List(), List("a", "b"), fMainBody, NullExp)
+    val fMain = FunDecl("main", List(), List(VariableExp("a"), VariableExp("b")), fMainBody, NullExp)
 
     val program = List(fShow, fMain)
 
@@ -82,16 +82,16 @@ class RDInterproceduralTest extends AnyFunSuite {
 
     val f1 = ReturnStmt(VariableExp("a"))
     val fIdentityBody = f1
-    val fIdentity = FunDecl("fIdentity", List("a"), List(), fIdentityBody, NullExp)
+    val fIdentity = FunDecl("fIdentity", List(VariableExp("a")), List(), fIdentityBody, NullExp)
 
     val s1 = AssignmentStmt(VariableExp("a"), ConstExp(1))
-    val s2 = AssignmentStmt(VariableExp("b"), FunctionCallExp(NameExp(fIdentity.name), List(VariableExp("a"))))
+    val s2 = AssignmentStmt(VariableExp("b"), FunctionCallExp(fIdentity.name, List(VariableExp("a"))))
     val s3 = OutputStmt(VariableExp("b"))
 
     //main function
     val fMainBody = SequenceStmt(s1, SequenceStmt(s2, s3))
 
-    val fMain = FunDecl("main", List(), List("a", "b"), fMainBody, NullExp)
+    val fMain = FunDecl("main", List(), List(VariableExp("a"), VariableExp("b")), fMainBody, NullExp)
 
     val program = List(fIdentity, fMain)
 
@@ -133,16 +133,16 @@ class RDInterproceduralTest extends AnyFunSuite {
 
     val f1 = ReturnStmt(VariableExp("x"))
     val fIdentityBody = f1
-    val fIdentity = FunDecl("fIdentity", List("x"), List(), fIdentityBody, NullExp)
+    val fIdentity = FunDecl("fIdentity", List(VariableExp("x")), List(), fIdentityBody, NullExp)
 
     val s1 = AssignmentStmt(VariableExp("a"), ConstExp(1))
-    val s2 = AssignmentStmt(VariableExp("b"), FunctionCallExp(NameExp(fIdentity.name), List(VariableExp("a"))))
+    val s2 = AssignmentStmt(VariableExp("b"), FunctionCallExp(fIdentity.name, List(VariableExp("a"))))
     val s3 = OutputStmt(VariableExp("b"))
 
     //main function
     val fMainBody = SequenceStmt(s1, SequenceStmt(s2, s3))
 
-    val fMain = FunDecl("main", List(), List("a", "b"), fMainBody, NullExp)
+    val fMain = FunDecl("main", List(), List(VariableExp("a"), VariableExp("b")), fMainBody, NullExp)
 
     val program = List(fIdentity, fMain)
 
@@ -186,16 +186,16 @@ class RDInterproceduralTest extends AnyFunSuite {
     val f1 = AssignmentStmt(VariableExp("y"), ConstExp(1))
     val f2 = ReturnStmt(VariableExp("y"))
     val fReturnYBody = SequenceStmt(f1, f2)
-    val fReturnY = FunDecl("fIdentity", List("x"), List(), fReturnYBody, NullExp)
+    val fReturnY = FunDecl("fIdentity", List(VariableExp("x")), List(), fReturnYBody, NullExp)
 
     val s1 = AssignmentStmt(VariableExp("a"), ConstExp(1))
-    val s2 = AssignmentStmt(VariableExp("b"), FunctionCallExp(NameExp(fReturnY.name), List(VariableExp("a"))))
+    val s2 = AssignmentStmt(VariableExp("b"), FunctionCallExp(fReturnY.name, List(VariableExp("a"))))
     val s3 = OutputStmt(VariableExp("b"))
 
     //main function
     val fMainBody = SequenceStmt(s1, SequenceStmt(s2, s3))
 
-    val fMain = FunDecl("main", List(), List("a", "b"), fMainBody, NullExp)
+    val fMain = FunDecl("main", List(), List(VariableExp("a"), VariableExp("b")), fMainBody, NullExp)
 
     val program = List(fReturnY, fMain)
 
@@ -244,16 +244,16 @@ class RDInterproceduralTest extends AnyFunSuite {
     val f1 = AssignmentStmt(VariableExp("y"), MultiExp(VariableExp("y"), ConstExp(1)))
     val f2 = ReturnStmt(VariableExp("y"))
     val fSignBody = SequenceStmt(f1, f2)
-    val fSign = FunDecl("fSign", List("x"), List("y"), fSignBody, VariableExp("y"))
+    val fSign = FunDecl("fSign", List(VariableExp("x")), List(VariableExp("y")), fSignBody, VariableExp("y"))
 
     val s1 = AssignmentStmt(VariableExp("a"), ConstExp(1))
-    val s2 = AssignmentStmt(VariableExp("b"), FunctionCallExp(NameExp(fSign.name), List(VariableExp("a"))))
+    val s2 = AssignmentStmt(VariableExp("b"), FunctionCallExp(fSign.name, List(VariableExp("a"))))
     val s3 = OutputStmt(VariableExp("b"))
 
     //main function
     val fMainBody = SequenceStmt(s1, SequenceStmt(s2, s3))
 
-    val fMain = FunDecl("main", List(), List("a", "b"), fMainBody, NullExp)
+    val fMain = FunDecl("main", List(), List(VariableExp("a"), VariableExp("b")), fMainBody, NullExp)
 
     val program = List(fSign, fMain)
 
@@ -302,16 +302,16 @@ class RDInterproceduralTest extends AnyFunSuite {
     val f1 = AssignmentStmt(VariableExp("a"), MultiExp(VariableExp("a"), ConstExp(1)))
     val f2 = ReturnStmt(VariableExp("a"))
     val fSignBody = SequenceStmt(f1, f2)
-    val fSign = FunDecl("fSign", List("a"), List(), fSignBody, VariableExp("a"))
+    val fSign = FunDecl("fSign", List(VariableExp("a")), List(), fSignBody, VariableExp("a"))
 
     val s1 = AssignmentStmt(VariableExp("a"), ConstExp(1))
-    val s2 = AssignmentStmt(VariableExp("b"), FunctionCallExp(NameExp(fSign.name), List(VariableExp("a"))))
+    val s2 = AssignmentStmt(VariableExp("b"), FunctionCallExp(fSign.name, List(VariableExp("a"))))
     val s3 = OutputStmt(VariableExp("b"))
 
     //main function
     val fMainBody = SequenceStmt(s1, SequenceStmt(s2, s3))
 
-    val fMain = FunDecl("main", List(), List("a", "b"), fMainBody, NullExp)
+    val fMain = FunDecl("main", List(), List(VariableExp("a"), VariableExp("b")), fMainBody, NullExp)
 
     val program = List(fSign, fMain)
 
@@ -359,18 +359,18 @@ class RDInterproceduralTest extends AnyFunSuite {
   test("test_rd_calling_function_one_time") {
 
     val m1 = AssignmentStmt(VariableExp("x"), ConstExp(5))
-    val myFunction = FunDecl("myFunction", List("x"), List(), m1, NullExp)
+    val myFunction = FunDecl("myFunction", List(VariableExp("x")), List(), m1, NullExp)
 
     val s1 = AssignmentStmt(VariableExp("x"), ConstExp(1))
     val s2 = AssignmentStmt(VariableExp("y"), ConstExp(2))
-    val s3 = AssignmentStmt(VariableExp("z"), FunctionCallExp(NameExp(myFunction.name), List(VariableExp("x"))))
+    val s3 = AssignmentStmt(VariableExp("z"), FunctionCallExp(myFunction.name, List(VariableExp("x"))))
     val s4 = AssignmentStmt(VariableExp("a"), AddExp(VariableExp("y"), ConstExp(1)))
     val s5 = AssignmentStmt(VariableExp("b"), AddExp(VariableExp("x"), ConstExp(1)))
 
     //main function
     val mainBody = SequenceStmt(s1, SequenceStmt(s2, SequenceStmt(s3, SequenceStmt(s4, s5))))
 
-    val mainFunction = FunDecl("main", List(), List("x", "y", "z"), mainBody, NullExp)
+    val mainFunction = FunDecl("main", List(), List(VariableExp("x"), VariableExp("y"), VariableExp("z")), mainBody, NullExp)
 
     val program = List(myFunction, mainFunction)
 

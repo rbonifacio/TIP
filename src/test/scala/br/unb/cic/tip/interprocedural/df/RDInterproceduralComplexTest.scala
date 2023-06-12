@@ -33,15 +33,15 @@ class RDInterproceduralComplexTest extends AnyFunSuite {
   test("test_rd_calling_function_two_times") {
 
     val m1 = AssignmentStmt(VariableExp("x"), ConstExp(5))
-    val myFunction = FunDecl("myFunction", List("x"), List(), m1, NullExp)
+    val myFunction = FunDecl("myFunction", List(VariableExp("x")), List(), m1, NullExp)
 
     val s1 = AssignmentStmt(VariableExp("x"), ConstExp(1))
     val s2 = AssignmentStmt(VariableExp("y"), ConstExp(2))
-    val s3 = AssignmentStmt(VariableExp("z"), FunctionCallExp(NameExp(myFunction.name), List(VariableExp("x"))))
+    val s3 = AssignmentStmt(VariableExp("z"), FunctionCallExp(myFunction.name, List(VariableExp("x"))))
     val s4 = AssignmentStmt(VariableExp("a"), AddExp(VariableExp("y"), ConstExp(1)))
     val s5 = AssignmentStmt(VariableExp("b"), AddExp(VariableExp("x"), ConstExp(1)))
     val s6 = AssignmentStmt(VariableExp("x"), ConstExp(100))
-    val s7 = AssignmentStmt(VariableExp("c"), FunctionCallExp(NameExp(myFunction.name), List(VariableExp("x"))))
+    val s7 = AssignmentStmt(VariableExp("c"), FunctionCallExp(myFunction.name, List(VariableExp("x"))))
     val s8 = AssignmentStmt(VariableExp("aa"), AddExp(VariableExp("y"), ConstExp(11)))
     val s9 = AssignmentStmt(VariableExp("bb"), AddExp(VariableExp("x"), ConstExp(11)))
 
@@ -57,7 +57,7 @@ class RDInterproceduralComplexTest extends AnyFunSuite {
                     SequenceStmt(s8, s9
                     ))))))))
 
-    val mainFunction = FunDecl("main", List(), List("x", "y", "z"), mainBody, NullExp)
+    val mainFunction = FunDecl("main", List(), List(VariableExp("x"), VariableExp("y"), VariableExp("z")), mainBody, NullExp)
 
     val program = List(myFunction, mainFunction)
 

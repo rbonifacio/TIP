@@ -6,7 +6,6 @@ package br.unb.cic.tip.utils
  */
 type Program = List[FunDecl]
 type Id = String
-//type Int = Integer
 type Field = (Id, Expression)
 
 /** Algebraic definition of function declaration.
@@ -23,8 +22,8 @@ type Field = (Id, Expression)
  */
 case class FunDecl(
     name: Id,
-    args: List[Id],
-    vars: List[Id],
+    args: List[BasicExp],
+    vars: List[BasicExp],
     body: Stmt,
     retExp: Expression
 )
@@ -37,67 +36,38 @@ abstract class Expression
 abstract class BasicExp extends Expression
 abstract class PointerLeftExp extends BasicExp
 
-
+// Left Expressions
 case class VariableExp(name: Id) extends BasicExp // x | y | z | . . .
 case class PointerExp(name: Id) extends PointerLeftExp // p | q | . . .
 
+// Basic
 case class ConstExp(v: Integer) extends Expression
 case class BracketExp(exp: Expression) extends Expression // (Exp)
 case class NameExp(name: Id) extends Expression // (Exp)
 case object NullExp extends Expression // null
+case object InputExp extends Expression // input
 
-//  // Algebraic
+// Algebraic
 case class AddExp(left: Expression, right: Expression) extends Expression // Exp + Exp
 case class SubExp(left: Expression, right: Expression) extends Expression // Exp - Exp
 case class MultiExp(left: Expression, right: Expression) extends Expression // Exp * Exp
 case class DivExp(left: Expression, right: Expression) extends Expression // Exp / Exp
 case class EqExp(left: Expression, right: Expression) extends Expression // Exp == Exp
 case class GTExp(left: Expression, right: Expression) extends Expression // Exp > Exp
-//
-//  // function-call
-case class FunctionCallExp(name: Expression, args: List[Expression]) extends Expression
-//
-//  // Pointer
+
+// function-call
+case class FunctionCallExp(name: Id, args: List[Expression]) extends Expression
+
+// Pointer
 case class AllocExp(exp: Expression) extends Expression // alloc Exp
-case class LocationExp(pointer: Id) extends Expression // & Id
+case class LocationExp(pointer: PointerExp) extends Expression // & Id
 case class LoadExp(pointer: PointerExp) extends PointerLeftExp // *p
-//
-//  // Record
-case class RecordExp(fields: List[Field]) extends Expression // { Id : Exp , . . . , Id : Exp }
-case class FieldAccess(record: Expression, field: Id) // Exp . Id
-case object InputExp extends Expression // input
 
-//enum Expression:
-//  // Basic
-//  case ConstExp(v: Integer) extends Expression // 0 | 1 | -1 | 2 | -2 | ...
-//  case VariableExp(name: Id) extends Expression // x | y | z | . . .
-//  case PointerExp(name: Id) extends Expression // p | q | . . .
-//  case BracketExp(exp: Expression) extends Expression // (Exp)
-//  case NameExp(name: Id) extends Expression // (Exp)
-//  case NullExp extends Expression // null
-//
-//  // Algebraic
-//  case AddExp(left: Expression, right: Expression) extends Expression // Exp + Exp
-//  case SubExp(left: Expression, right: Expression) extends Expression // Exp - Exp
-//  case MultiExp(left: Expression, right: Expression) extends Expression // Exp * Exp
-//  case DivExp(left: Expression, right: Expression) extends Expression // Exp / Exp
-//  case EqExp(left: Expression, right: Expression) extends Expression // Exp == Exp
-//  case GTExp(left: Expression, right: Expression) extends Expression // Exp > Exp
-//
-//  // function-call
-//  case FunctionCallExp(name: Expression, args: List[Any]) extends Expression
-//
-//  // Pointer
-//  case AllocExp(exp: Expression) extends Expression // alloc Exp
-//  case LocationExp(pointer: Id) extends Expression // & Id
-//  case LoadExp(exp: Expression) extends Expression // * Exp
-//
-//  // Record
-//  case RecordExp(fields: List[Field]) extends Expression // { Id : Exp , . . . , Id : Exp }
-//  case FieldAccess(record: Expression, field: Id) // Exp . Id
-//  case InputExp extends Expression // input
+// Record
+//case class RecordExp(fields: List[Field]) extends Expression // { Id : Exp , . . . , Id : Exp }
+//case class FieldAccess(record: Expression, field: Id) // Exp . Id
 
-/** 
+/**
 * Algebraic data type for statements 
 */
 enum Stmt:
@@ -120,8 +90,8 @@ enum Stmt:
   case OutputStmt(exp: Expression) extends Stmt // output Exp
 
   //records
-  case RecordAssignmentStmt(name: Id, field: Id, exp: Expression) extends Stmt // Id.Id = Exp;
-  case RecordStoreStmt(exp1: Expression, id: Id, exp2: Expression) extends Stmt // (*Exp).Id = Exp;
+//  case RecordAssignmentStmt(name: Id, field: Id, exp: Expression) extends Stmt // Id.Id = Exp;
+//  case RecordStoreStmt(exp1: Expression, id: Id, exp2: Expression) extends Stmt // (*Exp).Id = Exp;
 
 /**
  * Node Types
