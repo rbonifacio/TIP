@@ -68,10 +68,9 @@ object SVF {
    *  - v2@s2 -> v@s
    *  - q@s'-> p@s
    */
-  private def ruleCopy(stmt: Stmt, left: BasicExp, right: Expression, caller: Stmt): Unit = right match {
-    case LoadExp(pointer) => PT(pointer).foreach(v => createGraph((findDefinition(stmt, v, caller), v), (stmt, left)))
-    case _ => variables(right).foreach(v => createGraph((findDefinition(stmt, v, caller), v), (stmt, left)))
-  }
+  private def ruleCopy(stmt: Stmt, left: BasicExp, right: Expression, caller: Stmt): Unit =
+    variables(right).foreach(v => createGraph((findDefinition(stmt, v, caller), v), (stmt, left)))
+
 
   /**
    * This is a "use" operation so its represented by [u(o)]
