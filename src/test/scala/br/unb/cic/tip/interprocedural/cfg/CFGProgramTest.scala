@@ -27,7 +27,7 @@ class CFGProgramTest extends AnyFunSuite {
     val sumS1 = AssignmentStmt(VariableExp("z"), AddExp(VariableExp("x"), VariableExp("y")))
     val sumS2 = ReturnStmt(VariableExp("z"))
     val sumBody = SequenceStmt(sumS1, sumS2)
-    val sumFunction = FunDecl("sum", List("x", "y"), List("z"), sumBody, VariableExp("z"))
+    val sumFunction = FunDecl("sum", List(VariableExp("x"), VariableExp("y")), List("z"), sumBody, VariableExp("z"))
 
     //main function
     val mainS1 = AssignmentStmt((VariableExp("a")), ConstExp(1))
@@ -69,7 +69,7 @@ class CFGProgramTest extends AnyFunSuite {
     val sumS1 = AssignmentStmt(VariableExp("z"), AddExp(VariableExp("x"), VariableExp("y")))
     val sumS2 = ReturnStmt(VariableExp("z"))
     val sumBody = SequenceStmt(sumS1, sumS2)
-    val sumFunction = FunDecl("sum", List("x", "y"), List("z"), sumBody, VariableExp("z"))
+    val sumFunction = FunDecl("sum", List(VariableExp("x"), VariableExp("y")), List("z"), sumBody, VariableExp("z"))
 
     //main function
     val mainS1 = AssignmentStmt(VariableExp("a"), ConstExp(1))
@@ -106,7 +106,7 @@ class CFGProgramTest extends AnyFunSuite {
     val fibonacciBodyElse: Stmt = SequenceStmt(fibonacciBodyElseS1, fibonacciBodyElseS2)
     val fibonacciBody: Stmt = IfElseStmt(GTExp(VariableExp("z"), ConstExp(3)), fibonacciBodyIf, Some(fibonacciBodyElse))
 
-    val fibonacciFunction = FunDecl("fibonacci", List("z", "u", "v"), List(), fibonacciBody, VariableExp("v"))
+    val fibonacciFunction = FunDecl("fibonacci", List(VariableExp("z"), VariableExp("u"), VariableExp("v")), List(), fibonacciBody, VariableExp("v"))
 
     //main function
     val mainBody = AssignmentStmt(VariableExp("_m1"), FunctionCallExp(NameExp(fibonacciFunction.name), List(VariableExp("x"), ConstExp(0), VariableExp("y"))))

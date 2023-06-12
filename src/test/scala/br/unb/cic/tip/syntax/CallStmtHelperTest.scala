@@ -44,7 +44,7 @@ class CallStmtHelperTest extends AnyFunSuite {
   test("test_rd_using_only_statements") {
 
     val m1 = AssignmentStmt(VariableExp("a"), ConstExp(999))
-    val myFunction = FunDecl("myFunction", List("x"), List(), m1, NullExp)
+    val myFunction = FunDecl("myFunction", List(VariableExp("x")), List(), m1, NullExp)
 
     val s1 = AssignmentStmt(VariableExp("x"), ConstExp(1))
     val s2 = AssignmentStmt(VariableExp("y"), ConstExp(2))
