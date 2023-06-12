@@ -55,7 +55,7 @@ case class EqExp(left: Expression, right: Expression) extends Expression // Exp 
 case class GTExp(left: Expression, right: Expression) extends Expression // Exp > Exp
 //
 //  // function-call
-case class FunctionCallExp(name: Expression, args: List[Any]) extends Expression
+case class FunctionCallExp(name: Id, args: List[Any]) extends Expression
 //
 //  // Pointer
 case class AllocExp(exp: Expression) extends Expression // alloc Exp

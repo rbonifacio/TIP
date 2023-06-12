@@ -37,11 +37,11 @@ class RDInterproceduralComplexTest extends AnyFunSuite {
 
     val s1 = AssignmentStmt(VariableExp("x"), ConstExp(1))
     val s2 = AssignmentStmt(VariableExp("y"), ConstExp(2))
-    val s3 = AssignmentStmt(VariableExp("z"), FunctionCallExp(NameExp(myFunction.name), List(VariableExp("x"))))
+    val s3 = AssignmentStmt(VariableExp("z"), FunctionCallExp(myFunction.name, List(VariableExp("x"))))
     val s4 = AssignmentStmt(VariableExp("a"), AddExp(VariableExp("y"), ConstExp(1)))
     val s5 = AssignmentStmt(VariableExp("b"), AddExp(VariableExp("x"), ConstExp(1)))
     val s6 = AssignmentStmt(VariableExp("x"), ConstExp(100))
-    val s7 = AssignmentStmt(VariableExp("c"), FunctionCallExp(NameExp(myFunction.name), List(VariableExp("x"))))
+    val s7 = AssignmentStmt(VariableExp("c"), FunctionCallExp(myFunction.name, List(VariableExp("x"))))
     val s8 = AssignmentStmt(VariableExp("aa"), AddExp(VariableExp("y"), ConstExp(11)))
     val s9 = AssignmentStmt(VariableExp("bb"), AddExp(VariableExp("x"), ConstExp(11)))
 

@@ -40,14 +40,14 @@ object ReachingDefinition {
 
           stmt match
             case AssignmentStmt(_, exp) => exp match {
-              case FunctionCallExp(NameExp(name), args) =>
+              case FunctionCallExp(fName, args) =>
                 en = entry(fBody, stmt, predecessors, context)
                 // filter and get predecessor that are send as parameters to the function
                 val usedPredecessors = en.filter(e => args.exists(_ == e.name))
-                run(getMethodBody(program, name), program, usedPredecessors, stmt)
+                run(getMethodBody(program, fName), program, usedPredecessors, stmt)
                 // a kind of Interprocedural Exit Function was created in the next lines
                 val in: Set[AssignmentStmt] = exit(stmt)
-                val RDCallee: Set[AssignmentStmt] = finalStmt(getMethodBody(program, name)).map(s => RD((s, stmt))._2).foldLeft(Set())(_ union _)
+                val RDCallee: Set[AssignmentStmt] = finalStmt(getMethodBody(program, fName)).map(s => RD((s, stmt))._2).foldLeft(Set())(_ union _)
                 val g = RDCallee.filter(e => args.exists(_ == e.name)) // filter and keep just parameters that were sent
                 val kill = in.filter(i => g.exists(g => g.name == i.name))
                 ex = ((in diff kill) union g) union gen(stmt)

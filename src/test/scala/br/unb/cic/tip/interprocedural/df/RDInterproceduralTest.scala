@@ -34,7 +34,7 @@ class RDInterproceduralTest extends AnyFunSuite {
     val fShow = FunDecl("fShow", List(VariableExp("x")), List(), fShowBody, NullExp)
 
     val s1 = AssignmentStmt(VariableExp("a"), ConstExp(1))
-    val s2 = AssignmentStmt(VariableExp("b"), FunctionCallExp(NameExp(fShow.name), List(VariableExp("a"))))
+    val s2 = AssignmentStmt(VariableExp("b"), FunctionCallExp(fShow.name, List(VariableExp("a"))))
     val s3 = OutputStmt(VariableExp("b"))
 
     //main function
@@ -85,7 +85,7 @@ class RDInterproceduralTest extends AnyFunSuite {
     val fIdentity = FunDecl("fIdentity", List(VariableExp("a")), List(), fIdentityBody, NullExp)
 
     val s1 = AssignmentStmt(VariableExp("a"), ConstExp(1))
-    val s2 = AssignmentStmt(VariableExp("b"), FunctionCallExp(NameExp(fIdentity.name), List(VariableExp("a"))))
+    val s2 = AssignmentStmt(VariableExp("b"), FunctionCallExp(fIdentity.name, List(VariableExp("a"))))
     val s3 = OutputStmt(VariableExp("b"))
 
     //main function
@@ -136,7 +136,7 @@ class RDInterproceduralTest extends AnyFunSuite {
     val fIdentity = FunDecl("fIdentity", List(VariableExp("x")), List(), fIdentityBody, NullExp)
 
     val s1 = AssignmentStmt(VariableExp("a"), ConstExp(1))
-    val s2 = AssignmentStmt(VariableExp("b"), FunctionCallExp(NameExp(fIdentity.name), List(VariableExp("a"))))
+    val s2 = AssignmentStmt(VariableExp("b"), FunctionCallExp(fIdentity.name, List(VariableExp("a"))))
     val s3 = OutputStmt(VariableExp("b"))
 
     //main function
@@ -189,7 +189,7 @@ class RDInterproceduralTest extends AnyFunSuite {
     val fReturnY = FunDecl("fIdentity", List(VariableExp("x")), List(), fReturnYBody, NullExp)
 
     val s1 = AssignmentStmt(VariableExp("a"), ConstExp(1))
-    val s2 = AssignmentStmt(VariableExp("b"), FunctionCallExp(NameExp(fReturnY.name), List(VariableExp("a"))))
+    val s2 = AssignmentStmt(VariableExp("b"), FunctionCallExp(fReturnY.name, List(VariableExp("a"))))
     val s3 = OutputStmt(VariableExp("b"))
 
     //main function
@@ -247,7 +247,7 @@ class RDInterproceduralTest extends AnyFunSuite {
     val fSign = FunDecl("fSign", List(VariableExp("x")), List(VariableExp("y")), fSignBody, VariableExp("y"))
 
     val s1 = AssignmentStmt(VariableExp("a"), ConstExp(1))
-    val s2 = AssignmentStmt(VariableExp("b"), FunctionCallExp(NameExp(fSign.name), List(VariableExp("a"))))
+    val s2 = AssignmentStmt(VariableExp("b"), FunctionCallExp(fSign.name, List(VariableExp("a"))))
     val s3 = OutputStmt(VariableExp("b"))
 
     //main function
@@ -305,7 +305,7 @@ class RDInterproceduralTest extends AnyFunSuite {
     val fSign = FunDecl("fSign", List(VariableExp("a")), List(), fSignBody, VariableExp("a"))
 
     val s1 = AssignmentStmt(VariableExp("a"), ConstExp(1))
-    val s2 = AssignmentStmt(VariableExp("b"), FunctionCallExp(NameExp(fSign.name), List(VariableExp("a"))))
+    val s2 = AssignmentStmt(VariableExp("b"), FunctionCallExp(fSign.name, List(VariableExp("a"))))
     val s3 = OutputStmt(VariableExp("b"))
 
     //main function
@@ -363,7 +363,7 @@ class RDInterproceduralTest extends AnyFunSuite {
 
     val s1 = AssignmentStmt(VariableExp("x"), ConstExp(1))
     val s2 = AssignmentStmt(VariableExp("y"), ConstExp(2))
-    val s3 = AssignmentStmt(VariableExp("_m1"), FunctionCallExp(NameExp(myFunction.name), List(VariableExp("x"))))
+    val s3 = AssignmentStmt(VariableExp("_m1"), FunctionCallExp(myFunction.name, List(VariableExp("x"))))
     val s4 = AssignmentStmt(VariableExp("a"), AddExp(VariableExp("y"), ConstExp(1)))
     val s5 = AssignmentStmt(VariableExp("b"), AddExp(VariableExp("x"), ConstExp(1)))
 
