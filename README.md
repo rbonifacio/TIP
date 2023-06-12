@@ -4,14 +4,14 @@
 
 This project was implemented by University dof Brasília **(UnB)** students from Science Computer Department **(CIC)** and the develpoment was based in [Static Program Analysis’ book](https://users-cs.au.dk/amoeller/spa/spa.pdf), where it is used a Tiny Imperative Programming language **(TIP)**, which is based in a context free grammar, that has a very simple syntax and implements basic ’s constructions like expressions and statements but does not high level features like global variables, objects and others. Moreover, [Principles of Program Analysis’ book](https://link.springer.com/book/10.1007/978-3-662-03811-6) was used as a helper because the first book was not totally dense.
 
-The goal of this projects is explore the concepts for Static Analysis and implement its basic algorithms.
+The goal of this project is to explore the concepts for Static Analysis and implement its basic algorithms.
 
 # Implementations
 
 In this study the next implementations  have been done: 
 
 - [x] Parser
-- [x] Intraprodecural
+- [x] IntraProcedural
     - [x] CFG
     - [x] Classic Algorithms
         - [x] Available Expression
@@ -25,7 +25,7 @@ In this study the next implementations  have been done:
             - [x] Reaching Definition
             - [ ] Very Busy Expression
         - [ ] ~~MOP~~
-- [ ] Interprocedural
+- [ ] InterProcedural
     - [x] CFG
     - [x] Classic Algorithms
         - [ ] Available Expression
@@ -43,10 +43,14 @@ In this study the next implementations  have been done:
         - [x] Valid 
         - [x] Completed
     - [x] Context Insensitivity
-    - [x] Context Sensityvity
+    - [x] Context Sensitivity
         - [x] Basic
         - [x] Call String
-        - [ ] Functional Approach
+        - [ ] ~~Functional Approach~~
+    - [x] Pointer Analysis
+      - [x] Andersen's Algorithm
+      - [x] Alias Analysis
+    - [ ] SVF: Static Value Flow
 
 # Version
 
