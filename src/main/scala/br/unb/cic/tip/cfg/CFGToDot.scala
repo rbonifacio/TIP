@@ -4,7 +4,7 @@ import org.typelevel.paiges.Doc
 import br.unb.cic.tip.*
 import br.unb.cic.tip.utils.Node
 import br.unb.cic.tip.utils.Node.{EndNode, SimpleNode, StartNode}
-import br.unb.cic.tip.utils.Stmt.{AfterCallStmt, CallStmt}
+import br.unb.cic.tip.utils.Stmt.{AfterCallStmt, CallStmt, IfElseStmt, WhileStmt}
 
 def exportDot(cfg: Graph, path: Path = List()): String = {
 
@@ -35,7 +35,11 @@ def exportDot(cfg: Graph, path: Path = List()): String = {
 
 def createNode(v: Node): Doc = {
   Doc.text("\"") + (v match {
-    case SimpleNode(s) => Doc.text(s.toString)
+    case SimpleNode(s) => s match {
+      case IfElseStmt(condition, _, _) => Doc.text(condition.toString)
+      case WhileStmt(condition, _) => Doc.text(condition.toString)
+      case _ => Doc.text(v.toString)
+    }
     case _ => Doc.text(v.toString)
   }) + Doc.text("\"")
 }
