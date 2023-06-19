@@ -95,7 +95,11 @@ enum Stmt:
 //  case RecordStoreStmt(exp1: Expression, id: Id, exp2: Expression) extends Stmt // (*Exp).Id = Exp;
 
 /**
- * Node Types
+ * To build the CFG, there are 3 nodes' types which represent:
+ *
+ * StartNode: function opening
+ * StartNode: function statements
+ * EndNode: function closing
  */
 enum Node:
   case StartNode(function: Id) extends Node
