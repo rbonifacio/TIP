@@ -38,7 +38,7 @@ def createNode(v: Node): Doc = {
     case SimpleNode(s) => s match {
       case IfElseStmt(condition, _, _) => Doc.text(condition.toString)
       case WhileStmt(condition, _) => Doc.text(condition.toString)
-      case _ => Doc.text(v.toString)
+      case _ => Doc.text(s.toString)
     }
     case _ => Doc.text(v.toString)
   }) + Doc.text("\"")
