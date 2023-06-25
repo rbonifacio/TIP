@@ -11,18 +11,19 @@ class CFGProgramTest extends AnyFunSuite {
 
   /**
    * sum(x, y) {
-   * z = x + y
-   * return z
+   *  z = x + y
+   *  return z
    * }
    *
    * main() {
-   * a = 1
-   * b = 2
-   * c = sum(a, b)
-   * print c
+   *  a = 1
+   *  b = 2
+   *  c = sum(a, b)
+   *  print c
    * }
    */
-  test("sum_program") {
+  test("test_cfg_sum_program") {
+
     //sum function
     val sumS1 = AssignmentStmt(VariableExp("z"), AddExp(VariableExp("x"), VariableExp("y")))
     val sumS2 = ReturnStmt(VariableExp("z"))
@@ -64,7 +65,8 @@ class CFGProgramTest extends AnyFunSuite {
    *    print f
    * }
    */
-  test("sum_program_called_two_times") {
+  test("test_cfg_sum_program_called_two_times") {
+
     //sum function
     val sumS1 = AssignmentStmt(VariableExp("z"), AddExp(VariableExp("x"), VariableExp("y")))
     val sumS2 = ReturnStmt(VariableExp("z"))
@@ -99,11 +101,12 @@ class CFGProgramTest extends AnyFunSuite {
     )
 
     val program = List(sumFunction, mainFunction)
-//    val cfg = flow(program)
-//    println(exportDot(cfg))
+    val cfg = flow(program)
+    // println(exportDot(cfg))
   }
 
-  test("fibonacci program") {
+  test("test_cfg_fibonacci_program") {
+
     //fibonacci function
     val fibonacciBodyIf: Stmt = AssignmentStmt(VariableExp("v"), AddExp(VariableExp("u"), ConstExp(1)))
     val fibonacciBodyElseS1: Stmt = AssignmentStmt(VariableExp("_f1"), FunctionCallExp("fibonacci", List(SubExp(VariableExp("z"), ConstExp(1)), VariableExp("u"), VariableExp("v"))))
