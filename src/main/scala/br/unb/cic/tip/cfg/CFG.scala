@@ -34,6 +34,10 @@ def blocks(stmt: Stmt): Set[Stmt] = stmt match {
   case _                            => Set(stmt)
 }
 
+/**
+ * This function returns an intra procedural CFG
+ * Which is generated according to each statement's type
+ */
 def flow(stmt: Stmt): Graph = stmt match {
   case SequenceStmt(s1, s2)         => flow(s1) union flow(s2) union finalStmt(s1).map(s => (SimpleNode(s),SimpleNode(initStmt(s2))))
   case IfElseStmt(_, s1, Some(s2))  => flow(s1) union flow(s2) union Set((SimpleNode(stmt), SimpleNode(initStmt(s1)))) union Set((SimpleNode(stmt), SimpleNode(initStmt(s2))))
