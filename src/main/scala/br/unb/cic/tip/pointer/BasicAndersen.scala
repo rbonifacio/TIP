@@ -62,9 +62,7 @@ object BasicAndersen {
    * Case: p = q
    * Rule: pt(q) ⊆ pt(p)
    */
-  private def ruleCopy(left: PointerExp, right: PointerExp): Unit =  {
-    pt(left) = pt(left) union pt(right)
-  }
+  private def ruleCopy(left: PointerExp, right: PointerExp): Unit = pt(left) = pt(left) union pt(right)
 
 
   /**
