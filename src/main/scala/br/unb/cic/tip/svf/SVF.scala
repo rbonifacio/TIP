@@ -57,14 +57,10 @@ object SVF {
   /**
    * This is a copy operation for variables and pointers.
    * 
-   * Case:
-   *  - s: v = v1
-   *  - s: v = v1 op v2
-   *  - s: p = q
-   * Rule:
-   *  - v1@s1 -> v@s
-   *  - v2@s2 -> v@s
-   *  - q@s'-> p@s
+   *        Case          |     Rule
+   *  - s: v = v1         | - v1@s' -> v@s
+   *  - s: v = v1 op v2   | - v1@s' -> v@s and v2@s'\'-> v@s
+   *  - s: p = q          | - q@s'-> p@s
    */
   private def ruleCopy(stmt: Stmt, left: BasicExp, right: Expression, caller: Stmt): Unit =
     variables(right).foreach(v => createGraph((findDefinition(stmt, v, caller), v), (stmt, left)))
@@ -73,9 +69,9 @@ object SVF {
   /**
    * This is a "use" operation so its represented by [u(o)]
    *
-   * Case: l: p = *q
-   * Rule: ∀ o pt(q)
-   *  - ∀ o@Ln -> p@L
+   *     Case       |     Rule
+   * - s: p = *q    |  - o@s' -> p@s, ∀ o pt(q)
+   *
    */
   private def ruleLoad(stmt: Stmt, left: PointerExp, right: LoadExp, caller: Stmt): Unit =
     PT(right.pointer).foreach(v => createGraph((findDefinition(stmt, v, caller), v), (stmt, left)))
@@ -83,10 +79,10 @@ object SVF {
 
   /**
    * This is an "use and definition" operation so its represented by [o = x(o1)]
-   * Case: L: *p = q
-   * Rule: ∀ o pt(p)
-   *  - q@L1 -> ∀ o@L (strong)
-   *  - o1@L1 --> ∀ o@L (weak)
+   *
+   *     Case     |     Rule
+   * - s: *p = q  | - q@s' -> o@s,        ∀ o pt(p) : (strong)
+   *              | - pt(o)@s' --> o@s,   ∀ o pt(p) : (weak)
    */
   private def ruleStore(stmt: Stmt, left: LoadExp, right: PointerExp, caller: Stmt): Unit =
     PT(left.pointer).foreach(v => createGraph((findDefinition(stmt, right, caller), right), (stmt, v)))
@@ -96,29 +92,29 @@ object SVF {
    * DIRECT                         | INDIRECT
    * Case:                          |
    *                                |
-   *  Lcs: r = f(..., p, ...)       | [U(o)]
-   *  Lf: f(..., q, ...)            | [o1 = X(_)]
+   *  sc: r = f(..., p, ...)        | [U(o)]
+   *  sf: f(..., q, ...)            | [o1 = X(_)]
    *                                |
    * Rule:                          |
-   *  - p@L1 -> q@Lf                | - o@L1 --> o1@Lf
+   *  - p@s' -> q@sf                | - o@s' --> q@sf,  ∀ o pt(p)
    *
    */
   private def ruleCall(stmt: Stmt, caller: Stmt): Unit = {}
 
 
   /**
-   * DIRECT                         | INDIRECT
-   * Case:                          |
-   *                                |
-   *  Lf: f(..., q, ...) {          |
-   *    ...                         |
-   *    return x                    |  [U(o)]
-   *  }                             |
-   *  Lcs: r = f(..., p, ...)       |  [o1 = X(_)]
-   *                                |
-   * Rule:                          |
-   *  - x@Lf -> r@Lcs               | - o@Lf --> o1@Lcs
-   *                                |
+   * DIRECT                           | INDIRECT
+   * Case:                            |
+   *                                  |
+   *  sf:   f(..., q, ...) {          |
+   *          ...                     |
+   *  sf':    return x                |  [U(o)]
+   *        }                         |
+   *  sc: r = f(..., p, ...)          |  [o1 = X(_)]
+   *                                  |
+   * Rule:                            |
+   *  - x@sf' -> r@sc                 | - o@sf' --> r@sc ,  ∀ o pt(r)
+   *                                  |
    */
   private def ruleReturn(stmt: ReturnStmt, caller: Stmt): Unit = caller match {
     case AssignmentStmt(name, _) =>
