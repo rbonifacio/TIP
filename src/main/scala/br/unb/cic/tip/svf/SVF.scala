@@ -62,8 +62,14 @@ object SVF {
    *  - s: v = v1 op v2   | - v1@s' -> v@s and v2@s'\'-> v@s
    *  - s: p = q          | - q@s'-> p@s
    */
-  private def ruleCopy(stmt: Stmt, left: BasicExp, right: Expression, caller: Stmt): Unit =
-    variables(right).foreach(v => createGraph((findDefinition(stmt, v, caller), v), (stmt, left)))
+  private def ruleCopy(stmt: Stmt, left: BasicExp, right: Expression, caller: Stmt):
+    Unit =
+        variables(right).foreach(
+          v => createGraph(
+            (findDefinition(stmt, v, caller), v),
+            (stmt, left)
+          )
+        )
 
 
   /**
@@ -73,8 +79,14 @@ object SVF {
    * - s: p = *q    |  - o@s' -> p@s, ∀ o pt(q)
    *
    */
-  private def ruleLoad(stmt: Stmt, left: PointerExp, right: LoadExp, caller: Stmt): Unit =
-    PT(right.pointer).foreach(v => createGraph((findDefinition(stmt, v, caller), v), (stmt, left)))
+  private def ruleLoad(stmt: Stmt, left: PointerExp, right: LoadExp, caller: Stmt):
+    Unit =
+      PT(right.pointer).foreach(
+        v => createGraph(
+          (findDefinition(stmt, v, caller), v),
+          (stmt, left)
+        )
+      )
 
 
   /**
@@ -84,8 +96,14 @@ object SVF {
    * - s: *p = q  | - q@s' -> o@s,        ∀ o pt(p) : (strong)
    *              | - pt(o)@s' --> o@s,   ∀ o pt(p) : (weak)
    */
-  private def ruleStore(stmt: Stmt, left: LoadExp, right: PointerExp, caller: Stmt): Unit =
-    PT(left.pointer).foreach(v => createGraph((findDefinition(stmt, right, caller), right), (stmt, v)))
+  private def ruleStore(stmt: Stmt, left: LoadExp, right: PointerExp, caller: Stmt):
+  Unit =
+    PT(left.pointer).foreach(
+      v => createGraph(
+        (findDefinition(stmt, right, caller),
+          right), (stmt, v)
+      )
+    )
 
 
   /**
@@ -116,11 +134,11 @@ object SVF {
    *  - x@sf' -> r@sc                 | - o@sf' --> r@sc ,  ∀ o pt(r)
    *                                  |
    */
-  private def ruleReturn(stmt: ReturnStmt, caller: Stmt): Unit = caller match {
+  private def ruleReturn(stmt: ReturnStmt, caller: Stmt):
+  Unit = caller match {
     case AssignmentStmt(name, _) =>
         createGraph((findDefinition(stmt, stmt.exp, caller), stmt.exp), (stmt, stmt.exp))
         createGraph((stmt, stmt.exp), (caller, name))
-    case _ =>
   }
 
 
