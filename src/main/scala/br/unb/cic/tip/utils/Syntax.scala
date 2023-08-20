@@ -38,7 +38,7 @@ abstract class PointerLeftExp extends BasicExp
 
 // Left Expressions
 case class VariableExp(name: Id) extends BasicExp // x | y | z | . . .
-case class PointerExp(name: Id) extends PointerLeftExp // p | q | . . .
+case class PointerExp(name: Id) extends PointerLeftExp // *p | *q | . . .
 
 // Basic
 case class ConstExp(v: Integer) extends Expression
