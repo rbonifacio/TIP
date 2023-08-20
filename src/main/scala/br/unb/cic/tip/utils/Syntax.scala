@@ -38,7 +38,7 @@ abstract class PointerLeftExp extends BasicExp
 
 // Left Expressions
 case class VariableExp(name: Id) extends BasicExp // x | y | z | . . .
-case class PointerExp(name: Id) extends PointerLeftExp // p | q | . . .
+case class PointerExp(name: Id) extends PointerLeftExp // *p | *q | . . .
 
 // Basic
 case class ConstExp(v: Integer) extends Expression
@@ -105,3 +105,4 @@ enum Node:
   case StartNode(function: Id) extends Node
   case EndNode(function: Id) extends Node
   case SimpleNode(stmt: Stmt) extends Node
+  case SVFNode(stmt: Stmt, variable: Expression) extends Node

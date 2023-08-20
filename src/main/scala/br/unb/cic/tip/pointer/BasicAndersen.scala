@@ -8,14 +8,21 @@ import br.unb.cic.tip.utils.Stmt.AssignmentStmt
 import scala.collection.mutable
 
 type Cell = Expression
-type Result = mutable.HashMap[BasicExp, Set[Cell]]
+type ResultPT = mutable.HashMap[BasicExp, Set[Cell]]
 
 object BasicAndersen {
 
-  private var pt: Result = mutable.HashMap()
+  private var pt: ResultPT = mutable.HashMap()
 
-  def pointTo(body: Stmt): Result = {
+  private var disableAllocationRule: Boolean = false
 
+  def pointTo(body: Stmt): ResultPT = {
+    pt = mutable.HashMap()
+    pointTo(body: Stmt, false)
+  }
+  def pointTo(body: Stmt, disableAllocation: Boolean): ResultPT = {
+
+    disableAllocationRule = disableAllocation
     var explore = true
     for (variable <- variables(body)) {
       pt(variable) = Set()
@@ -34,7 +41,10 @@ object BasicAndersen {
 
   def gen(stmt: Stmt): Unit = stmt match {
     case AssignmentStmt(left, right) => (left, right) match {
-      case (l: PointerExp, r: AllocExp) => ruleAllocation(l, r) // alloc: p = alloc i
+      case (l: PointerExp, r: AllocExp) => disableAllocationRule match {
+        case false => ruleAllocation(l, r) // alloc: p = alloc i
+        case true =>
+      }
       case (l: PointerExp, r: LocationExp) => ruleLocation (l, r) // location: p1 = &q
       case (l: PointerExp, r: PointerExp) => ruleCopy(l, r) // assign: p = q
       case (l: PointerExp, r: LoadExp) => ruleLoad(l, r) // load: p = *q
@@ -42,6 +52,7 @@ object BasicAndersen {
       case (l: PointerExp, r: Expression) => ruleDeferred(l, r) // deferred: p = null
       case (_: VariableExp, _: Expression) =>  // any other thing
     }
+    case _ =>
   }
 
   /**

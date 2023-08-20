@@ -1,6 +1,7 @@
 package br.unb.cic.tip
 
-import br.unb.cic.tip.utils.{AddExp, BasicExp, BracketExp, ConstExp, DivExp, EqExp, Expression, FunDecl, FunctionCallExp, GTExp, Id, InputExp, LoadExp, MultiExp, Node, PointerExp, Program, Stmt, SubExp, VariableExp}
+import br.unb.cic.tip.svf.GraphSVF
+import br.unb.cic.tip.utils.{AddExp, BasicExp, BracketExp, ConstExp, DivExp, EqExp, Expression, FunDecl, FunctionCallExp, GTExp, Id, InputExp, LoadExp, MultiExp, NameExp, Node, PointerExp, Program, Stmt, SubExp, VariableExp}
 import br.unb.cic.tip.utils.Stmt.*
 import br.unb.cic.tip.utils.Node.*
 
@@ -136,3 +137,5 @@ def expDependsOn(exp: Expression, id: VariableExp): Boolean = exp match {
   case InputExp          => false
   case _                 => true
 }
+
+def convertSVFtoGraph(svf: GraphSVF): Graph = svf.map { case(l,r) => (SVFNode(l._1, l._2), SVFNode(r._1, r._2)) }.foldLeft(Set())(_ + _)

@@ -50,7 +50,7 @@ In this study the next implementations  have been done:
     - [x] Pointer Analysis
       - [x] Andersen's Algorithm
       - [x] Alias Analysis
-    - [ ] SVF: Static Value Flow
+    - [x] SVF: Static Value Flow
 
 # Version
 
