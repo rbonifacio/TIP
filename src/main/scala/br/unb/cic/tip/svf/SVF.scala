@@ -3,7 +3,7 @@ package br.unb.cic.tip.svf
 import br.unb.cic.tip.df.{ReachingDefinition, ResultRD}
 import br.unb.cic.tip.pointer.{BasicAndersen, ResultPT}
 import br.unb.cic.tip.{blocks, getMethodBody, variables}
-import br.unb.cic.tip.utils.{AllocExp, BasicExp, Expression, FunDecl, FunctionCallExp, Id, LoadExp, NameExp, PointerExp, Program, Stmt, VariableExp}
+import br.unb.cic.tip.utils.{AllocExp, BasicExp, Expression, FunDecl, FunctionCallExp, Id, LoadExp, PointerExp, Program, Stmt, VariableExp}
 import br.unb.cic.tip.utils.Stmt.*
 
 import scala.collection.mutable
