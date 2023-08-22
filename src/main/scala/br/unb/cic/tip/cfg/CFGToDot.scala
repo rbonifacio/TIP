@@ -9,7 +9,8 @@ import br.unb.cic.tip.utils.Stmt.{AfterCallStmt, CallStmt, IfElseStmt, WhileStmt
 def exportDot(cfg: Graph, path: Path = List()): String = {
 
   val edges = cfg.map { case (from, to) =>
-    createNode(from) + Doc.space + Doc.text("->") + Doc.space + createNode(to) + (if (isCallStmt(from) && isCallStmt(to)) Doc.space + Doc.text("[color=\"gray\"]") else Doc.text(""))
+    createNode(from) + Doc.space + Doc.text("->") + Doc.space + createNode(to)
+//      (if (isCallStmt(from) && isCallStmt(to)) Doc.space + Doc.text("[color=\"gray\"]") else Doc.text("")) // creates an edge btw call and after call node
   }
   var body = Doc.intercalate(Doc.text("\n"), edges)
 
@@ -20,6 +21,7 @@ def exportDot(cfg: Graph, path: Path = List()): String = {
 
   // add color for call nodes
   val callNodes = callStatement(cfg).map( stmt => createNode(stmt.toString, "skyblue"))
+
   // add color for limit nodes (start and end)
   val limitNodes = functions(cfg).map( stmt => createNode(StartNode(stmt).toString, "yellow") + Doc.space + createNode(EndNode(stmt).toString, "yellow"))
 
